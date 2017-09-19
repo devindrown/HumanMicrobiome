@@ -5,18 +5,35 @@ From here on out you’ll be entering commands directly to the mothur program. T
 mothur>
 ```
 
-
-
+# Prepare database
 
 ```
 set.dir(input=./MiSeq_SOP, output=./testrun)
 ```
+
+
+Customize database to our region of interes
+```
+pcr.seqs(fasta=./silva.bacteria/silva.bacteria.fasta, start=11894, end=25319, keepdots=F)
+```
+Output File Names:
+/home/microbiome/mothur/testrun/silva.bacteria.pcr.fasta
+
+Paying careful attention to the output file, use this in the below command <INPUT>
+
+```
+rename.file(input=/home/microbiome/mothur/testrun/silva.bacteria.pcr.fasta, new=silva.v4.fasta)
+rename.file(input=<INPUT>, new=silva.v4.fasta)
+```
+
 # Reducing sequencing and PCR errors
 
 Combine our two sets of reads for each sample and then to combine the data from all of the samples
+
 ```
 make.contigs(file=stability.files, processors=8)
 ```
+
 You’ll probably get a [WARNING] message, but don’t worry.
 
 Go back to the file explorer and open `stability.files`
@@ -123,6 +140,7 @@ Output File Names:
 # Processing improved sequences
 
 Many of our sequences are duplicates of each other. Because it's computationally wasteful to align the same thing a bazillion times, we'll unique our sequences using
+
 ```
 unique.seqs()
 ```
@@ -149,7 +167,9 @@ Output File Names:
 /home/microbiome/mothur/testrun/stability.trim.contigs.good.count_table
 ```
 
+```
 summary.seqs()
+```
 
 OUTPUT
 ```
@@ -168,21 +188,49 @@ Output File Names:
 /home/microbiome/mothur/testrun/stability.trim.contigs.good.unique.summary
 
 ```
-## Preparing for aligning to database
+# Aligning to the database
 
-Customize database to our region of intereste.
+Now we need to align our sequences to the reference alignment. I’ve already trimmed the silva database to just the v4 region of 16s, so if you were using a different section, you’d need to do this from scratch. See the MiSeq SOP online for details. Here we’ll just use the shortcut.
+
 ```
-pcr.seqs(fasta=./silva.bacteria/silva.bacteria.fasta, start=11894, end=25319, keepdots=F)
+align.seqs(fasta=current, reference=silva.v4.fasta)
 ```
+
+Check the results. Enter the following command all on one line:
+INPUT
+fasta=stability.trim.contigs.good.unique.align, 
+count=stability.trim.contigs.good.count_table
+```
+summary.seqs()
+```
+So what does this mean? You'll see that the bulk of the sequences start at position 1968 and end at position 11550. Deviants from the mode positions are likely due to an insertion or deletion at the terminal ends of the alignments. 
+
+To make sure that everything overlaps the same region we'll re-run `screen.seqs` to get sequences that start at or before position 1 and end at or after position 11550. We'll also set the maximum homopolymer length to 8 since there's nothing in the database with a stretch of 9 or more of the same base in a row. 
+```
+screen.seqs(fasta=current, count=current, start=1968, end=11550, maxhomop=8)
+```
+
+Check to see if our sequences overlap the same alignment coordinates
+```
+summary.seqs(fasta=current, count=current)
+```
+
+Filter the sequences to remove the overhangs at both ends. In addition, there are many columns in the alignment that only contain gap characters.
+```
+filter.seqs(fasta=current, vertical=T, trump=.)
+```
+
 OUTPUT
 ```
-Output File Names:
-/home/microbiome/mothur/testrun/silva.bacteria.pcr.fasta
-```
-rename.file(input=/home/microbiome/mothur/testrun/silva.bacteria.pcr.fasta, new=silva.v4.fasta) 
-
-
+Length of filtered alignment: 376
+Number of columns removed: 13049
+Length of the original alignment: 13425
+Number of sequences used to construct filter: 16298
 ```
 
 
+Perhaps we’ve created some redundancy across our sequences by trimming the ends, we can re-run unique.seqs:
+```
+unique.seqs(fasta=current, count=current)
+```
 
