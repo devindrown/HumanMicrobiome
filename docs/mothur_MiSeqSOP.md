@@ -8,7 +8,7 @@ mothur>
 # Prepare database
 
 ```
-set.dir(input=./MiSeq_SOP, output=./testrun)
+set.dir(output=./testrun)
 ```
 
 
@@ -31,7 +31,7 @@ rename.file(input=<INPUT>, new=silva.v4.fasta)
 Combine our two sets of reads for each sample and then to combine the data from all of the samples
 
 ```
-make.contigs(file=stability.files, processors=8)
+make.contigs(inputdir=./MiSeq_SOP, file=./MiSeq_SOP/stability.files, processors=8)
 ```
 
 You’ll probably get a [WARNING] message, but don’t worry.
@@ -79,7 +79,7 @@ Output File Names:
 
 Let's see what these sequences look like
 ```
-summary.seqs()
+summary.seqs(fasta=current)
 ```
 
 OUTPUT
@@ -168,7 +168,7 @@ Output File Names:
 ```
 
 ```
-summary.seqs()
+summary.seqs(count=current)
 ```
 
 OUTPUT
@@ -183,6 +183,8 @@ Median:         1       253     253     0       4       8214
 Maximum:        1       270     270     0       12      16426
 Mean:   1       252.594 252.594 0       4.44277
 # of Seqs:      16426
+total # of seqs:        128872
+
 
 Output File Names:
 /home/microbiome/mothur/testrun/stability.trim.contigs.good.unique.summary
@@ -201,7 +203,7 @@ INPUT
 fasta=stability.trim.contigs.good.unique.align, 
 count=stability.trim.contigs.good.count_table
 ```
-summary.seqs()
+summary.seqs(count=current)
 ```
 So what does this mean? You'll see that the bulk of the sequences start at position 1968 and end at position 11550. Deviants from the mode positions are likely due to an insertion or deletion at the terminal ends of the alignments. 
 
@@ -212,7 +214,7 @@ screen.seqs(fasta=current, count=current, start=1968, end=11550, maxhomop=8)
 
 Check to see if our sequences overlap the same alignment coordinates
 ```
-summary.seqs()
+summary.seqs(fasta=current, count=current)
 ```
 
 OUTPUT
@@ -227,6 +229,7 @@ Median: 	1968	11550	252	0	4	64328
 Maximum:	1968	13400	270	0	8	128655
 Mean:	1968	11550	252.463	0	4.36666
 # of unique seqs:	16298
+total # of seqs:        128655
 ```
 
 
@@ -246,7 +249,7 @@ Number of sequences used to construct filter: 16298
 
 Perhaps we’ve created some redundancy across our sequences by trimming the ends, we can re-run unique.seqs:
 ```
-unique.seqs()
+unique.seqs(fasta=current,count=current)
 ```
 
 Further de-noise our sequences using the pre.cluster command allowing for up to 2 differences between sequences. This command will split the sequences by group and then sort them by abundance and go from most abundant to least and identify sequences that are within 2 nt of each other. If they are then they get merged. We generally favor allowing 1 difference for every 100 bp of sequence
@@ -263,10 +266,13 @@ You still need to remove those sequences from the fasta file. Depending on the o
 remove.seqs(fasta=current, accnos=current)
 ```
 Sometimes when we pick a primer set they will amplify other stuff such as 16S rRNA from chloroplasts, and mitochondria. 
-classify.seqs(fasta=current, count=current, reference=trainset9_032012.pds.fasta, taxonomy=trainset9_032012.pds.tax, cutoff=80)
+```
+classify.seqs(fasta=current, count=current, reference=./reference/trainset9_032012.pds.fasta, taxonomy=./reference/trainset9_032012.pds.tax, cutoff=80)
+```
 Now that everything is classified we want to remove our undesirables
+```
 remove.lineage(fasta=current, count=current, taxonomy=current, taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota)
-
+```
 
 
 
