@@ -199,9 +199,6 @@ align.seqs(fasta=current, reference=./testrun/silva.v4.fasta)
 ```
 
 Check the results. Enter the following command all on one line:
-INPUT
-fasta=stability.trim.contigs.good.unique.align, 
-count=stability.trim.contigs.good.count_table
 ```
 summary.seqs(count=current)
 ```
@@ -209,7 +206,7 @@ So what does this mean? You'll see that the bulk of the sequences start at posit
 
 To make sure that everything overlaps the same region we'll re-run `screen.seqs` to get sequences that start at or before position 1 and end at or after position 11550. We'll also set the maximum homopolymer length to 8 since there's nothing in the database with a stretch of 9 or more of the same base in a row. 
 ```
-screen.seqs(fasta=current, count=current, start=1968, end=11550, maxhomop=8)
+screen.seqs(fasta=current,count=current,summary=current,start=1968, end=11550, maxhomop=8)
 ```
 
 Check to see if our sequences overlap the same alignment coordinates
@@ -263,7 +260,7 @@ chimera.vsearch(fasta=current, count=current, dereplicate=t)
 
 You still need to remove those sequences from the fasta file. Depending on the outcome of the chimera check, the following command may give an error. If there are no bad sequences to remove, then it will produce an error message.
 ```
-remove.seqs(fasta=current, accnos=current)
+remove.seqs(fasta=current, accnos=current, count=current)
 ```
 Sometimes when we pick a primer set they will amplify other stuff such as 16S rRNA from chloroplasts, and mitochondria. 
 ```
