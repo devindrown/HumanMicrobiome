@@ -193,7 +193,7 @@ Output File Names:
 Now we need to align our sequences to the reference alignment. I’ve already trimmed the silva database to just the v4 region of 16s, so if you were using a different section, you’d need to do this from scratch. See the MiSeq SOP online for details. Here we’ll just use the shortcut.
 
 ```
-align.seqs(fasta=current, reference=silva.v4.fasta)
+align.seqs(fasta=current, reference=./testrun/silva.v4.fasta)
 ```
 
 Check the results. Enter the following command all on one line:
@@ -212,8 +212,23 @@ screen.seqs(fasta=current, count=current, start=1968, end=11550, maxhomop=8)
 
 Check to see if our sequences overlap the same alignment coordinates
 ```
-summary.seqs(fasta=current, count=current)
+summary.seqs()
 ```
+
+OUTPUT
+```
+ 		Start	End	NBases	Ambigs	Polymer	NumSeqs
+Minimum:	1965	11550	250	0	3	1
+2.5%-tile:	1968	11550	252	0	3	3217
+25%-tile:	1968	11550	252	0	4	32164
+Median: 	1968	11550	252	0	4	64328
+75%-tile:	1968	11550	253	0	5	96492
+97.5%-tile:	1968	11550	253	0	6	125439
+Maximum:	1968	13400	270	0	8	128655
+Mean:	1968	11550	252.463	0	4.36666
+# of unique seqs:	16298
+```
+
 
 Filter the sequences to remove the overhangs at both ends. In addition, there are many columns in the alignment that only contain gap characters.
 ```
@@ -231,6 +246,27 @@ Number of sequences used to construct filter: 16298
 
 Perhaps we’ve created some redundancy across our sequences by trimming the ends, we can re-run unique.seqs:
 ```
-unique.seqs(fasta=current, count=current)
+unique.seqs()
 ```
+
+Further de-noise our sequences using the pre.cluster command allowing for up to 2 differences between sequences. This command will split the sequences by group and then sort them by abundance and go from most abundant to least and identify sequences that are within 2 nt of each other. If they are then they get merged. We generally favor allowing 1 difference for every 100 bp of sequence
+```
+pre.cluster(fasta=current, count=current, diffs=2)
+```
+
+# We have removed as much sequencing error as we can!
+Check for chimeras
+chimera.vsearch(fasta=current, count=current, dereplicate=t)
+
+You still need to remove those sequences from the fasta file. Depending on the outcome of the chimera check, the following command may give an error. If there are no bad sequences to remove, then it will produce an error message.
+```
+remove.seqs(fasta=current, accnos=current)
+```
+Sometimes when we pick a primer set they will amplify other stuff such as 16S rRNA from chloroplasts, and mitochondria. 
+classify.seqs(fasta=current, count=current, reference=trainset9_032012.pds.fasta, taxonomy=trainset9_032012.pds.tax, cutoff=80)
+Now that everything is classified we want to remove our undesirables
+remove.lineage(fasta=current, count=current, taxonomy=current, taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota)
+
+
+
 
