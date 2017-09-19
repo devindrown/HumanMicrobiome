@@ -1,15 +1,69 @@
-Welcome class
+# Overview
+
+What follows is a modified version of the mothur MiSeq SOP. You can find the full details at:
+
+https://www.mothur.org/wiki/MiSeq_SOP
+
+The author of that manual encourages you to cite the following paper if you use this SOP:
+
+> Kozich JJ, Westcott SL, Baxter NT, Highlander SK, Schloss PD. (2013): Development of a dual-index sequencing strategy and curation pipeline for analyzing amplicon sequence data on the MiSeq Illumina sequencing platform. Applied and Environmental Microbiology. 79(17):5112-20.
+
+# Getting started with mothur
+
+Open a terminal window and navigate to
+```
+cd ~/Documents/mothur/
+```
+
+## Confirm data files and databases
+
+Already included on your hard drive are several data files, along with some databases. Let’s have a quick look at the files on the system at the start before we dig any deeper.
+Click on the Files icon to explore
+
+Navigate to Home->Documents->mothur
+Within the `MiSeq_SOP` folder confirm that you have original data files
+```
+F3D0_S188_L001_R1_001.fastq
+F3D0_S188_L001_R2_001.fastq
+...
+stability.files
+```
+
+Within the `silva.bacteria` you should have seven files with different extensions such as:
+```
+silva.bacteria.fasta
+silva.bacteria.rdp.tax
+...
+```
+
+Within the `referenceq`, confirm you have database files including the one you just downloaded
+```
+trainset9_032012.pds.fasta
+trainset9_032012.pds.tax
+```
+
+## Starting the program
+
+Now you are ready to start the local version of mothur
+./mothur
+Verify with the instructor that you are indeed running running: mothur v.1.38.1.
 
 From here on out you’ll be entering commands directly to the mothur program. The command prompt should look like this:
 ```
 mothur>
 ```
 
-# Prepare database
+Setup a directory to put all of your output. You'll find that `mothur` generates a lot of files. It is helpful to a single location to help organize.
 
 ```
 set.dir(output=./testrun)
 ```
+
+
+# Prepare the custome database
+
+
+
 
 
 Customize database to our region of interes
