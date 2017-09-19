@@ -156,7 +156,7 @@ Output File Names:
 Generate a table where the rows are the names of the unique sequences and the columns are the names of the groups. In this case, we’ll only have one group.
 
 ```
-count.seqs()
+count.seqs(name=current,group=current)
 ```
 
 OUTPUT
@@ -256,12 +256,38 @@ pre.cluster(fasta=current, count=current, diffs=2)
 
 # We have removed as much sequencing error as we can!
 Check for chimeras
+
+```
 chimera.vsearch(fasta=current, count=current, dereplicate=t)
+```
 
 You still need to remove those sequences from the fasta file. Depending on the outcome of the chimera check, the following command may give an error. If there are no bad sequences to remove, then it will produce an error message.
 ```
-remove.seqs(fasta=current, accnos=current, count=current)
+remove.seqs(fasta=current, accnos=current)
 ```
+
+Check your results
+```
+summary.seqs(fasta=current, count=current)
+```
+
+OUTPUT
+```
+                Start   End     NBases  Ambigs  Polymer NumSeqs
+Minimum:        1       376     249     0       3       1
+2.5%-tile:      1       376     252     0       3       2954
+25%-tile:       1       376     252     0       4       29539
+Median:         1       376     252     0       4       59077
+75%-tile:       1       376     253     0       5       88615
+97.5%-tile:     1       376     253     0       6       115200
+Maximum:        1       376     256     0       8       118153
+Mean:   1       376     252.464 0       4.37545
+# of unique seqs:       2283
+total # of seqs:        118153
+
+
+```
+
 Sometimes when we pick a primer set they will amplify other stuff such as 16S rRNA from chloroplasts, and mitochondria. 
 ```
 classify.seqs(fasta=current, count=current, reference=./reference/trainset9_032012.pds.fasta, taxonomy=./reference/trainset9_032012.pds.tax, cutoff=80)
@@ -271,5 +297,30 @@ Now that everything is classified we want to remove our undesirables
 remove.lineage(fasta=current, count=current, taxonomy=current, taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota)
 ```
 
+Also of note is that "unknown" only pops up as a classification if the classifier cannot classify your sequence to one of the domains. If you run summary.seqs you'll see that we now have 2281 unique sequences and a total of 118150 total sequences. This means about 350 of our sequences were in these various groups. Now, to create an updated taxonomy summary file that reflects these removals we use the summary.tax command:
+```
+summary.tax(taxonomy=current, count=current)
+```
+This creates a pick.tax.summary file with the undesirables removed. At this point we have curated our data as far as possible
 
 
+# Let's get some OTUs
+
+```
+remove.groups(count=current, fasta=current, taxonomy=current, groups=Mock)
+```
+
+Clustering sequences into OTUs. We use the taxonomic information to split the sequences into bins and then cluster within each bin. In this command we use taxlevel=4, which corresponds to the level of Order.
+```
+cluster.split(fasta=current, count=current, taxonomy=current, splitmethod=classify, taxlevel=4, cutoff=0.03)
+```
+ combine your data across different samples.
+
+```
+make.shared(list=current, count=current, label=0.03)
+```
+
+We can get the consensus taxonomy for each OTU
+```
+classify.otu(list=current, count=current, taxonomy=current, label=0.03)
+```
