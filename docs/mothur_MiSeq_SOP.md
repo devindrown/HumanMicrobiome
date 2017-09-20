@@ -40,7 +40,7 @@ trainset9_032012.pds.tax
 
 Now you are ready to start the local version of mothur, you can double click on the `mothur` file
 
-* Verify with the instructor that you are indeed running running: mothur v.1.39.5.
+**Verify with the instructor that you are indeed running running: mothur v.1.39.5.**
 
 From here on out you’ll be entering commands directly to the mothur program. The command prompt should look like this:
 ```
@@ -49,7 +49,7 @@ mothur>
 
 You'll find that `mothur` generates a lot of files. It is helpful to a single location to help organize.
 
-* Setup a directory to put all of your output. 
+**Setup a directory to put all of your output.**
 ```
 set.dir(output=./testrun)
 ```
@@ -58,7 +58,7 @@ set.dir(output=./testrun)
 
 We'll be aligning our sequencings to a currated set of 16s sequences called the Silva database. We'll go more into this later, but for now we want to trim the database down to just the v4 region.
 
-* Customize database to our region of interest
+**Customize database to our region of interest**
 ```
 pcr.seqs(fasta=./silva.bacteria/silva.bacteria.fasta, start=11894, end=25319, keepdots=F)
 ```
@@ -68,7 +68,7 @@ Output File Names:
 ./testrun\silva.bacteria.pcr.fasta
 ```
 
-* Rename the output
+**Rename the output**
 Paying careful attention to the output file, use this information in the below command substituting <INPUT> with the file location
 ```
 rename.file(input=<INPUT>, new=silva.v4.fasta)
@@ -76,8 +76,7 @@ rename.file(input=<INPUT>, new=silva.v4.fasta)
 
 # Reducing sequencing and PCR errors
 
-Combine our two sets of reads for each sample and then to combine the data from all of the samples
-
+**Combine our two sets of reads for each sample and then to combine the data from all of the samples**
 ```
 make.contigs(inputdir=./MiSeq_SOP, file=./MiSeq_SOP/stability.files, processors=8)
 ```
