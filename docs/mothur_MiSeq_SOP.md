@@ -8,37 +8,29 @@ The author of that manual encourages you to cite the following paper if you use 
 
 > Kozich JJ, Westcott SL, Baxter NT, Highlander SK, Schloss PD. (2013): Development of a dual-index sequencing strategy and curation pipeline for analyzing amplicon sequence data on the MiSeq Illumina sequencing platform. Applied and Environmental Microbiology. 79(17):5112-20.
 
-
-* list 1 item 1
- * list 1 item 2 (indent 1 space)
-  * list 1 item 3 (indent 2 spaces)
-   * list 1 item 4  (indent 3 spaces)
-    * lazy text belonging to above item 4
-
-
 # Getting started with mothur
 
-1. Open a File Explorer window and navigate to `Documents/mothur/`
+* Open a File Explorer window and navigate to `Documents/mothur/`
 
 ## Confirm data files and databases
 
 Already included on your hard drive are several data files, along with some databases. Let’s have a quick look at the files on the system at the start before we dig any deeper. 
 
-1. Check the following folders:
- 1. `MiSeq_SOP` confirm that you have original data files
+* Check the following folders:
+ `MiSeq_SOP` confirm that you have original data files
 ```
 F3D0_S188_L001_R1_001.fastq
 F3D0_S188_L001_R2_001.fastq
 ...
 stability.files
 ```
- 1. `silva.bacteria` confirm seven files with different extensions such as:
+`silva.bacteria` confirm seven files with different extensions such as:
 ```
 silva.bacteria.fasta
 silva.bacteria.rdp.tax
 ...
 ```
- 1. `referenceq`, confirm you have database files:
+`referenceq`, confirm you have database files:
 ```
 trainset9_032012.pds.fasta
 trainset9_032012.pds.tax
@@ -48,7 +40,7 @@ trainset9_032012.pds.tax
 
 Now you are ready to start the local version of mothur, you can double click on the `mothur` file
 
-1. Verify with the instructor that you are indeed running running: mothur v.1.39.5.
+* Verify with the instructor that you are indeed running running: mothur v.1.39.5.
 
 From here on out you’ll be entering commands directly to the mothur program. The command prompt should look like this:
 ```
@@ -57,29 +49,28 @@ mothur>
 
 You'll find that `mothur` generates a lot of files. It is helpful to a single location to help organize.
 
-1. Setup a directory to put all of your output. 
-
+* Setup a directory to put all of your output. 
 ```
 set.dir(output=./testrun)
 ```
 
-
 # Prepare the custom database
 
-We'll be aligning our sequencings to a currated set of 16s sequences called t
+We'll be aligning our sequencings to a currated set of 16s sequences called the Silva database. We'll go more into this later, but for now we want to trim the database down to just the v4 region.
 
-
-- [ ] Customize database to our region of interes
+* Customize database to our region of interest
 ```
 pcr.seqs(fasta=./silva.bacteria/silva.bacteria.fasta, start=11894, end=25319, keepdots=F)
 ```
-Output File Names:
-/home/microbiome/mothur/testrun/silva.bacteria.pcr.fasta
-
-Paying careful attention to the output file, use this in the below command <INPUT>
-
+The output should look something like
 ```
-rename.file(input=/home/microbiome/mothur/testrun/silva.bacteria.pcr.fasta, new=silva.v4.fasta)
+Output File Names:
+./testrun\silva.bacteria.pcr.fasta
+```
+
+* Rename the output
+Paying careful attention to the output file, use this information in the below command substituting <INPUT> with the file location
+```
 rename.file(input=<INPUT>, new=silva.v4.fasta)
 ```
 
