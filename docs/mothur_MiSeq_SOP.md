@@ -60,13 +60,12 @@ set.dir(output=./testrun)
 ```
 
 
-# Prepare the custome database
+# Prepare the custom database
+
+We'll be aligning our sequencings to a currated set of 16s sequences called t
 
 
-
-
-
-Customize database to our region of interes
+- [ ] Customize database to our region of interes
 ```
 pcr.seqs(fasta=./silva.bacteria/silva.bacteria.fasta, start=11894, end=25319, keepdots=F)
 ```
