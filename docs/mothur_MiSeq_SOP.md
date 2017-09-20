@@ -2,7 +2,7 @@
 
 What follows is a modified version of the mothur MiSeq SOP. You can find the full details at:
 
-https://www.mothur.org/wiki/MiSeq_SOP
+[mothur MiSeq SOP](https://www.mothur.org/wiki/MiSeq_SOP)
 
 The author of that manual encourages you to cite the following paper if you use this SOP:
 
@@ -335,21 +335,36 @@ This creates a pick.tax.summary file with the undesirables removed. At this poin
 
 # Let's get some OTUs
 
+**Remove a Mock community group**
 ```
 remove.groups(count=current, fasta=current, taxonomy=current, groups=Mock)
 ```
 
-Clustering sequences into OTUs. We use the taxonomic information to split the sequences into bins and then cluster within each bin. In this command we use taxlevel=4, which corresponds to the level of Order.
+**Clustering sequences into OTUs. **
+
+We use the taxonomic information to split the sequences into bins and then cluster within each bin. In this command we use taxlevel=4, which corresponds to the level of Order.
 ```
 cluster.split(fasta=current, count=current, taxonomy=current, splitmethod=classify, taxlevel=4, cutoff=0.03)
 ```
- combine your data across different samples.
 
+**combine your data across different samplee**
 ```
 make.shared(list=current, count=current, label=0.03)
 ```
 
-We can get the consensus taxonomy for each OTU
+**We can get the consensus taxonomy for each OTU**
 ```
 classify.otu(list=current, count=current, taxonomy=current, label=0.03)
+```
+
+# Quick Visualize
+
+**Create a `.biom` file**
+```
+make.biom(shared=current,constaxonomy=current)
+```
+
+**Rename the file to something simpler**
+```
+rename.file(biom=current, new=testrun.biom)
 ```
