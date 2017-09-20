@@ -8,6 +8,14 @@ The author of that manual encourages you to cite the following paper if you use 
 
 > Kozich JJ, Westcott SL, Baxter NT, Highlander SK, Schloss PD. (2013): Development of a dual-index sequencing strategy and curation pipeline for analyzing amplicon sequence data on the MiSeq Illumina sequencing platform. Applied and Environmental Microbiology. 79(17):5112-20.
 
+
+* list 1 item 1
+ * list 1 item 2 (indent 1 space)
+  * list 1 item 3 (indent 2 spaces)
+   * list 1 item 4  (indent 3 spaces)
+    * lazy text belonging to above item 4
+
+
 # Getting started with mothur
 
 1. Open a File Explorer window and navigate to `Documents/mothur/`
