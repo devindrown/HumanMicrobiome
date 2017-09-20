@@ -17,20 +17,20 @@ The author of that manual encourages you to cite the following paper if you use 
 Already included on your hard drive are several data files, along with some databases. Let’s have a quick look at the files on the system at the start before we dig any deeper. 
 
 1. Check the following folders:
-  1. `MiSeq_SOP` confirm that you have original data files
+ 1. `MiSeq_SOP` confirm that you have original data files
 ```
 F3D0_S188_L001_R1_001.fastq
 F3D0_S188_L001_R2_001.fastq
 ...
 stability.files
 ```
-  1. `silva.bacteria` confirm seven files with different extensions such as:
+ 1. `silva.bacteria` confirm seven files with different extensions such as:
 ```
 silva.bacteria.fasta
 silva.bacteria.rdp.tax
 ...
 ```
-  1. `referenceq`, confirm you have database files:
+ 1. `referenceq`, confirm you have database files:
 ```
 trainset9_032012.pds.fasta
 trainset9_032012.pds.tax
