@@ -106,7 +106,7 @@ Output File Names:
 /home/microbiome/mothur/testrun/stability.contigs.groups
 ```
 
-**Go back to the file explorer and open `stability.files` **
+**Go back to the file explorer and open `stability.files`**
 
 What do you see?  The first column is the name of the sample. The second column is the name of the forward read for that sample and the third columns in the name of the reverse read for that sample.
 
