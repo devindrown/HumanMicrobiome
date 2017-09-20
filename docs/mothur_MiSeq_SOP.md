@@ -10,18 +10,15 @@ The author of that manual encourages you to cite the following paper if you use 
 
 # Getting started with mothur
 
-Open a terminal window and navigate to
-```
-cd ~/Documents/mothur/
-```
+1. Open a File Explorer window and navigate to `Documents/mothur/`
 
 ## Confirm data files and databases
 
-Already included on your hard drive are several data files, along with some databases. Let’s have a quick look at the files on the system at the start before we dig any deeper.
-Click on the Files icon to explore
+Already included on your hard drive are several data files, along with some databases. Let’s have a quick look at the files on the system at the start before we dig any deeper. 
 
-Navigate to Home->Documents->mothur
-Within the `MiSeq_SOP` folder confirm that you have original data files
+1. Check the following folders:
+
+  1. `MiSeq_SOP` confirm that you have original data files
 ```
 F3D0_S188_L001_R1_001.fastq
 F3D0_S188_L001_R2_001.fastq
@@ -29,14 +26,14 @@ F3D0_S188_L001_R2_001.fastq
 stability.files
 ```
 
-Within the `silva.bacteria` you should have seven files with different extensions such as:
+  1. `silva.bacteria` confirm seven files with different extensions such as:
 ```
 silva.bacteria.fasta
 silva.bacteria.rdp.tax
 ...
 ```
 
-Within the `referenceq`, confirm you have database files including the one you just downloaded
+  1. `referenceq`, confirm you have database files:
 ```
 trainset9_032012.pds.fasta
 trainset9_032012.pds.tax
@@ -44,16 +41,18 @@ trainset9_032012.pds.tax
 
 ## Starting the program
 
-Now you are ready to start the local version of mothur
-./mothur
-Verify with the instructor that you are indeed running running: mothur v.1.38.1.
+Now you are ready to start the local version of mothur, you can double click on the `mothur` file
+
+1. Verify with the instructor that you are indeed running running: mothur v.1.39.5.
 
 From here on out you’ll be entering commands directly to the mothur program. The command prompt should look like this:
 ```
 mothur>
 ```
 
-Setup a directory to put all of your output. You'll find that `mothur` generates a lot of files. It is helpful to a single location to help organize.
+You'll find that `mothur` generates a lot of files. It is helpful to a single location to help organize.
+
+1. Setup a directory to put all of your output. 
 
 ```
 set.dir(output=./testrun)
