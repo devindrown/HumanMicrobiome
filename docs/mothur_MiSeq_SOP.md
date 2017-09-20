@@ -16,7 +16,8 @@ The author of that manual encourages you to cite the following paper if you use 
 
 Already included on your hard drive are several data files, along with some databases. Let’s have a quick look at the files on the system at the start before we dig any deeper. 
 
-* Check the following folders:
+**Check the following folders**
+
  `MiSeq_SOP` confirm that you have original data files
 ```
 F3D0_S188_L001_R1_001.fastq
@@ -69,9 +70,9 @@ Output File Names:
 ```
 
 **Rename the output**
-Paying careful attention to the output file, use this information in the below command substituting <INPUT> with the file location
+Paying careful attention to the output file, use this information in the below command substituting **INPUT** with the file location
 ```
-rename.file(input=<INPUT>, new=silva.v4.fasta)
+rename.file(input=INPUT, new=silva.v4.fasta)
 ```
 
 # Reducing sequencing and PCR errors
@@ -83,38 +84,19 @@ make.contigs(inputdir=./MiSeq_SOP, file=./MiSeq_SOP/stability.files, processors=
 
 You’ll probably get a [WARNING] message, but don’t worry.
 
-Go back to the file explorer and open `stability.files`
-
-What do you see?  The first column is the name of the sample. The second column is the name of the forward read for that sample and the third columns in the name of the reverse read for that sample.
-
+**Compare your output with the expected below**
 Output
 ```
 Group count:
 F3D0    7793
 F3D1    5869
 F3D141  5958
-F3D142  3183
-F3D143  3178
-F3D144  4827
-F3D145  7377
-F3D146  5021
-F3D147  17070
-F3D148  12405
-F3D149  13083
-F3D150  5509
-F3D2    19620
-F3D3    6758
-F3D5    4448
-F3D6    7989
-F3D7    5129
+...
 F3D8    5294
 F3D9    7070
 Mock    4779
-
 Total of all groups is 152360
-```
 
-```
 Output File Names:
 /home/microbiome/mothur/testrun/stability.trim.contigs.fasta
 /home/microbiome/mothur/testrun/stability.trim.contigs.qual
@@ -124,17 +106,20 @@ Output File Names:
 /home/microbiome/mothur/testrun/stability.contigs.groups
 ```
 
-Let's see what these sequences look like
+**Go back to the file explorer and open `stability.files` **
+
+What do you see?  The first column is the name of the sample. The second column is the name of the forward read for that sample and the third columns in the name of the reverse read for that sample.
+
+**Let's see what these sequences look like**
 ```
 summary.seqs(fasta=current)
 ```
 
-OUTPUT
+**Compare your output with the expected below**
+
 ```
 Using /home/microbiome/mothur/testrun/stability.trim.contigs.fasta as input file for the fasta parameter.
-
 Using 8 processors.
-
                 Start   End     NBases  Ambigs  Polymer NumSeqs
 Minimum:        1       248     248     0       3       1
 2.5%-tile:      1       252     252     0       3       3810
@@ -145,24 +130,23 @@ Median:         1       252     252     0       4       76181
 Maximum:        1       502     502     249     243     152360
 Mean:   1       252.811 252.811 0.70063 4.44854
 # of Seqs:      152360
-
 Output File Names:
 /home/microbiome/mothur/testrun/stability.trim.contigs.summary
 ```
 
-Verify that you have the same number of reads `# of Seqs:      152360`
+**Verify that you have the same number of reads `# of Seqs:      152360`**
 
-Next, we want to get rid of some of the bad reads
+**Next, we want to get rid of some of the bad reads**
 
 ```
 screen.seqs(fasta=current, group=current, maxambig=0, maxlength=275)
 ```
 
-It is a lot of work to keep typing in `fasta=example.fasta` etc. Try this: 
+**It is a lot of work to keep typing in `fasta=example.fasta` etc. Try this: **
 ```
 get.current()
 ```
-mothur remembers your latest fasta file and group file as well as the number of processors you have, so you don’t have to type them in each time
+mothur remembers your latest fasta file and group file as well as the number of processors you have, so you don’t have to type them in each time. You should see something like this list:
 
 ```
 Current files saved by mothur:
@@ -174,51 +158,49 @@ processors=8
 summary=/home/microbiome/mothur/testrun/stability.trim.contigs.summary
 
 Current input directory saved by mothur: /home/microbiome/mothur/MiSeq_SOP/
-
 Current output directory saved by mothur: /home/microbiome/mothur/testrun/
-
 Current default directory saved by mothur: /home/microbiome/mothur/mothur/
-
 Current working directory: /home/microbiome/mothur/
 
 Output File Names:
 /home/microbiome/mothur/testrun/current_files.summary
 ```
+
 # Processing improved sequences
 
 Many of our sequences are duplicates of each other. Because it's computationally wasteful to align the same thing a bazillion times, we'll unique our sequences using
+
+**Select only the unique sequences**
 
 ```
 unique.seqs()
 ```
 
-OUTPUT
+**Compare your output with the expected below**
 ```
 Output File Names:
-/home/microbiome/mothur/testrun/stability.trim.contigs.good.names
-/home/microbiome/mothur/testrun/stability.trim.contigs.good.unique.fasta
+stability.trim.contigs.good.names
+stability.trim.contigs.good.unique.fasta
 ```
 
-
-Generate a table where the rows are the names of the unique sequences and the columns are the names of the groups. In this case, we’ll only have one group.
-
+**Generate a table where the rows are the names of the unique sequences and the columns are the names of the groups.**
 ```
 count.seqs(name=current,group=current)
 ```
 
-OUTPUT
+**Compare your output with the expected below**
 ```
 Total number of sequences: 128872
 
-Output File Names:
-/home/microbiome/mothur/testrun/stability.trim.contigs.good.count_table
+Output File Names: stability.trim.contigs.good.count_table
 ```
 
+**Let's see where you are in terms of reducing your dataset**
 ```
 summary.seqs(count=current)
 ```
 
-OUTPUT
+**Compare your output with the expected below**
 ```
                 Start   End     NBases  Ambigs  Polymer NumSeqs
 Minimum:        1       250     250     0       3       1
@@ -232,15 +214,15 @@ Mean:   1       252.594 252.594 0       4.44277
 # of Seqs:      16426
 total # of seqs:        128872
 
-
 Output File Names:
 /home/microbiome/mothur/testrun/stability.trim.contigs.good.unique.summary
-
 ```
+
 # Aligning to the database
 
 Now we need to align our sequences to the reference alignment. I’ve already trimmed the silva database to just the v4 region of 16s, so if you were using a different section, you’d need to do this from scratch. See the MiSeq SOP online for details. Here we’ll just use the shortcut.
 
+**Align your dataset to the database**
 ```
 align.seqs(fasta=current, reference=./testrun/silva.v4.fasta)
 ```
