@@ -142,7 +142,7 @@ Output File Names:
 screen.seqs(fasta=current, group=current, maxambig=0, maxlength=275)
 ```
 
-**It is a lot of work to keep typing in `fasta=example.fasta` etc. Try this: **
+**It is a lot of work to keep typing in `fasta=example.fasta` etc. Try**
 ```
 get.current()
 ```
