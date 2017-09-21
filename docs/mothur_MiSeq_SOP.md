@@ -330,8 +330,7 @@ Also of note is that "unknown" only pops up as a classification if the classifie
 ```
 summary.tax(taxonomy=current, count=current)
 ```
-This creates a pick.tax.summary file with the undesirables removed. At this point we have curated our data as far as possible
-
+This creates a new summary file with the undesirables removed. At this point we have curated our data as far as possible
 
 # Let's get some OTUs
 
@@ -340,19 +339,19 @@ This creates a pick.tax.summary file with the undesirables removed. At this poin
 remove.groups(count=current, fasta=current, taxonomy=current, groups=Mock)
 ```
 
-**Clustering sequences into OTUs. **
+**Clustering sequences into OTUs.**
 
 We use the taxonomic information to split the sequences into bins and then cluster within each bin. In this command we use taxlevel=4, which corresponds to the level of Order.
 ```
 cluster.split(fasta=current, count=current, taxonomy=current, splitmethod=classify, taxlevel=4, cutoff=0.03)
 ```
 
-**combine your data across different samplee**
+**Combine your data across different samplee**
 ```
 make.shared(list=current, count=current, label=0.03)
 ```
 
-**We can get the consensus taxonomy for each OTU**
+**Get the consensus taxonomy for each OTU**
 ```
 classify.otu(list=current, count=current, taxonomy=current, label=0.03)
 ```
