@@ -168,7 +168,7 @@ Output File Names:
 
 # Processing improved sequences
 
-Many of our sequences are duplicates of each other. Because it's computationally wasteful to align the same thing a bazillion times, we'll unique our sequences using
+Many of our sequences are duplicates of each other. It's computationally wasteful to align the same thing a bazillion times.
 
 **Select only the unique sequences**
 
@@ -220,14 +220,14 @@ Output File Names:
 
 # Aligning to the database
 
-Now we need to align our sequences to the reference alignment. I’ve already trimmed the silva database to just the v4 region of 16s, so if you were using a different section, you’d need to do this from scratch. See the MiSeq SOP online for details. Here we’ll just use the shortcut.
+Now we need to align our sequences to the reference alignment. You’ve already trimmed the silva database to just the right region of 16s. If you were using a different section, you’d need to do this from scratch. See the MiSeq SOP online for details.
 
 **Align your dataset to the database**
 ```
 align.seqs(fasta=current, reference=./testrun/silva.v4.fasta)
 ```
 
-Check the results. Enter the following command all on one line:
+**Check the results. Enter the following command all on one line:**
 ```
 summary.seqs(count=current)
 ```
@@ -243,7 +243,7 @@ Check to see if our sequences overlap the same alignment coordinates
 summary.seqs(fasta=current, count=current)
 ```
 
-OUTPUT
+**Compare your output with the expected below**
 ```
  		Start	End	NBases	Ambigs	Polymer	NumSeqs
 Minimum:	1965	11550	250	0	3	1
@@ -259,12 +259,12 @@ total # of seqs:        128655
 ```
 
 
-Filter the sequences to remove the overhangs at both ends. In addition, there are many columns in the alignment that only contain gap characters.
+**Filter the sequences** to remove the overhangs at both ends. In addition, there are many columns in the alignment that only contain gap characters.
 ```
 filter.seqs(fasta=current, vertical=T, trump=.)
 ```
 
-OUTPUT
+**Compare your output with the expected below**
 ```
 Length of filtered alignment: 376
 Number of columns removed: 13049
@@ -273,18 +273,21 @@ Number of sequences used to construct filter: 16298
 ```
 
 
-Perhaps we’ve created some redundancy across our sequences by trimming the ends, we can re-run unique.seqs:
+Perhaps we’ve created some redundancy across our sequences by trimming the ends
+
+**Re-run `unique.seqs`**
 ```
 unique.seqs(fasta=current,count=current)
 ```
 
-Further de-noise our sequences using the pre.cluster command allowing for up to 2 differences between sequences. This command will split the sequences by group and then sort them by abundance and go from most abundant to least and identify sequences that are within 2 nt of each other. If they are then they get merged. We generally favor allowing 1 difference for every 100 bp of sequence
+**Further de-noise our sequences** using the `pre.cluster` command allowing for up to 2 differences between sequences. This command will split the sequences by group and then sort them by abundance and go from most abundant to least and identify sequences that are within 2 nt of each other. If they are then they get merged. We generally favor allowing 1 difference for every 100 bp of sequence
 ```
 pre.cluster(fasta=current, count=current, diffs=2)
 ```
 
 # We have removed as much sequencing error as we can!
-Check for chimeras
+
+**Check for chimeras**
 
 ```
 chimera.vsearch(fasta=current, count=current, dereplicate=t)
@@ -295,12 +298,12 @@ You still need to remove those sequences from the fasta file. Depending on the o
 remove.seqs(fasta=current, accnos=current)
 ```
 
-Check your results
+**Check your results**
 ```
 summary.seqs(fasta=current, count=current)
 ```
 
-OUTPUT
+**Compare your output with the expected below**
 ```
                 Start   End     NBases  Ambigs  Polymer NumSeqs
 Minimum:        1       376     249     0       3       1
@@ -313,20 +316,23 @@ Maximum:        1       376     256     0       8       118153
 Mean:   1       376     252.464 0       4.37545
 # of unique seqs:       2283
 total # of seqs:        118153
-
-
 ```
 
-Sometimes when we pick a primer set they will amplify other stuff such as 16S rRNA from chloroplasts, and mitochondria. 
+Sometimes when we pick a primer set they will amplify other stuff such as 16S rRNA from chloroplasts, and mitochondria.
+
+**Classify your sequences**
 ```
 classify.seqs(fasta=current, count=current, reference=./reference/trainset9_032012.pds.fasta, taxonomy=./reference/trainset9_032012.pds.tax, cutoff=80)
 ```
-Now that everything is classified we want to remove our undesirables
+
+Now that everything is classified we want to **remove our undesirables**
 ```
 remove.lineage(fasta=current, count=current, taxonomy=current, taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota)
 ```
 
-Also of note is that "unknown" only pops up as a classification if the classifier cannot classify your sequence to one of the domains. If you run summary.seqs you'll see that we now have 2281 unique sequences and a total of 118150 total sequences. This means about 350 of our sequences were in these various groups. Now, to create an updated taxonomy summary file that reflects these removals we use the summary.tax command:
+Also of note is that "unknown" only pops up as a classification if the classifier cannot classify your sequence to one of the domains. If you run summary.seqs you'll see that we now have 2281 unique sequences and a total of 118150 total sequences. This means about 350 of our sequences were in these various groups.
+
+**Create an updated taxonomy summary file that reflects these removals**
 ```
 summary.tax(taxonomy=current, count=current)
 ```
@@ -341,7 +347,9 @@ remove.groups(count=current, fasta=current, taxonomy=current, groups=Mock)
 
 **Clustering sequences into OTUs.**
 
-We use the taxonomic information to split the sequences into bins and then cluster within each bin. In this command we use taxlevel=4, which corresponds to the level of Order.
+We use the taxonomic information to bin our sequences. In this command we use taxlevel=4, which corresponds to the level of Order.
+
+**Split the sequences into bins and then cluster within each bin**
 ```
 cluster.split(fasta=current, count=current, taxonomy=current, splitmethod=classify, taxlevel=4, cutoff=0.03)
 ```
