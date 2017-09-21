@@ -1,12 +1,10 @@
 # Running mothur in Batch mode
 
-Mothur is a command line program. You can run it in interactive mode by double-clicking on the mothur.exe executable.
+Mothur is a command line program. You can run it in interactive mode by double-clicking on the mothur.exe executable. Alternatively, you can run it from the command line.
 
-Alternatively, you can run it from the command line.
+**To open a command prompt in windows, Select the Start menu and type cmd**
 
-**To open a command prompt in windows select the Start menu and type cmd**
-
-**Navigate to where the mothur executable lives**
+**Navigate to the mothur executable**
 
 ```
 cd Documents/mothur
