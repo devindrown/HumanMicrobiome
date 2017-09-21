@@ -227,7 +227,7 @@ Now we need to align our sequences to the reference alignment. You’ve already 
 align.seqs(fasta=current, reference=./testrun/silva.v4.fasta)
 ```
 
-**Check the results. Enter the following command all on one line:**
+**Check the results**
 ```
 summary.seqs(count=current)
 ```
