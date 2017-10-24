@@ -52,25 +52,29 @@ set.dir(output=./negativeQC)
 
 # Prepare the custom database
 
-We'll be aligning our sequencings to a currated set of 16s sequences called the Silva database. We'll go more into this later, but for now we want to trim the database down to just the v4 region.
+Like last time, we'll be aligning our sequencings to a currated set of 16s sequences to the Silva database. We need to trim our samples to just the v4 region that we actually amplified.
 
 **Customize database to our region of interest**
 ```
-pcr.seqs(fasta=./silva.bacteria/silva.bacteria.fasta, start=11894, end=25319, keepdots=F)
+pcr.seqs(fasta=./silva.bacteria/silva.bacteria.fasta, start=13861, end=23444, keepdots=F)
 ```
 The output should look something like
 ```
 Output File Names:
-./testrun\silva.bacteria.pcr.fasta
+./negativeQC\silva.bacteria.pcr.fasta
 ```
 
-**Rename the output**
-Paying careful attention to the output file, use this information in the below command substituting **INPUT** with the file location
+**Rename the reference database**
+
 ```
-rename.file(input=INPUT, new=silva.v4.fasta)
+rename.file(input=INPUT, new=silva.EMP.fasta)
 ```
 
 # Reducing sequencing and PCR errors
+
+
+
+
 
 **Combine our two sets of reads for each sample and then to combine the data from all of the samples**
 ```
