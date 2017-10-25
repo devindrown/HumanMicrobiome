@@ -60,16 +60,14 @@ First we need to take the paired-end read data from the MiSeq and join the read 
 Last time, you had a file preapred for you that contained all of the raw data files. This time around, you'll be making and editing that file from scratch. Mothur helps to get you started. You give the program a location (directory) and type of file (fastq).
 
 ```
-make.file(inputdir=./rawdata_neg/, type=fastq, prefix=neg.stability)
+make.file(inputdir=./rawdata_neg, type=fastq, prefix=neg.stability)
 ```
 
 **Fix the stability file**
 
 Unfortunately, the current version of `mothur` has a bug and the file isn't quite right. You'll need to open the file in `notepad` and change the first column. You shoud give each sample a short name without spaces or dashes. 
 
-Remeber, the first column is the name of the sample. The second column is the name of the forward read for that sample and the third columns in the name of the reverse read for that sample.
-
-# Reducing sequencing errors
+Remeber, the first column is the name othe sample. The second column is the name of the forward read for that sample and the third columns in the name of the reverse read for that sample.
 
 **Combine our two sets of reads for each sample and then to combine the data from all of the samples**
 
@@ -81,9 +79,11 @@ make.contigs(inputdir=./rawdata_neg, file=./negativeQC/neg.stability.files, proc
 
 **What do these sequences look like?**
 ```
-summary.seqs(fasta=current)
+summary.seqs(# Reducing sequencing errorsfasta=current)
 ```
 **How many total sequences do you have? What's the distribution of the length?**
+
+# Reducing sequencing errors
 
 **Next, we want to get rid of some of the bad reads**
 
