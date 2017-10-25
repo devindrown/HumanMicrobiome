@@ -1,12 +1,5 @@
 # Overview
-
-What follows is a modified version of the mothur MiSeq SOP. You can find the full details at:
-
-[mothur MiSeq SOP](https://www.mothur.org/wiki/MiSeq_SOP)
-
-The author of that manual encourages you to cite the following paper if you use this SOP:
-
-> Kozich JJ, Westcott SL, Baxter NT, Highlander SK, Schloss PD. (2013): Development of a dual-index sequencing strategy and curation pipeline for analyzing amplicon sequence data on the MiSeq Illumina sequencing platform. Applied and Environmental Microbiology. 79(17):5112-20.
+Here we will analyze our own data. We'll start with a small set.
 
 # Getting started
 
@@ -15,8 +8,9 @@ The author of that manual encourages you to cite the following paper if you use 
 
 You should verify that you have the databases we used in the previous lab. If you are in doubt visit those instructions:
 
+[UAF mothur MiSeq SOP](https://devindrown.github.io/HumanMicrobiome/mothur_MiSeq_SOP)
 
-**Check the following folders**
+**Check the raw data folder**
 
  `rawdata_neg` confirm that you have **12 original data files**
 
@@ -39,12 +33,6 @@ PCR-NEG-SetB1-2017001041_S80_L001_R2_001.fastq
 
 Now you are ready to start the local version of mothur, you can double click on the `mothur` file
 
-**Verify with the instructor that you are indeed running running: mothur v.1.39.5.**
-
-From here on out you’ll be entering commands directly to the mothur program. The command prompt should look like this:
-```
-mothur>
-```
 **Setup a directory to put all of your output.**
 ```
 set.dir(output=./negativeQC)
@@ -52,16 +40,11 @@ set.dir(output=./negativeQC)
 
 # Prepare the custom database
 
-Like last time, we'll be aligning our sequencings to a currated set of 16s sequences to the Silva database. We need to trim our samples to just the v4 region that we actually amplified.
+Like last time, we'll be aligning our sequencings to a currated set of 16s sequences to the Silva database. We need to trim our samples to just the v4 region that we actually amplified. We used the 515f and 806rb primers from the Earth Microbiome Project. I've already aligned those to the E. coli genome and found their positions (start=13861, end=23444).
 
 **Customize database to our region of interest**
 ```
 pcr.seqs(fasta=./silva.bacteria/silva.bacteria.fasta, start=13861, end=23444, keepdots=F)
-```
-The output should look something like
-```
-Output File Names:
-./negativeQC\silva.bacteria.pcr.fasta
 ```
 
 **Rename the reference database**
@@ -70,81 +53,44 @@ Output File Names:
 rename.file(input=INPUT, new=silva.EMP.fasta)
 ```
 
+# Make contigs
+
+First we need to take the paired-end read data from the MiSeq and join the read 1 and read 2 into a single sequences or contig. For example, you will see two files: ExtractionNEG-B-2017001057_S96_L001_R1_001.fastq and ExtractionNEG-B-2017001057_S96_L001_R2_001.fastq.. The first and all those with R1 correspond to read 1 while the second and all those with R2 correspond to the second or reverse read. These sequences are 250 bp and overlap in the V4 region of the 16S rRNA gene; this region is about 253 bp long.
+
+Last time, you had a file preapred for you that contained all of the raw data files. This time around, you'll be making and editing that file from scratch. Mothur helps to get you started. You give the program a location (directory) and type of file (fastq).
+
+```
+make.file(inputdir=./rawdata_neg/, type=fastq, prefix=neg.stability)
+```
+
+**Fix the stability file**
+
+Unfortunately, the current version of `mothur` has a bug and the file isn't quite right. You'll need to open the file in `notepad` and change the first column. You shoud give each sample a short name without spaces or dashes. 
+
+Remeber, the first column is the name of the sample. The second column is the name of the forward read for that sample and the third columns in the name of the reverse read for that sample.
+
 # Reducing sequencing and PCR errors
 
-Last time, you had a file preapred for you that contained all of the raw data files. This time around, you'll be making and editing that file from scratch. Mothur helps to get you started
-
-** 
-
-```
-make.file(inputdir=../microbiome2017/fastq/, type=fastq, prefix=microbiome2017.stability)
-```
-
-
-
 **Combine our two sets of reads for each sample and then to combine the data from all of the samples**
-```
-make.contigs(inputdir=./MiSeq_SOP, file=./MiSeq_SOP/stability.files, processors=8)
-```
 
-You’ll probably get a [WARNING] message, but don’t worry.
-
-**Compare your output with the expected below**
-Output
 ```
-Group count:
-F3D0    7793
-F3D1    5869
-F3D141  5958
-...
-F3D8    5294
-F3D9    7070
-Mock    4779
-Total of all groups is 152360
-
-Output File Names:
-/home/microbiome/mothur/testrun/stability.trim.contigs.fasta
-/home/microbiome/mothur/testrun/stability.trim.contigs.qual
-/home/microbiome/mothur/testrun/stability.contigs.report
-/home/microbiome/mothur/testrun/stability.scrap.contigs.fasta
-/home/microbiome/mothur/testrun/stability.scrap.contigs.qual
-/home/microbiome/mothur/testrun/stability.contigs.groups
+make.contigs(inputdir=./rawdata_neg, file=./negativeQC/neg.stability.files, processors=8)
 ```
 
-**Go back to the file explorer and open `stability.files`**
+**Report how many sequences are in each group**
 
-What do you see?  The first column is the name of the sample. The second column is the name of the forward read for that sample and the third columns in the name of the reverse read for that sample.
-
-**Let's see what these sequences look like**
+**What do these sequences look like?**
 ```
 summary.seqs(fasta=current)
 ```
-
-**Compare your output with the expected below**
-
-```
-Using /home/microbiome/mothur/testrun/stability.trim.contigs.fasta as input file for the fasta parameter.
-Using 8 processors.
-                Start   End     NBases  Ambigs  Polymer NumSeqs
-Minimum:        1       248     248     0       3       1
-2.5%-tile:      1       252     252     0       3       3810
-25%-tile:       1       252     252     0       4       38091
-Median:         1       252     252     0       4       76181
-75%-tile:       1       253     253     0       5       114271
-97.5%-tile:     1       253     253     6       6       148552
-Maximum:        1       502     502     249     243     152360
-Mean:   1       252.811 252.811 0.70063 4.44854
-# of Seqs:      152360
-Output File Names:
-/home/microbiome/mothur/testrun/stability.trim.contigs.summary
-```
-
-**Verify that you have the same number of reads `# of Seqs:      152360`**
+**How many totoal sequences do you have? What's the distribution of the length?**
 
 **Next, we want to get rid of some of the bad reads**
 
+Note how long most of the reads are. We'll use that to trim out the reads that assembled backwards.
+
 ```
-screen.seqs(fasta=current, group=current, maxambig=0, maxlength=275)
+screen.seqs(fasta=current, group=current, maxambig=0, maxlength=311)
 ```
 
 **It is a lot of work to keep typing in `fasta=example.fasta` etc. Try**
