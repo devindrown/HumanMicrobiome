@@ -72,7 +72,13 @@ rename.file(input=INPUT, new=silva.EMP.fasta)
 
 # Reducing sequencing and PCR errors
 
+Last time, you had a file preapred for you that contained all of the raw data files. This time around, you'll be making and editing that file from scratch. Mothur helps to get you started
 
+** 
+
+```
+make.file(inputdir=../microbiome2017/fastq/, type=fastq, prefix=microbiome2017.stability)
+```
 
 
 
