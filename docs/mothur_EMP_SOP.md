@@ -75,17 +75,17 @@ Remeber, the first column is the name othe sample. The second column is the name
 make.contigs(inputdir=./rawdata_neg, file=./negativeQC/neg.stability.files, processors=8)
 ```
 
-**Report how many sequences are in each group**
+**Q1 Report how many sequences are in each group**
 
-**What do these sequences look like?**
+**Determine the distributions of these sequences**
 ```
-summary.seqs(# Reducing sequencing errorsfasta=current)
+summary.seqs(fasta=current)
 ```
-**How many total sequences do you have? What's the distribution of the length?**
+**How many total sequences do you have? What's the median length?**
 
 # Reducing sequencing errors
 
-**Next, we want to get rid of some of the bad reads**
+**Q2 Next, we want to get rid of some of the bad reads**
 
 Note how long most of the reads are. We'll use that to trim out the reads that assembled backwards.
 
@@ -93,8 +93,9 @@ Note how long most of the reads are. We'll use that to trim out the reads that a
 screen.seqs(fasta=current, group=current, maxambig=0, maxlength=311)
 ```
 
-**How many sequences do you have now? What command do you have to use?**
+**Q3 How many sequences do you have now?** 
 
+What command do you have to use?
 
 Many of our sequences are duplicates of each other. It's computationally wasteful to align the same thing a bazillion times.
 
@@ -104,7 +105,7 @@ Many of our sequences are duplicates of each other. It's computationally wastefu
 unique.seqs()
 ```
 
-**How many sequences do you have now?**
+**Q4 How many unique sequences do you have?**
 
 **Generate a table where the rows are the names of the unique sequences and the columns are the names of the groups.**
 ```
@@ -131,17 +132,20 @@ align.seqs(fasta=current, reference=./negativeQC/silva.EMP.fasta)
 summary.seqs(count=current)
 ```
  You'll see that the bulk of the sequences start at position 1 and end at position 9583. Deviants from the mode positions are likely due to an insertion or deletion at the terminal ends of the alignments. 
+ 
+ **Q5: What's the median sequence length after aligning to the reference?**
 
 To make sure that everything overlaps the same region we'll re-run `screen.seqs`  
+
 ```
 screen.seqs(fasta=current,count=current,summary=current,start=1, end=9583, maxhomop=8)
 ```
 
 Check to see if our sequences overlap the same alignment coordinates
+
 ```
 summary.seqs(fasta=current, count=current)
 ```
-
 
 **Filter the sequences** to remove the overhangs at both ends and any columns in the alignment that only contain gap characters.
 
@@ -156,7 +160,7 @@ Perhaps we’ve created some redundancy across our sequences by trimming the end
 unique.seqs(fasta=current,count=current)
 ```
 
-**How many unique sequences are left?**
+**Q6: How many unique sequences are left?**
 
 **Further de-noise our sequences** using the `pre.cluster` command allowing for up to 2 differences between sequences.
 
@@ -164,9 +168,7 @@ unique.seqs(fasta=current,count=current)
 pre.cluster(fasta=current, count=current, diffs=2)
 ```
 
-**How many unique sequences are left?**
-
-# We have removed as much sequencing error as we can!
+**Q7: How many sequences are left? How many unique sequences?**
 
 **Check for chimeras**
 
@@ -185,7 +187,7 @@ remove.seqs(fasta=current, accnos=current)
 summary.seqs(fasta=current, count=current)
 ```
 
-**How many unique and total sequences are left now?**
+**Q8: How many sequences are left? How many unique sequences?**
 
 Sometimes when we pick a primer set they will amplify other stuff such as 16S rRNA from chloroplasts, and mitochondria.
 
@@ -201,15 +203,18 @@ Now that everything is classified we want to **remove our undesirables**
 remove.lineage(fasta=current, count=current, taxonomy=current, taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota)
 ```
 
+**Q9: How many sequences are left? How many unique sequences?**
+
 **Create an updated taxonomy summary file that reflects these removals**
 ```
 summary.tax(taxonomy=current, count=current)
 ```
+
 This creates a new summary file with the undesirables removed. At this point we have curated our data as far as possible
 
-# Get some OTUs
+# Generate OTUs
 
-**Clustering sequences into OTUs.**
+**Clustering sequences into OTUs**
 
 We use the taxonomic information to bin our sequences. In this command we use taxlevel=4, which corresponds to the level of Order.
 
@@ -228,14 +233,14 @@ make.shared(list=current, count=current, label=0.03)
 classify.otu(list=current, count=current, taxonomy=current, label=0.03)
 ```
 
-# Quick Visualize
+# Generate a BIOM to Visualize
 
 **Create a `.biom` file**
 ```
 make.biom(shared=current,constaxonomy=current)
 ```
 
-**Rename the file to something simpler**
+**Rename the file to include a Team Name**
 ```
 rename.file(biom=current, new=TEAMNAME.biom)
 ```
