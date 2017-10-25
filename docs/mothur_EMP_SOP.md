@@ -75,17 +75,17 @@ Remeber, the first column is the name othe sample. The second column is the name
 make.contigs(inputdir=./rawdata_neg, file=./negativeQC/neg.stability.files, processors=8)
 ```
 
-**Q1 Report how many sequences are in each group**
+**Q1: Report how many sequences are in each group**
 
 **Determine the distributions of these sequences**
 ```
 summary.seqs(fasta=current)
 ```
-**How many total sequences do you have? What's the median length?**
+**Q2: How many total sequences do you have? What's the median length?**
 
 # Reducing sequencing errors
 
-**Q2 Next, we want to get rid of some of the bad reads**
+**Next, we want to get rid of some of the bad reads**
 
 Note how long most of the reads are. We'll use that to trim out the reads that assembled backwards.
 
