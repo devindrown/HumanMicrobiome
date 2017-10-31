@@ -218,8 +218,6 @@ ggplot(alphadiv, aes(x = SampleID, y = mean)) +
 ```
 plot_richness(mydata, measures="Chao1")
 ```
-[Alpha Diversity](https://joey711.github.io/phyloseq/plot_richness-examples.html)
-
 
 # Bar plots
 
