@@ -104,9 +104,15 @@ These taxonomy names are not helpful, so let’s rename them
 colnames(tax_table(moth_merge)) <- c("Kingdom", "Phylum", "Class", 
   "Order", "Family", "Genus")
 ```
+
+**Let's make a tree of our OTUs in case we want to use that later**
+```
+random_tree = rtree(ntaxa(moth_merge), rooted=TRUE, tip.label=taxa_names(moth_merge))
+```
+
 **Finally put your data in a new container**
 ```
-mydata <- moth_merge
+mydata <- merge_phyloseq(moth_merge, random_tree)
 ```
 
 # Basic info and plots
@@ -212,3 +218,19 @@ ggplot(alphadiv, aes(x = SampleID, y = mean)) +
 ```
 plot_richness(mydata, measures="Chao1")
 ```
+[Alpha Diversity](https://joey711.github.io/phyloseq/plot_richness-examples.html)
+
+
+# Ordinations
+One of the best exploratory analyses for amplicon data is unconstrained ordinations. Here we will look at ordinations of our full community samples.
+
+```
+# Ordinate
+mydata_pcoa <- ordinate(
+  physeq = erie_scale, 
+  method = "PCoA", 
+  distance = "bray"
+)
+```
+
+
