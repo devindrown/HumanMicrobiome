@@ -221,16 +221,104 @@ plot_richness(mydata, measures="Chao1")
 [Alpha Diversity](https://joey711.github.io/phyloseq/plot_richness-examples.html)
 
 
+# Bar plots
+
+You of course know that your samples had different numbers of reads after the QC, so you should convert your dataset to relative abundances. Use this command and create a new dataset
+```
+relmydata = transform_sample_counts(mydata,function(x) 100 * x / sum(x))
+```
+Here you’ll divide all the OTU counts by the total sample counts and then multiple by 100. Now your bars will sum to 100% and represent the relative abundance within a sample.
+
+**You can use Phylseq's built in function to make some bar plot**
+```
+plot_bar(relmydata,fill="Class")
+```
+Here you're plotting all the OTUs colored by Class. This can get pretty confusing pretty quickly. So you can use the following code to pull together some of the OTUs by whatever level you're intereseted in
+```
+relmydata_phylum <- relmydata %>%
+  tax_glom(taxrank = "Phylum") %>%                     # group at Phylum level
+  psmelt() %>%                                         # Melt to long format
+  filter(Abundance > 1) %>%                         # Filter out low abundance taxa
+  arrange(Phylum)                                   # Sort data frame alphabetically by Phylum
+```
+Here we are looking at the Phylum level and filtering out anything less than 1%
+
+Next we plot the results
+```
+phylum_colors <- diverge_hcl(length(unique(relmydata_phylum$Phylum)))
+ggplot(relmydata_phylum, aes(x = SampleID, y = Abundance, fill = Phylum)) + 
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = phylum_colors) +
+  # Remove x axis title
+  theme(axis.title.x = element_blank()) + 
+  ylab("Relative Abundance (Phylum > 10%) \n") +
+  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+  ggtitle("Composition, Phylum")
+```
+
+**Keep digging deeper into the data**
+
+Let's look at class and family level
+```
+relmydata_class <- relmydata %>%
+  tax_glom(taxrank = "Class") %>% 
+  psmelt() %>% 
+  filter(Abundance > 1) %>% 
+  arrange(Class)
+
+relmydata_family <- relmydata %>%
+  tax_glom(taxrank = "Family") %>% 
+  psmelt() %>% 
+  filter(Abundance > 1) %>% 
+  arrange(Family)            
+```
+Create some pretty colors for your categories
+```
+class_colors <- diverge_hcl(length(unique(relmydata_class$Class)))
+family_colors <- rainbow_hcl(length(unique(relmydata_family$Family)))
+```
+
+Finally, you can print each separately
+```
+ggplot(relmydata_class, aes(x = SampleID, y = Abundance, fill = Class)) + 
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = class_colors) +
+  # Remove x axis title
+  theme(axis.title.x = element_blank()) + 
+  ylab("Relative Abundance (Class > 10%) \n") +
+  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+  ggtitle("Composition, Class") 
+```
+```
+ggplot(relmydata_family, aes(x = SampleID, y = Abundance, fill = Family)) + 
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = family_colors) +
+  # Remove x axis title
+  theme(axis.title.x = element_blank()) + 
+  ylab("Relative Abundance (Family > 1%) \n") +
+  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+  ggtitle("Composition, Phylum")
+```
+
 # Ordinations
-One of the best exploratory analyses for amplicon data is unconstrained ordinations. Here we will look at ordinations of our full community samples.
+One of the best exploratory analyses for amplicon data is unconstrained ordinations. Phyloseq can compute these in two simple steps
 
 ```
-# Ordinate
-mydata_pcoa <- ordinate(
-  physeq = erie_scale, 
-  method = "PCoA", 
+# Calculate
+mydata_pcoa_bray <- ordinate(
+  physeq = mydata, 
+  method = "PCoA",
+#  weight=TRUE,
   distance = "bray"
 )
+# Plot
+plot_ordination(
+  physeq = mydata,
+  ordination = mydata_pcoa_bray,
+  title = "PCoA of mydata (bray)",
+  color = "SampleID"
+) + 
+  geom_point(aes(color = SampleID), alpha = 0.7, size = 4)
 ```
 
 
