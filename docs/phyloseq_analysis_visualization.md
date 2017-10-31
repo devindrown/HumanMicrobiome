@@ -5,8 +5,6 @@ Here we will analyze out small dataset in R and produce some visualizations
 Most of these instructions are modified from:
 [Denef lab howto](http://deneflab.github.io/MicrobeMiseq/demos/mothur_2_phyloseq.html)
 
-# Installing lots of Packages
-
 # Getting your workspace ready
 
 ```
