@@ -17,15 +17,12 @@ library(grid)
 library(reshape2)
 library(phyloseq)
 library(colorspace)
+library(ape)
 ```
 
 ```
 # Set working directory
-setwd("C:/Users/Microbiome/documents/demodataR")
-
-# Source code files
-# miseqR.R can be found in this repository
-source("setwd("C:/Users/Microbiome/documents/demodataR/miseqR.R")
+setwd("C:/Users/microbiome/documents/demodataR")
 
 # Set plotting theme
 theme_set(theme_bw())
@@ -151,8 +148,6 @@ row.names(richness) <- sample_names(mydata)
 evenness <- matrix(nrow = nsamp, ncol = trials)
 row.names(evenness) <- sample_names(mydata)
 
-diversity <- matrix(nrow = nsamp, ncol = trials)
-row.names(diversity) <- sample_names(mydata)
 ```
 
 **It is always important to set a seed when you subsample so your result is replicable**
@@ -163,7 +158,7 @@ The create a loop to do all the subsampling
 ```
 for (i in 1:100) {
   # Subsample
-  r <- rarefy_even_depth(mydata, sample.size = min_lib, verbose = FALSE, replace = TRUE)
+  r <- rarefy_even_depth(mydata, sample.size = nsamp, verbose = FALSE, replace = TRUE)
   
   # Calculate richness
   rich <- as.numeric(as.matrix(estimate_richness(r, measures = "Observed")))
@@ -172,7 +167,6 @@ for (i in 1:100) {
   # Calculate evenness
   even <- as.numeric(as.matrix(estimate_richness(r, measures = "InvSimpson")))
   evenness[ ,i] <- even
-  
 }
 ```
 
