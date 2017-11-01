@@ -158,7 +158,7 @@ The create a loop to do all the subsampling
 ```
 for (i in 1:100) {
   # Subsample
-  r <- rarefy_even_depth(mydata, sample.size = nsamp, verbose = FALSE, replace = TRUE)
+  r <- rarefy_even_depth(mydata, sample.size = min_lib, verbose = FALSE, replace = TRUE)
   
   # Calculate richness
   rich <- as.numeric(as.matrix(estimate_richness(r, measures = "Observed")))
@@ -241,7 +241,7 @@ ggplot(relmydata_phylum, aes(x = SampleID, y = Abundance, fill = Phylum)) +
   scale_fill_manual(values = phylum_colors) +
   # Remove x axis title
   theme(axis.title.x = element_blank()) + 
-  ylab("Relative Abundance (Phylum > 10%) \n") +
+  ylab("Relative Abundance (Phylum > 1%) \n") +
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
   ggtitle("Composition, Phylum")
 ```
@@ -253,13 +253,13 @@ Let's look at class and family level
 relmydata_class <- relmydata %>%
   tax_glom(taxrank = "Class") %>% 
   psmelt() %>% 
-  filter(Abundance > 1) %>% 
+  filter(Abundance > 1%) %>% 
   arrange(Class)
 
 relmydata_family <- relmydata %>%
   tax_glom(taxrank = "Family") %>% 
   psmelt() %>% 
-  filter(Abundance > 1) %>% 
+  filter(Abundance > 1%) %>% 
   arrange(Family)            
 ```
 Create some pretty colors for your categories
