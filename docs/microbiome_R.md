@@ -1,8 +1,8 @@
 # Running R
 
-Install the latest version of R. You can find the installs here: (https://cran.rstudio.com/) You want to install the **base version**
+Install the latest version of R. You can find the install [HERE](https://cran.rstudio.com/) You want to install the **base version**
 
-One of the best tools for using R is called R-Studio. You can download the Free RStudio Desktop verison here (https://www.rstudio.com/products/rstudio/download/#download)
+One of the best tools for using R is called R-Studio. You can download the Free RStudio Desktop verison [HERE](https://www.rstudio.com/products/rstudio/download/#download)
 
 
 
