@@ -26,3 +26,5 @@ Install Phyloseq
 source('http://bioconductor.org/biocLite.R')
 biocLite('phyloseq')
 ```
+
+I've put all of the commands we used today in a single R script here (demodataR.R)
