@@ -29,4 +29,4 @@ biocLite('phyloseq')
 
 You'll have to load all of these packages into your workspace before you can use them.
 
-I've put all of the commands we used today in a single R script here (demodataR.R)
+I've put all of the commands we used today in a single R script here [demodataR script](demodataR.R)
