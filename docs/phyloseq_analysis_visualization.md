@@ -253,13 +253,13 @@ Let's look at class and family level
 relmydata_class <- relmydata %>%
   tax_glom(taxrank = "Class") %>% 
   psmelt() %>% 
-  filter(Abundance > 1%) %>% 
+  filter(Abundance > 1) %>% 
   arrange(Class)
 
 relmydata_family <- relmydata %>%
   tax_glom(taxrank = "Family") %>% 
   psmelt() %>% 
-  filter(Abundance > 1%) %>% 
+  filter(Abundance > 1) %>% 
   arrange(Family)            
 ```
 Create some pretty colors for your categories
