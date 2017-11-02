@@ -30,3 +30,5 @@ biocLite('phyloseq')
 You'll have to load all of these packages into your workspace before you can use them.
 
 I've put all of the commands we used today in a single R script. You can  [download here](demodataR.R)
+
+Would you like to compare many different ordination methods all at once? [Download this](oneplot_ordinations.R) script to see how I compared and plots 6 different method combinations at once.
