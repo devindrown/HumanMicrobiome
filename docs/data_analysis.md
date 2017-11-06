@@ -105,11 +105,126 @@ While you're making datasets, pick a house that you want to work with can create
 myhouse <- subset_samples(mb2017, House=="5676")
 ```
 
-Now you have two new datasets, go back to the [previous lab](phyloseq_analysis_visualization) and run the following to explore you data. **Show your instructor the set of figures on your house data before you move on to the site data.**
+# Explore diversity
+
+Now you have two new datasets, go back to the [previous lab](phyloseq_analysis_visualization) and run the following to explore you data.
 
 1. Calculate number of reads
 2. Alpha Diversity
 3. Bar Plots of diversity at different scales
 4. Ordination plot
 
+**Show your instructor the set of figures on your house data before you move on to the site data.**
 
+# Introductory stats
+
+
+
+# Sampling other sets
+
+If you'd like to sample more than one site at a time or more than one house you can do that in the following way
+
+Create some lists, each time in enclosed in double quotes `"` and separated by a comma `,`
+```
+mysitelist = c("SiteA","SiteC","SiteD")
+myhouselist = c("3a4c","4226","3f92","415e")
+```
+
+Next, create a subset as before, but with some masking
+```
+mysiteACD <- subset_samples(mb2017, ((Site %in% mysitelist) & (House %in% myhouselist)))
+```
+
+## Ordination with two variables
+
+With this more complete dataset, you can create an ordination plot, here we'll use an NMDS plot
+
+```
+#Ordinate
+mysiteACD_pcoa <- ordinate(
+  physeq = mysiteACD, 
+  method = "NMDS", 
+  distance = "bray"
+)
+
+```
+
+Next, we want to plot, but we'll use symbols for the different sites and solors for the various houses
+
+```
+# Plot 
+
+house_colors <- rainbow_hcl(length(unique(myhouselist)))
+
+plot_ordination(
+  physeq = mysiteACD,
+  ordination = mysiteACD_pcoa,
+  color = "House",
+  shape = "Site",
+  title = "NMDS of mysiteACD bacterial Communities"
+) + 
+  scale_color_manual(values = house_colors
+  ) +
+  #  geom_line() +
+  geom_point(aes(color = House), alpha = 0.7, size = 6) +
+  geom_point(colour = "grey90", size = 1.5) 
+
+```
+
+Here are a couple of examples of plotting bar plots of this kind of data
+
+
+Transform to relative abundances
+
+```
+relmydata = transform_sample_counts(mysiteACD,function(x) 100 * x / sum(x))
+```
+
+Pick some colors based on the phylum data (you can do deeper if you choose)
+
+```
+phylum_colors <- diverge_hcl(length(unique(relmydata_phylum$Phylum)))
+```
+
+Plot **Sites** across the **X axis** and make a separate **Row** for each **house**
+
+```
+ggplot(relmydata_phylum, aes(x = Site, y = Abundance, fill = Phylum)) + 
+  facet_grid(House~.) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = phylum_colors) +
+  # Remove x axis title
+  theme(axis.title.x = element_blank()) + 
+  ylab("Relative Abundance (Phylum > 1%) \n") +
+  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+  ggtitle("Composition, Phylum")
+```
+
+What if you want to compare in the other dimension? Try this:
+
+```
+ggplot(relmydata_phylum, aes(x = House, y = Abundance, fill = Phylum)) + 
+  facet_grid(Site~.) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = phylum_colors) +
+  # Remove x axis title
+  theme(axis.title.x = element_blank()) + 
+  ylab("Relative Abundance (Phylum > 1%) \n") +
+  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+  ggtitle("Composition, Phylum")
+```
+
+Finally, explore differences at the Phylum level with this plot (note the `x = Phylum`)
+```
+ggplot(relmydata_phylum, aes(x = Phylum, y = Abundance, fill = Phylum)) + 
+  facet_grid(House ~ Site) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = phylum_colors) +
+  # Remove x axis title
+  theme(axis.title.x = element_blank()) + 
+  ylab("Relative Abundance (Phylum > 1%) \n") +
+  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+  ggtitle("Composition, Phylum")
+```
+
+The **`facet_grid`** function controls the formatting as `facet_grid(ROW_variable ~ COLUMN_variable)`
