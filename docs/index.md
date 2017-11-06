@@ -7,3 +7,5 @@ Labs
 * [mothur analysis of Human Microbiome](mothur_EMP_SOP)
 
 * [Phyloseq and R for analysis and visualization](phyloseq_analysis_visualization)
+
+* [Data analysis of Human Microbiome](data_analysis)
