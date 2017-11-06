@@ -287,7 +287,7 @@ ggplot(relmydata_family, aes(x = SampleID, y = Abundance, fill = Family)) +
   theme(axis.title.x = element_blank()) + 
   ylab("Relative Abundance (Family > 1%) \n") +
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
-  ggtitle("Composition, Phylum")
+  ggtitle("Composition, Family")
 ```
 
 # Ordinations
