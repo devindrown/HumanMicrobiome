@@ -116,6 +116,15 @@ Now you have two new datasets, go back to the previous lab, [Phyloseq and R for 
 
 **Show your instructor the set of figures on your house data before you move on to the site data.**
 
+When looking at your site data, you might want to consider these options for plotting your diversity
+
+We can specify a sample variable on which to group/organize samples along the horizontal (x) axis. An experimentally meaningful categorical variable is usually a good choice (e.g. Plate, House)
+
+```
+plot_richness(mysiteA, x = "Plate", measures="Chao1",)
+plot_richness(mysiteA, x = "House", measures="Chao1",)
+```
+
 # Introductory stats
 
 ## Permanova
@@ -280,8 +289,13 @@ Residuals  8 0.36068 0.045085
 
 Not significant, so we can be more confident of our earlier results.
 
-## Complex bar plots with this kind of data
+## Plot alpha diversity
 
+```
+plot_richness(mysiteACD, x = "Site", color = "House", measures="Chao1",)
+```
+
+## Complex bar plots with this kind of data
 
 Transform to relative abundances
 
