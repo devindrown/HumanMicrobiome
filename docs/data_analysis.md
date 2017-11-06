@@ -152,7 +152,7 @@ If we had a significant test, then it would be worth running a **Homogeneity of 
 ```
 beta <- betadisper(mysiteA_bray, sampledf$Plate)
 permutest(beta)
-``
+```
 
 Example  output
 ```
@@ -170,7 +170,7 @@ Additionally, our betadisper results are not significant, meaning we cannot reje
 
 There is a lot more analysis that can be done here. We could test different grouping variables, or we could create a more complex permanova by testing a model that combines multiple variables. We'll get back to that later.
 
-# Sampling other sets
+# Sampling complex subsets
 
 If you'd like to sample more than one site at a time or more than one house you can do that in the following way
 
@@ -199,7 +199,7 @@ mysiteACD_pcoa <- ordinate(
 
 ```
 
-Next, we want to plot, but we'll use symbols for the different sites and solors for the various houses
+Next, we want to plot our results, but we'll use symbols for the different sites and solors for the various houses
 
 ```
 # Plot 
@@ -236,12 +236,49 @@ We can write a more complex formula as below (typical model formula such as Y ~ 
 adonis(mysiteACD_bray ~ House + Site, data = sampledf)
 ```
 
-adonis adds the terms of formula sequentially
+Example output
+
+```
+adonis(formula = mysiteACD_bray ~ House + Site, data = sampledf) 
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
+House      3    1.4630 0.48765  2.4831 0.45750  0.001 ***
+Site       2    0.5564 0.27821  1.4166 0.17400  0.143    
+Residuals  6    1.1783 0.19639         0.36849           
+Total     11    3.1977                 1.00000 
+```
+
+It appears that we can reject the null hypothesis that samples from different house are from the same centroid.
+
+adonis adds the terms of formula sequentially, so it is worth comparing the two orders so that you can be more confident of your results.
 ```
 adonis(mysiteACD_bray ~ Site + House, data = sampledf)
 ```
 
+Example output
+```
+adonis(formula = mysiteACD_bray ~ Site + House, data = sampledf)
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)   
+House      3    1.4630 0.48765  2.4831 0.45750  0.002 **
+```
 
+Again, House is significant, so we should move on the final test of homogeneity of dispersions
+
+```
+beta <- betadisper(mysiteACD_bray, sampledf$House)
+permutest(beta)
+```
+
+Example output
+
+```
+Permutation test for homogeneity of multivariate dispersions
+Response: Distances
+          Df  Sum Sq  Mean Sq      F N.Perm Pr(>F)
+Groups     3 0.04076 0.013586 0.3013    999  0.878
+Residuals  8 0.36068 0.045085
+```
+
+Not significant, so we can be more confident of our earlier results.
 
 ## Complex bar plots with this kind of data
 
