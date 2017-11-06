@@ -107,7 +107,7 @@ myhouse <- subset_samples(mb2017, House=="5676")
 
 # Explore diversity
 
-Now you have two new datasets, go back to the [previous lab](phyloseq_analysis_visualization) and run the following to explore you data.
+Now you have two new datasets, go back to the previous lab, [Phyloseq and R for analysis and visualization](phyloseq_analysis_visualization), and run the following to explore you data.
 
 1. Calculate number of reads
 2. Alpha Diversity
