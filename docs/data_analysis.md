@@ -291,6 +291,8 @@ Not significant, so we can be more confident of our earlier results.
 
 ## Plot alpha diversity
 
+Heere we'll divide up the X axis by Site and then color each house differently
+
 ```
 plot_richness(mysiteACD, x = "Site", color = "House", measures="Chao1",)
 ```
