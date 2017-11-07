@@ -9,3 +9,5 @@ Labs
 * [Phyloseq and R for analysis and visualization](phyloseq_analysis_visualization)
 
 * [Data analysis of Human Microbiome](data_analysis)
+
+* [Running Phyloseq on your own computer](microbiome_R.md)
