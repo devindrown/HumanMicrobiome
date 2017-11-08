@@ -305,6 +305,16 @@ Transform to relative abundances
 relmydata = transform_sample_counts(mysiteACD,function(x) 100 * x / sum(x))
 ```
 
+You probably don't want to look at all of your data at once. Here we are looking at the Phylum level and filtering out anything less than 1%. You might want to do something else for your own dataset.
+
+```
+relmydata_phylum <- relmydata %>%
+  tax_glom(taxrank = "Phylum") %>%                     # group at Phylum level
+  psmelt() %>%                                         # Melt to long format
+  filter(Abundance > 1) %>%                         # Filter out low abundance taxa
+  arrange(Phylum)                                   # Sort data frame alphabetically by Phylum
+```
+
 Pick some colors based on the phylum data (you can do deeper if you choose)
 
 ```
