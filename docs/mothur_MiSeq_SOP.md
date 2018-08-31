@@ -31,7 +31,7 @@ silva.bacteria.fasta
 silva.bacteria.rdp.tax
 ...
 ```
-`referenceq`, confirm you have database files:
+`reference`, confirm you have database files:
 ```
 trainset9_032012.pds.fasta
 trainset9_032012.pds.tax
