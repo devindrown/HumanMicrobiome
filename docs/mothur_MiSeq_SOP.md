@@ -41,7 +41,7 @@ trainset9_032012.pds.tax
 
 Now you are ready to start the local version of mothur, you can double click on the `mothur` file
 
-**Verify with the instructor that you are indeed running running: mothur v.1.39.5.**
+**Verify with the instructor that you are indeed running running: mothur v.1.40.5.**
 
 From here on out you’ll be entering commands directly to the mothur program. The command prompt should look like this:
 ```
