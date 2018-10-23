@@ -37,8 +37,10 @@ Now you are ready to start the local version of mothur, you can double click on 
 ```
 set.dir(output=./negativeQC)
 ```
-{::comment}
+<!-- 
 # Prepare the custom database
+
+DO NOT COMPLETE THIS STEP
 
 Like last time, we'll be aligning our sequencings to a currated set of 16s sequences to the Silva database. We need to trim our samples to just the v4 region that we actually amplified. We used the 515f and 806rb primers from the Earth Microbiome Project. We'll use the actual primers that we used for PCR to perform a digitial PCR on the SILVA database.
 
@@ -64,7 +66,7 @@ get.seqs(accnos=./negativeQC\silva.seed_v132.EMP.accnos, taxonomy=./reference/si
 ```
 rename.file(input=./negativeQC/silva.seed_v132.pick.tax, new=silva.seed_v132.EMP.tax)
 ```
-{:/comment}
+-->
 # Make contigs
 
 First we need to take the paired-end read data from the MiSeq and join the read 1 and read 2 into a single sequences or contig. For example, you will see two files: ExtractionNEG-B-2017001057_S96_L001_R1_001.fastq and ExtractionNEG-B-2017001057_S96_L001_R2_001.fastq.. The first and all those with R1 correspond to read 1 while the second and all those with R2 correspond to the second or reverse read. These sequences are 250 bp and overlap in the V4 region of the 16S rRNA gene; this region is about 253 bp long.
