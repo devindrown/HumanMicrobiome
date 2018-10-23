@@ -40,17 +40,29 @@ set.dir(output=./negativeQC)
 
 # Prepare the custom database
 
-Like last time, we'll be aligning our sequencings to a currated set of 16s sequences to the Silva database. We need to trim our samples to just the v4 region that we actually amplified. We used the 515f and 806rb primers from the Earth Microbiome Project. I've already aligned those to the E. coli genome and found their positions (start=13861, end=23444).
+Like last time, we'll be aligning our sequencings to a currated set of 16s sequences to the Silva database. We need to trim our samples to just the v4 region that we actually amplified. We used the 515f and 806rb primers from the Earth Microbiome Project. We'll use the actual primers that we used for PCR to perform a digitial PCR on the SILVA database.
 
 **Customize database to our region of interest**
 ```
-pcr.seqs(fasta=./silva.bacteria/silva.bacteria.fasta, start=13861, end=23444, keepdots=F)
+pcr.seqs(fasta=./reference/silva.seed_v132.align, oligos=./reference/EMP_primers.oligos, keepdots=F)
 ```
 
 **Rename the reference database**
 
+Us the output from the previous command (the .pcr.align file) as input for the next command.
 ```
-rename.file(input=INPUT, new=silva.EMP.fasta)
+rename.file(input=LASTOUTPUT, new=silva.seed_v132.EMP.fasta)
+```
+**Trim the taxonomy database**
+First list all the remaining sequences left in the FASTA database, then select only those in the Taxonomy database (~7816 taxa)
+```
+list.seqs(fasta=./negativeQC/silva.seed_v132.EMP.fasta)
+get.seqs(accnos=./negativeQC\silva.seed_v132.EMP.accnos, taxonomy=./reference/silva.seed_v132.tax)
+```
+
+**Rename the taxonomy database**
+```
+rename.file(input=./negativeQC/silva.seed_v132.pick.tax, new=silva.seed_v132.EMP.tax)
 ```
 
 # Make contigs
@@ -63,9 +75,9 @@ Last time, you had a file preapred for you that contained all of the raw data fi
 make.file(inputdir=./rawdata_neg, type=fastq, prefix=neg.stability)
 ```
 
-**Fix the stability file**
+**Check the stability file**
 
-Unfortunately, the current version of `mothur` has a bug and the file isn't quite right. You'll need to open the file in `notepad` and change the first column. You shoud give each sample a short name without spaces or dashes. 
+You'll need to open the file in `notepad` and check the first column. Make sure each sample a short name without spaces or dashes. 
 
 Remeber, the first column is the name othe sample. The second column is the name of the forward read for that sample and the third columns in the name of the reverse read for that sample.
 
@@ -123,7 +135,7 @@ Now we need to align our sequences to the reference alignment. You’ve already 
 
 **Align your dataset to the database**
 ```
-align.seqs(fasta=current, reference=./negativeQC/silva.EMP.fasta)
+align.seqs(fasta=current, reference=./reference/silva.seed_v132.EMP.fasta)
 ```
 
 **Check the results**
@@ -131,14 +143,14 @@ align.seqs(fasta=current, reference=./negativeQC/silva.EMP.fasta)
 ```
 summary.seqs(count=current)
 ```
- You'll see that the bulk of the sequences start at position 1 and end at position 9583. Deviants from the mode positions are likely due to an insertion or deletion at the terminal ends of the alignments. 
+ You'll see that the bulk of the sequences start at position 27 and end at position 9609. Deviants from the mode positions are likely due to an insertion or deletion at the terminal ends of the alignments. 
  
  **Q5: What's the median sequence length after aligning to the reference?**
 
 To make sure that everything overlaps the same region we'll re-run `screen.seqs`  
 
 ```
-screen.seqs(fasta=current,count=current,summary=current,start=1, end=9583, maxhomop=8)
+screen.seqs(fasta=current,count=current,summary=current,start=27, end=9609, maxhomop=8)
 ```
 
 Check to see if our sequences overlap the same alignment coordinates
@@ -194,7 +206,7 @@ Sometimes when we pick a primer set they will amplify other stuff such as 16S rR
 **Classify your sequences**
 
 ```
-classify.seqs(fasta=current, count=current, reference=./reference/trainset9_032012.pds.fasta, taxonomy=./reference/trainset9_032012.pds.tax, cutoff=80)
+classify.seqs(fasta=current, count=current, reference=./reference/silva.seed_v132.EMP.fasta, taxonomy=./reference/silva.seed_v132.EMP.tax, cutoff=80)
 ```
 
 Now that everything is classified we want to **remove our undesirables**
