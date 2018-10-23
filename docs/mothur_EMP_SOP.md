@@ -15,18 +15,30 @@ You should verify that you have the databases we used in the previous lab. If yo
  `rawdata_neg` confirm that you have **12 original data files**
 
 ```
-ExtractionNEG-B-2017001057_S96_L001_R1_001.fastq
-ExtractionNEG-B-2017001057_S96_L001_R2_001.fastq
-ExtractionNEG-A-2017000993_S32_L001_R1_001.fastq
-ExtractionNEG-A-2017000993_S32_L001_R2_001.fastq
-PCR-NEG-SetA2-2017000969_S8_L001_R1_001.fastq
-PCR-NEG-SetA2-2017000969_S8_L001_R2_001.fastq
-PCR-NEG-SetA1-2017000977_S16_L001_R1_001.fastq
-PCR-NEG-SetA1-2017000977_S16_L001_R2_001.fastq
-PCR-NEG-SetB2-2017001033_S72_L001_R1_001.fastq
-PCR-NEG-SetB2-2017001033_S72_L001_R2_001.fastq
-PCR-NEG-SetB1-2017001041_S80_L001_R1_001.fastq
-PCR-NEG-SetB1-2017001041_S80_L001_R2_001.fastq
+2017a1PCRneg_S16_L001_R1_001.fastq
+2017a1PCRneg_S16_L001_R2_001.fastq
+2017a2PCRneg_S8_L001_R1_001.fastq
+2017a2PCRneg_S8_L001_R2_001.fastq
+2017aDNAneg_S32_L001_R1_001.fastq
+2017aDNAneg_S32_L001_R2_001.fastq
+2017b1PCRneg_S80_L001_R1_001.fastq
+2017b1PCRneg_S80_L001_R2_001.fastq
+2017b2PCRneg_S72_L001_R1_001.fastq
+2017b2PCRneg_S72_L001_R2_001.fastq
+2017bDNAneg_S96_L001_R1_001.fastq
+2017bDNAneg_S96_L001_R2_001.fastq
+2018aDNAneg_PlateA_G12_R1.fastq
+2018aDNAneg_PlateA_G12_R2.fastq
+2018aPCRneg_PlateA_H12_R1.fastq
+2018aPCRneg_PlateA_H12_R2.fastq
+2018bDNAneg_PlateB_G12_R1.fastq
+2018bDNAneg_PlateB_G12_R2.fastq
+2018bHOUSEDNAneg_PlateB_G10_R1.fastq
+2018bHOUSEDNAneg_PlateB_G10_R2.fastq
+2018bHOUSEPCRneg_PlateB_H10_R1.fastq
+2018bHOUSEPCRneg_PlateB_H10_R2.fastq
+2018bPCRneg_PlateB_H12_R1.fastq
+2018bPCRneg_PlateB_H12_R2.fastq
 ```
 
 ## Starting the program
