@@ -37,10 +37,10 @@ theme_set(theme_bw())
 I've put four four data files on the Lab/Project Analysis section of Blackboard. You can download the mothur output of our class data there. You should end up with
 
 ```
-microbiome2017.biom
-microbiome2017.csv
-microbiome2017.shared
-microbiome2017.taxonomy
+microbiome.biom
+microbiome.csv
+microbiome.shared
+microbiome.taxonomy
 ```
 You want to make sure these end up in the directory you created in the previous steps.
 
@@ -48,8 +48,8 @@ Next, as you learned before you want to import these for use for phyloseq
 
 ```
 # Assign variables for imported data
-sharedfile = "microbiome2017.shared"
-taxfile = "microbiome2017.taxonomy"
+sharedfile = "microbiome.shared"
+taxfile = "microbiome.taxonomy"
 
 # Import mothur data
 mothur_data <- import_mothur(mothur_shared_file = sharedfile,
@@ -60,7 +60,7 @@ We collected the sample metadata too, next we need to import this.
 
 ```
 # Import sample metadata
-mapfile = "microbiome2017.csv"
+mapfile = "microbiome.csv"
 map <- read.csv(mapfile)
 
 # Convert this dataframe into phyloseq forma
@@ -70,23 +70,23 @@ map <- sample_data(map)
 rownames(map) <- map$SampleID
 
 # Merge mothurdata object with sample metadata
-mb2017 <- merge_phyloseq(mothur_data, map)
+mb <- merge_phyloseq(mothur_data, map)
 ```
 
-If you type `mb2017` you should see the following output
+If you type `mb` you should see the following output
 
 ```
 phyloseq-class experiment-level object
-otu_table()   OTU Table:         [ 12951 taxa and 128 samples ]
-sample_data() Sample Data:       [ 128 samples by 5 sample variables ]
-tax_table()   Taxonomy Table:    [ 12951 taxa by 6 taxonomic ranks ]
+otu_table()   OTU Table:         [ 14687 taxa and 192 samples ]
+sample_data() Sample Data:       [ 192 samples by 15 sample variables ]
+tax_table()   Taxonomy Table:    [ 14687 taxa by 6 taxonomic ranks ]
 ```
 
-Now we have a phyloseq object called mb2017. 
+Now we have a phyloseq object called mb. 
 
 Next reset the column names of the taxonomy
 ```
-colnames(tax_table(mb2017)) <- c("Kingdom", "Phylum", "Class", 
+colnames(tax_table(mb)) <- c("Kingdom", "Phylum", "Class", 
   "Order", "Family", "Genus")
 ```
 
@@ -96,13 +96,13 @@ The complete dataset is too big to really look at all at once.
 
 Pick a Site that you want to work with can create a smaller dataset. You can look in the metadata file to see how the labels are formatted (e.g. SiteA, SiteB)
 ```
-mysiteA <- subset_samples(mb2017, Site=="SiteC")
+mysiteC <- subset_samples(mb, Site=="SiteC")
 ```
 
 While you're making datasets, pick a house that you want to work with can create a smaller dataset. You houses are identified by the last 4 digits of the ID
 
 ```
-myhouse <- subset_samples(mb2017, House=="5676")
+myhouse <- subset_samples(mb, House=="145a")
 ```
 
 # Explore diversity
@@ -121,8 +121,8 @@ When looking at your site data, you might want to consider these options for plo
 We can specify a sample variable on which to group/organize samples along the horizontal (x) axis. An experimentally meaningful categorical variable is usually a good choice (e.g. Plate, House)
 
 ```
-plot_richness(mysiteA, x = "Plate", measures="Chao1",)
-plot_richness(mysiteA, x = "House", measures="Chao1",)
+plot_richness(mysiteC, x = "Plate", measures="Chao1",)
+plot_richness(mysiteC, x = "House", measures="Chao1",)
 ```
 
 # Introductory stats
@@ -132,13 +132,13 @@ Here is an example of how to run a permanova test using the adonis function in v
 
 ```
 # Calculate bray curtis distance matrix
-mysiteA_bray <- phyloseq::distance(mysiteA, method = "bray")
+mysiteA_bray <- phyloseq::distance(mysiteC, method = "bray")
 
 # make a data frame from the sample_data
-sampledf <- data.frame(sample_data(mysiteA))
+sampledf <- data.frame(sample_data(mysiteC))
 
 # Adonis test
-adonis(mysiteA_bray ~ Plate, data = sampledf)
+adonis(mysiteC_bray ~ Plate, data = sampledf)
 ```
 
 Example output
@@ -159,7 +159,7 @@ This output tells us that our adonis test is not significant (p = 0.665) so we c
 If we had a significant test, then it would be worth running a **Homogeneity of dispersion test**
 
 ```
-beta <- betadisper(mysiteA_bray, sampledf$Plate)
+beta <- betadisper(mysiteC_bray, sampledf$Plate)
 permutest(beta)
 ```
 
@@ -191,7 +191,7 @@ myhouselist = c("3a4c","4226","3f92","415e")
 
 Next, create a subset as before, but with some masking
 ```
-mysiteACD <- subset_samples(mb2017, ((Site %in% mysitelist) & (House %in% myhouselist)))
+mysiteACD <- subset_samples(mb, ((Site %in% mysitelist) & (House %in% myhouselist)))
 ```
 
 ## Ordination with two variables
