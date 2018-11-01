@@ -37,10 +37,10 @@ theme_set(theme_bw())
 I've put four four data files on the Lab/Project Analysis section of Blackboard. You can download the mothur output of our class data there. You should end up with
 
 ```
-microbiome.biom
-microbiome.csv
-microbiome.shared
-microbiome.taxonomy
+microbiome2018.biom
+microbiome2018.csv
+microbiome2018.shared
+microbiome2018.taxonomy
 ```
 You want to make sure these end up in the directory you created in the previous steps.
 
