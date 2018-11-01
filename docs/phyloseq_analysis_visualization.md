@@ -100,14 +100,9 @@ colnames(tax_table(moth_merge)) <- c("Kingdom", "Phylum", "Class",
   "Order", "Family", "Genus")
 ```
 
-**Let's make a tree of our OTUs in case we want to use that later**
-```
-random_tree = rtree(ntaxa(moth_merge), rooted=TRUE, tip.label=taxa_names(moth_merge))
-```
-
 **Finally put your data in a new container**
 ```
-mydata <- merge_phyloseq(moth_merge, random_tree)
+mydata <- merge_phyloseq(moth_merge)
 ```
 
 # Basic info and plots
