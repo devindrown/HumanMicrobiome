@@ -15,7 +15,6 @@ library(grid)
 library(reshape2)
 library(colorspace)
 library(phyloseq)
-library(ape)
 ```
 
 Here is some code to create and change your working directory. Before you run, be sure to chang **MYNAME** to something specific.
@@ -38,7 +37,7 @@ I've put four four data files on the Lab/Project Analysis section of Blackboard.
 
 ```
 microbiome2018.biom
-microbiome2018.csv
+microbiome2018.metadata.csv
 microbiome2018.shared
 microbiome2018.taxonomy
 ```
@@ -48,19 +47,32 @@ Next, as you learned before you want to import these for use for phyloseq
 
 ```
 # Assign variables for imported data
-sharedfile = "microbiome.shared"
-taxfile = "microbiome.taxonomy"
+sharedfile = "microbiome2018.shared"
+taxfile = "microbiome2018.taxonomy"
 
 # Import mothur data
 mothur_data <- import_mothur(mothur_shared_file = sharedfile,
                              mothur_constaxonomy_file = taxfile)
 ```
 
+## Some simple QC
+
+We know that there are a couple of OTUs that are contaminating our samples, so let's remove those before we proceed any further
+
+```
+# Remove bad OTUs
+badOTU = c("Otu00001","Otu00002")
+allTaxa = taxa_names(mothur_data)
+allTaxa <- allTaxa[!(allTaxa %in% badOTU)]
+mothur_data_clean = prune_taxa(allTaxa, mothur_data)
+```
+## Metadata
+
 We collected the sample metadata too, next we need to import this.
 
 ```
 # Import sample metadata
-mapfile = "microbiome.csv"
+mapfile = "microbiome2018.metadata.csv"
 map <- read.csv(mapfile)
 
 # Convert this dataframe into phyloseq forma
@@ -70,14 +82,14 @@ map <- sample_data(map)
 rownames(map) <- map$SampleID
 
 # Merge mothurdata object with sample metadata
-mb <- merge_phyloseq(mothur_data, map)
+mb <- merge_phyloseq(mothur_data_clean, map)
 ```
 
 If you type `mb` you should see the following output
 
 ```
 phyloseq-class experiment-level object
-otu_table()   OTU Table:         [ 14687 taxa and 192 samples ]
+otu_table()   OTU Table:         [ 14685 taxa and 192 samples ]
 sample_data() Sample Data:       [ 192 samples by 15 sample variables ]
 tax_table()   Taxonomy Table:    [ 14687 taxa by 6 taxonomic ranks ]
 ```
@@ -90,11 +102,12 @@ colnames(tax_table(mb)) <- c("Kingdom", "Phylum", "Class",
   "Order", "Family", "Genus")
 ```
 
+
 # Create your samples
 
 The complete dataset is too big to really look at all at once.
 
-Pick a Site that you want to work with can create a smaller dataset. You can look in the metadata file to see how the labels are formatted (e.g. SiteA, SiteB)
+Pick a Site that you want to work with and create a smaller dataset. You can look in the metadata file to see how the labels are formatted (e.g. SiteA, SiteB)
 ```
 mysiteC <- subset_samples(mb, Site=="SiteC")
 ```
@@ -121,8 +134,8 @@ When looking at your site data, you might want to consider these options for plo
 We can specify a sample variable on which to group/organize samples along the horizontal (x) axis. An experimentally meaningful categorical variable is usually a good choice (e.g. Plate, House)
 
 ```
-plot_richness(mysiteC, x = "Plate", measures="Chao1",)
-plot_richness(mysiteC, x = "House", measures="Chao1",)
+plot_richness(mysiteC, x = "Plate", measures="Chao1")
+plot_richness(mysiteC, x = "House", measures="Chao1")
 ```
 
 # Introductory stats
@@ -132,7 +145,7 @@ Here is an example of how to run a permanova test using the adonis function in v
 
 ```
 # Calculate bray curtis distance matrix
-mysiteA_bray <- phyloseq::distance(mysiteC, method = "bray")
+mysiteC_bray <- phyloseq::distance(mysiteC, method = "bray")
 
 # make a data frame from the sample_data
 sampledf <- data.frame(sample_data(mysiteC))
@@ -185,7 +198,7 @@ If you'd like to sample more than one site at a time or more than one house you 
 
 Create some lists, each time in enclosed in double quotes `"` and separated by a comma `,`
 ```
-mysitelist = c("SiteA","SiteC","SiteD")
+mysitelist = c("SiteB","SiteC","SiteD")
 myhouselist = c("3a4c","4226","3f92","415e")
 ```
 
@@ -200,7 +213,7 @@ With this more complete dataset, you can create an ordination plot, here we'll u
 
 ```
 #Ordinate
-mysiteACD_pcoa <- ordinate(
+mysiteACD_nmds <- ordinate(
   physeq = mysiteACD, 
   method = "NMDS", 
   distance = "bray"
@@ -217,7 +230,7 @@ house_colors <- rainbow_hcl(length(unique(myhouselist)))
 
 plot_ordination(
   physeq = mysiteACD,
-  ordination = mysiteACD_pcoa,
+  ordination = mysiteACD_nmds,
   color = "House",
   shape = "Site",
   title = "NMDS of mysiteACD bacterial Communities"
@@ -294,7 +307,7 @@ Not significant, so we can be more confident of our earlier results.
 Heere we'll divide up the X axis by Site and then color each house differently
 
 ```
-plot_richness(mysiteACD, x = "Site", color = "House", measures="Chao1",)
+plot_richness(mysiteACD, x = "Site", color = "House", measures="Chao1")
 ```
 
 ## Complex bar plots with this kind of data
@@ -363,3 +376,8 @@ ggplot(relmydata_phylum, aes(x = Phylum, y = Abundance, fill = Phylum)) +
 ```
 
 The **`facet_grid`** function controls the formatting as `facet_grid(ROW_variable ~ COLUMN_variable)`
+
+
+# What's next
+
+Now you have lots of code and your head should be full of lots of ideas. Go ahead and start testing.
