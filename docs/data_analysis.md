@@ -65,6 +65,7 @@ badOTU = c("Otu00001","Otu00002")
 allTaxa = taxa_names(mothur_data)
 allTaxa <- allTaxa[!(allTaxa %in% badOTU)]
 mothur_data_clean = prune_taxa(allTaxa, mothur_data)
+
 ```
 ## Metadata
 
@@ -204,7 +205,7 @@ myhouselist = c("3a4c","4226","3f92","415e")
 
 Next, create a subset as before, but with some masking
 ```
-mysiteACD <- subset_samples(mb, ((Site %in% mysitelist) & (House %in% myhouselist)))
+mysiteBCD <- subset_samples(mb, ((Site %in% mysitelist) & (House %in% myhouselist)))
 ```
 
 ## Ordination with two variables
@@ -213,8 +214,8 @@ With this more complete dataset, you can create an ordination plot, here we'll u
 
 ```
 #Ordinate
-mysiteACD_nmds <- ordinate(
-  physeq = mysiteACD, 
+mysiteBCD_nmds <- ordinate(
+  physeq = mysiteBCD, 
   method = "NMDS", 
   distance = "bray"
 )
@@ -229,11 +230,11 @@ Next, we want to plot our results, but we'll use symbols for the different sites
 house_colors <- rainbow_hcl(length(unique(myhouselist)))
 
 plot_ordination(
-  physeq = mysiteACD,
-  ordination = mysiteACD_nmds,
+  physeq = mysiteBCD,
+  ordination = mysiteBCD_nmds,
   color = "House",
   shape = "Site",
-  title = "NMDS of mysiteACD bacterial Communities"
+  title = "NMDS of mysiteBCD bacterial Communities"
 ) + 
   scale_color_manual(values = house_colors
   ) +
@@ -248,20 +249,20 @@ plot_ordination(
 Prepare data
 
 ```
-mysiteACD_bray <- phyloseq::distance(mysiteACD, method = "bray")
-sampledf <- data.frame(sample_data(mysiteACD))
+mysiteBCD_bray <- phyloseq::distance(mysiteBCD, method = "bray")
+sampledf <- data.frame(sample_data(mysiteBCD))
 ```
 
 We can write a more complex formula as below (typical model formula such as Y ~ A + B*C)
 
 ```
-adonis(mysiteACD_bray ~ House + Site, data = sampledf)
+adonis(mysiteBCD_bray ~ House + Site, data = sampledf)
 ```
 
 Example output
 
 ```
-adonis(formula = mysiteACD_bray ~ House + Site, data = sampledf) 
+adonis(formula = mysiteBCD_bray ~ House + Site, data = sampledf) 
           Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
 House      3    1.4630 0.48765  2.4831 0.45750  0.001 ***
 Site       2    0.5564 0.27821  1.4166 0.17400  0.143    
@@ -273,12 +274,12 @@ It appears that we can reject the null hypothesis that samples from different ho
 
 adonis adds the terms of formula sequentially, so it is worth comparing the two orders so that you can be more confident of your results.
 ```
-adonis(mysiteACD_bray ~ Site + House, data = sampledf)
+adonis(mysiteBCD_bray ~ Site + House, data = sampledf)
 ```
 
 Example output
 ```
-adonis(formula = mysiteACD_bray ~ Site + House, data = sampledf)
+adonis(formula = mysiteBCD_bray ~ Site + House, data = sampledf)
           Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)   
 House      3    1.4630 0.48765  2.4831 0.45750  0.002 **
 ```
@@ -286,7 +287,7 @@ House      3    1.4630 0.48765  2.4831 0.45750  0.002 **
 Again, House is significant, so we should move on the final test of homogeneity of dispersions
 
 ```
-beta <- betadisper(mysiteACD_bray, sampledf$House)
+beta <- betadisper(mysiteBCD_bray, sampledf$House)
 permutest(beta)
 ```
 
@@ -307,7 +308,7 @@ Not significant, so we can be more confident of our earlier results.
 Heere we'll divide up the X axis by Site and then color each house differently
 
 ```
-plot_richness(mysiteACD, x = "Site", color = "House", measures="Chao1")
+plot_richness(mysiteBCD, x = "Site", color = "House", measures="Chao1")
 ```
 
 ## Complex bar plots with this kind of data
@@ -315,7 +316,7 @@ plot_richness(mysiteACD, x = "Site", color = "House", measures="Chao1")
 Transform to relative abundances
 
 ```
-relmydata = transform_sample_counts(mysiteACD,function(x) 100 * x / sum(x))
+relmydata = transform_sample_counts(mysiteBCD,function(x) 100 * x / sum(x))
 ```
 
 You probably don't want to look at all of your data at once. Here we are looking at the Phylum level and filtering out anything less than 1%. You might want to do something else for your own dataset.
@@ -377,6 +378,38 @@ ggplot(relmydata_phylum, aes(x = Phylum, y = Abundance, fill = Phylum)) +
 
 The **`facet_grid`** function controls the formatting as `facet_grid(ROW_variable ~ COLUMN_variable)`
 
+# Advanced QC
+
+First we want to remove the negative controls from our dataset. You can subsample your data and select only those samples that are not of the QC type
+```
+mydata <- subset_samples(mb, Type!="QC")
+```
+
+The phyloseq package includes functions for filtering, subsetting, and merging abundance data. In the following example, the data is first transformed to relative abundance, creating the new GPr object, which is then filtered such that only OTUs with a mean greater than 10^-5 are kept.
+```
+mbr  = transform_sample_counts(mydata, function(x) x / sum(x) )
+mbfr = filter_taxa(mbr, function(x) mean(x) > 1e-5, TRUE)
+```
+
+This results in a highly-subsetted object, mbfr, removing the really rare OTUs.
+
+Another method: Remove taxa not seen more than 3 times in at least 20% of the samples. This protects against an OTU with small mean & trivially large C.V.
+
+```
+GP = filter_taxa(mb, function(x) sum(x > 3) > (0.2*length(x)), TRUE)
+```
+
+Standardize abundances to the median sequencing depth
+```
+total = median(sample_sums(GP))
+standf = function(x, t=total) round(t * (x / sum(x)))
+gps = transform_sample_counts(GP, standf)
+```
+
+Filter the taxa using a cutoff of 3.0 for the Coefficient of Variation
+```
+gpsf = filter_taxa(gps, function(x) sd(x)/mean(x) > 3.0, TRUE)
+```
 
 # What's next
 
