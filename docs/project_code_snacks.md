@@ -57,7 +57,7 @@ You could use thise method on any column in the metadata.
 
 Let's go back to your Site data that you have stored in `mydataQC`
 
-To generate a PCoA plot using Undergraduate status to color the points you would first generate teh distance matrix
+To generate a PCoA plot using Undergraduate status to color the points you would first generate the distance matrix
 ```
 # Calculate the distance matrix first
 mydataQC_pcoa_bray <- ordinate(
@@ -78,7 +78,7 @@ plot_ordination(
   geom_point(aes(color = Undergraduate), alpha = 0.7, size = 4)
 ```
 
-Perhaps you want to explore both Undergraduate status and Dry Cabin living at the same time. Before you do this though, you shoudl `subset` your data again to make sure you don't have rows without data in both categories
+Perhaps you want to explore both Undergraduate status and Dry Cabin living at the same time. Before you do this though, you should `subset` your data again to make sure you don't have rows without data in both categories
 
 ```
 mydataQC <- subset_samples(mydata, Undergraduate != "NA" & DryCabin != "NA")
