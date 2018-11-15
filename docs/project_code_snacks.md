@@ -97,4 +97,16 @@ plot_ordination(
   geom_point(aes(color = Undergraduate), alpha = 0.7, size = 4)
 ```
 
+# Testing Significance
+
+Don't forget what you learned in previous weeks: [Data analysis of Human Microbiome](data_analysis)
+
+
+Here's an example of testing for both Undergraduate and Dry Cabin status given our current subset of QC'd data
+```
+mydataQC_bray <- phyloseq::distance(mydataQC, method = "bray")
+sampledf <- data.frame(sample_data(mydataQC))
+
+adonis(mydataQC_bray ~ Undergraduate + DryCabin, data = sampledf)
+```
 
