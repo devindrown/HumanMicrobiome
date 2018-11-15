@@ -67,7 +67,7 @@ mydataQC_pcoa_bray <- ordinate(
   distance = "bray"
 )
 ```
-The you can plot the data. Here you have to specific *Undergraduate* twice in the plot code
+The you can plot the data. Here you have to specify *Undergraduate* twice in the plot code
 ```
 plot_ordination(
   physeq = mydataQC,
@@ -85,7 +85,7 @@ mydataQC <- subset_samples(mydata, Undergraduate != "NA" & DryCabin != "NA")
 ```
 
 Then you can generate the distance matrix again as above `mydataQC_pcoa_bray <- ordinate...`
-Then run the plot command. You add a single line to the plot specificying the *symbol*. 
+Then run the plot command. You add a single line to the plot specifying the *shape*. 
 
 ```
 plot_ordination(
@@ -109,4 +109,3 @@ sampledf <- data.frame(sample_data(mydataQC))
 
 adonis(mydataQC_bray ~ Undergraduate + DryCabin, data = sampledf)
 ```
-
