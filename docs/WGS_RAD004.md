@@ -58,7 +58,7 @@ filtlong --min_mean_q 90 $TEAM.fasta/$TEAM.reads.trim.fastq > $TEAM.fasta/$TEAM.
 
 # Variant Calling
 
-Below script `map2variant` will use `nanopolish` to map reads to **READS*** to reference **GENOME**
+Below script `map2variant` will use `nanopolish` to map reads to **READS** to reference **GENOME**
 
 ```
 map2variant.sh -i $TEAM.fasta/$TEAM.reads.qcreads.fastq -r rawdata -s basecalled/sequencing_summary.txt -g $HOME/genomes/AfricanSwineFever_Georgia2007_1_complete_genome.fasta -d 5 -f 0.75 -o $TEAM.variants -p Georgia2007_1 -t 48
