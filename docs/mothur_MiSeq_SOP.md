@@ -83,7 +83,7 @@ rename.file(input=INPUT, new=silva.v4.fasta)
 
 **Combine our two sets of reads for each sample and then to combine the data from all of the samples**
 ```
-make.contigs(inputdir=./MiSeq_SOP, file=./MiSeq_SOP/stability.files, processors=8)
+make.contigs(inputdir=./MiSeq_SOP, file=./MiSeq_SOP/stability.files, processors=4)
 ```
 
 You’ll probably get a [WARNING] message, but don’t worry.
@@ -110,7 +110,7 @@ Output File Names:
 /home/microbiome/mothur/testrun/stability.contigs.groups
 ```
 
-**Go back to the file explorer and open `stability.files`**
+**Go back to the Files window, click on the `MiSeq_SOP` folder, and then open `stability.files`**
 
 What do you see?  The first column is the name of the sample. The second column is the name of the forward read for that sample and the third columns in the name of the reverse read for that sample.
 
@@ -132,7 +132,7 @@ Median:         1       252     252     0       4       76181
 75%-tile:       1       253     253     0       5       114271
 97.5%-tile:     1       253     253     6       6       148552
 Maximum:        1       502     502     249     243     152360
-Mean:   1       252.811 252.811 0.70063 4.44854
+Mean:   1       252     252     0       4
 # of Seqs:      152360
 Output File Names:
 /home/microbiome/mothur/testrun/stability.trim.contigs.summary
@@ -214,7 +214,7 @@ Median:         1       253     253     0       4       8214
 75%-tile:       1       253     253     0       5       12320
 97.5%-tile:     1       254     254     0       6       16016
 Maximum:        1       270     270     0       12      16426
-Mean:   1       252.594 252.594 0       4.44277
+Mean:   1       252     252     0       4
 # of Seqs:      16426
 total # of seqs:        128872
 
@@ -249,17 +249,18 @@ summary.seqs(fasta=current, count=current)
 
 **Compare your output with the expected below**
 ```
- 		Start	End	NBases	Ambigs	Polymer	NumSeqs
-Minimum:	1965	11550	250	0	3	1
-2.5%-tile:	1968	11550	252	0	3	3217
-25%-tile:	1968	11550	252	0	4	32164
-Median: 	1968	11550	252	0	4	64328
-75%-tile:	1968	11550	253	0	5	96492
-97.5%-tile:	1968	11550	253	0	6	125439
-Maximum:	1968	13400	270	0	8	128655
-Mean:	1968	11550	252.463	0	4.36666
-# of unique seqs:	16298
+                Start   End     NBases  Ambigs  Polymer NumSeqs
+Minimum:        1965    11550   250     0       3       1
+2.5%-tile:      1968    11550   252     0       3       3217
+25%-tile:       1968    11550   252     0       4       32164
+Median:         1968    11550   252     0       4       64328
+75%-tile:       1968    11550   253     0       5       96492
+97.5%-tile:     1968    11550   253     0       6       125439
+Maximum:        1968    13400   270     0       8       128655
+Mean:   1967    11550   252     0       4
+# of unique seqs:       16298
 total # of seqs:        128655
+
 ```
 
 
@@ -311,15 +312,15 @@ summary.seqs(fasta=current, count=current)
 ```
                 Start   End     NBases  Ambigs  Polymer NumSeqs
 Minimum:        1       376     249     0       3       1
-2.5%-tile:      1       376     252     0       3       2954
-25%-tile:       1       376     252     0       4       29539
-Median:         1       376     252     0       4       59077
-75%-tile:       1       376     253     0       5       88615
-97.5%-tile:     1       376     253     0       6       115200
-Maximum:        1       376     256     0       8       118153
-Mean:   1       376     252.464 0       4.37545
-# of unique seqs:       2283
-total # of seqs:        118153
+2.5%-tile:      1       376     252     0       3       2955
+25%-tile:       1       376     252     0       4       29543
+Median:         1       376     252     0       4       59086
+75%-tile:       1       376     253     0       5       88629
+97.5%-tile:     1       376     253     0       6       115217
+Maximum:        1       376     256     0       8       118171
+Mean:   1       376     252     0       4
+# of unique seqs:       2489
+total # of seqs:        118171
 ```
 
 Sometimes when we pick a primer set they will amplify other stuff such as 16S rRNA from chloroplasts, and mitochondria.
