@@ -10,7 +10,7 @@ The author of that manual encourages you to cite the following paper if you use 
 
 # Getting started with mothur
 
-* Open a File Explorer window and navigate to `Documents/mothur/`
+* In the File Explorer window and make sure that you are in `Home`
 
 ## Confirm data files and databases
 
@@ -39,9 +39,13 @@ trainset9_032012.pds.tax
 
 ## Starting the program
 
-Now you are ready to start the local version of mothur, you can double click on the `mothur` file
+Now you are ready to start the local version of mothur, you can open the Terminal window and it should look like
+```
+microbiome@hikita:~$
+```
+At the `$` prompt type `mothur`
 
-**Verify with the instructor that you are indeed running running: mothur v.1.40.5.**
+**Verify with the instructor that you are indeed running running: mothur v.1.42.3.**
 
 From here on out you’ll be entering commands directly to the mothur program. The command prompt should look like this:
 ```
@@ -70,7 +74,7 @@ Output File Names:
 ```
 
 **Rename the output**
-Paying careful attention to the output file, use this information in the below command substituting **INPUT** with the file location
+Paying cafeul attention to the output file, use this information in the below command substituting **INPUT** with the file location
 ```
 rename.file(input=INPUT, new=silva.v4.fasta)
 ```
