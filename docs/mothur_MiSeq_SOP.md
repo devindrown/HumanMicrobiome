@@ -373,10 +373,10 @@ classify.otu(list=current, count=current, taxonomy=current, label=0.03)
 
 **Create a `.biom` file**
 ```
-make.biom(shared=current,constaxonomy=current)
+make.biom(shared=current,constaxonomy=current,metadata=./MiSeq_SOP/stability.metadata)
 ```
 
 **Rename the file to something simpler**
 ```
-rename.file(biom=current, new=testrun.biom)
+rename.file(biom=current, new=TEAMNAME.biom)
 ```
