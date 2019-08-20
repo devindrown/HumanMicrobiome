@@ -65,7 +65,7 @@ We'll be aligning our sequencings to a currated set of 16s sequences called the 
 
 **Customize database to our region of interest**
 ```
-pcr.seqs(fasta=./silva.bacteria/silva.bacteria.fasta, start=11894, end=25319, keepdots=F)
+pcr.seqs(fasta=./silva.bacteria/silva.bacteria.fasta, start=11894, end=25319, keepdots=F, processors=4)
 ```
 The output should look something like
 ```
