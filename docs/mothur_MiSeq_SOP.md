@@ -189,7 +189,7 @@ stability.trim.contigs.good.unique.fasta
 
 **Generate a table where the rows are the names of the unique sequences and the columns are the names of the groups.**
 ```
-count.seqs(name=current,group=current)
+count.seqs(name=current, group=current)
 ```
 
 **Compare your output with the expected below**
@@ -239,7 +239,7 @@ So what does this mean? You'll see that the bulk of the sequences start at posit
 
 To make sure that everything overlaps the same region we'll re-run `screen.seqs` to get sequences that start at or before position 1 and end at or after position 11550. We'll also set the maximum homopolymer length to 8 since there's nothing in the database with a stretch of 9 or more of the same base in a row. 
 ```
-screen.seqs(fasta=current,count=current,summary=current,start=1968, end=11550, maxhomop=8)
+screen.seqs(fasta=current, count=current, summary=current, start=1968, end=11550, maxhomop=8)
 ```
 
 Check to see if our sequences overlap the same alignment coordinates
@@ -282,7 +282,7 @@ Perhaps we’ve created some redundancy across our sequences by trimming the end
 
 **Re-run `unique.seqs`**
 ```
-unique.seqs(fasta=current,count=current)
+unique.seqs(fasta=current, count=current)
 ```
 
 **Further de-noise our sequences** using the `pre.cluster` command allowing for up to 2 differences between sequences. This command will split the sequences by group and then sort them by abundance and go from most abundant to least and identify sequences that are within 2 nt of each other. If they are then they get merged. We generally favor allowing 1 difference for every 100 bp of sequence
@@ -373,7 +373,7 @@ classify.otu(list=current, count=current, taxonomy=current, label=0.03)
 
 **Create a `.biom` file**
 ```
-make.biom(shared=current,constaxonomy=current,metadata=./MiSeq_SOP/stability.metadata)
+make.biom(shared=current, constaxonomy=current, metadata=./MiSeq_SOP/stability.metadata)
 ```
 
 **Rename the file to something simpler**
