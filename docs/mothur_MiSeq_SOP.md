@@ -10,7 +10,7 @@ The author of that manual encourages you to cite the following paper if you use 
 
 # Getting started with mothur
 
-* In the File Explorer window and make sure that you are in `Home`
+* In the Files window and make sure that you are in `Home`
 
 ## Confirm data files and databases
 
@@ -39,7 +39,7 @@ trainset9_032012.pds.tax
 
 ## Starting the program
 
-Now you are ready to start the local version of mothur, you can open the Terminal window and it should look like
+Now you are ready to start the local version of mothur, Go to the Terminal window and it should look like
 ```
 microbiome@hikita:~$
 ```
