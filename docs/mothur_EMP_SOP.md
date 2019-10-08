@@ -3,7 +3,6 @@ Here we will analyze our own data. We'll start with a small set.
 
 # Getting started
 
-* Open a File Explorer window and navigate to `Documents/mothur/`
 * Confirm data files and databases
 
 You should verify that you have the databases we used in the previous lab. If you are in doubt visit those instructions:
@@ -263,7 +262,7 @@ classify.otu(list=current, count=current, taxonomy=current, label=0.03)
 
 **Create a `.biom` file**
 ```
-make.biom(shared=current,constaxonomy=current)
+make.biom(shared=current,constaxonomy=current, metadata=./rawdata_neg/neg.stability.metadata)
 ```
 
 **Rename the file to include a Team Name**
