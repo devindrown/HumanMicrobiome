@@ -22,7 +22,7 @@ library(ape)
 
 ```
 # Set working directory
-setwd("C:/Users/microbiome/documents/demodataR")
+setwd("~/demodataR2019")
 
 # Set plotting theme
 theme_set(theme_bw())
@@ -79,8 +79,8 @@ If you type `moth_merge` you should see the following output
 ```
 > moth_merge
 phyloseq-class experiment-level object
-otu_table()   OTU Table:         [ 213 taxa and 6 samples ]
-sample_data() Sample Data:       [ 6 samples by 4 sample variables ]
+otu_table()   OTU Table:         [ 213 taxa and 12 samples ]
+sample_data() Sample Data:       [ 12 samples by 3 sample variables ]
 tax_table()   Taxonomy Table:    [ 213 taxa by 6 taxonomic ranks ]
 ```
 
@@ -113,7 +113,7 @@ mydata <- merge_phyloseq(moth_merge)
 sample_sums(mydata)
 ```
 
-Output should look like:
+Output should look like (but contain more values):
 ```
 ExtractionNEGA ExtractionNEGB    PCRNEGSetA1    PCRNEGSetA2    PCRNEGSetB1    PCRNEGSetB2
           5108          71128          13710           4192          53655          12605
@@ -121,89 +121,6 @@ ExtractionNEGA ExtractionNEGB    PCRNEGSetA1    PCRNEGSetA2    PCRNEGSetB1    PC
 **Plot it**
 ```
 plot_bar(mydata)
-```
-
-# Alpha Diversity
-
-Estimating alpha diversity of microbial communities is problematic no matter what you do. My best stab at it is to subsample the libraries with replacement to estimate the species abundance of the real population while standardizing sampling effort.
-
-```
-min_lib <- min(sample_sums(mydata))
-```
-We will subsample to 4192, the minimum number of reads. We will repeat this 100 times and average the diversity estimates from each trial.
-
-**Initialize matrices to store richness and evenness estimates**
-```
-nsamp = nsamples(mydata)
-trials = 100
-
-richness <- matrix(nrow = nsamp, ncol = trials)
-row.names(richness) <- sample_names(mydata)
-
-evenness <- matrix(nrow = nsamp, ncol = trials)
-row.names(evenness) <- sample_names(mydata)
-
-```
-
-**It is always important to set a seed when you subsample so your result is replicable**
-```
-set.seed(3)
-```
-The create a loop to do all the subsampling
-```
-for (i in 1:100) {
-  # Subsample
-  r <- rarefy_even_depth(mydata, sample.size = min_lib, verbose = FALSE, replace = TRUE)
-  
-  # Calculate richness
-  rich <- as.numeric(as.matrix(estimate_richness(r, measures = "Observed")))
-  richness[ ,i] <- rich
-  
-  # Calculate evenness
-  even <- as.numeric(as.matrix(estimate_richness(r, measures = "InvSimpson")))
-  evenness[ ,i] <- even
-}
-```
-
-Let’s calculate the mean and standard deviation per sample for observed richness and inverse simpson’s index and store those values in a dataframe.
-```
-# Create a new dataframe to hold the means and standard deviations of richness estimates
-SampleID <- row.names(richness)
-mean <- apply(richness, 1, mean)
-sd <- apply(richness, 1, sd)
-measure <- rep("Richness", nsamp)
-rich_stats <- data.frame(SampleID, mean, sd, measure)
-
-# Create a new dataframe to hold the means and standard deviations of evenness estimates
-SampleID <- row.names(evenness)
-mean <- apply(evenness, 1, mean)
-sd <- apply(evenness, 1, sd)
-measure <- rep("Inverse Simpson", nsamp)
-even_stats <- data.frame(SampleID, mean, sd, measure)
-```
-
-**Now we will combine our estimates for richness and evenness into one dataframe**
-```
-alpha <- rbind(rich_stats, even_stats)
-```
-
-Let’s add the sample metadata into this dataframe using the `merge()` command
-```
-s <- data.frame(sample_data(mydata))
-alphadiv <- merge(alpha, s, by = "SampleID") 
-```
-
-**Finally, we will plot the two alpha diversity measures using a facet**
-
-```
-ggplot(alphadiv, aes(x = SampleID, y = mean)) +
-  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), colour="black", width=.1) +
-  geom_point(size = 2) +
-  facet_wrap(~measure, ncol = 1, scales = "free")
-```
-**Phyloseq also can do this for you**
-```
-plot_richness(mydata, measures="Chao1")
 ```
 
 # Bar plots
@@ -306,4 +223,85 @@ plot_ordination(
   geom_point(aes(color = SampleID), alpha = 0.7, size = 4)
 ```
 
+# Alpha Diversity
 
+Estimating alpha diversity of microbial communities is problematic no matter what you do. My best stab at it is to subsample the libraries with replacement to estimate the species abundance of the real population while standardizing sampling effort.
+
+```
+min_lib <- min(sample_sums(mydata))
+```
+We will subsample to 4192, the minimum number of reads. We will repeat this 100 times and average the diversity estimates from each trial.
+
+**Initialize matrices to store richness and evenness estimates**
+```
+nsamp = nsamples(mydata)
+trials = 100
+
+richness <- matrix(nrow = nsamp, ncol = trials)
+row.names(richness) <- sample_names(mydata)
+
+evenness <- matrix(nrow = nsamp, ncol = trials)
+row.names(evenness) <- sample_names(mydata)
+
+```
+
+**It is always important to set a seed when you subsample so your result is replicable**
+```
+set.seed(3)
+```
+The create a loop to do all the subsampling
+```
+for (i in 1:100) {
+  # Subsample
+  r <- rarefy_even_depth(mydata, sample.size = min_lib, verbose = FALSE, replace = TRUE)
+  
+  # Calculate richness
+  rich <- as.numeric(as.matrix(estimate_richness(r, measures = "Observed")))
+  richness[ ,i] <- rich
+  
+  # Calculate evenness
+  even <- as.numeric(as.matrix(estimate_richness(r, measures = "InvSimpson")))
+  evenness[ ,i] <- even
+}
+```
+
+Let’s calculate the mean and standard deviation per sample for observed richness and inverse simpson’s index and store those values in a dataframe.
+```
+# Create a new dataframe to hold the means and standard deviations of richness estimates
+SampleID <- row.names(richness)
+mean <- apply(richness, 1, mean)
+sd <- apply(richness, 1, sd)
+measure <- rep("Richness", nsamp)
+rich_stats <- data.frame(SampleID, mean, sd, measure)
+
+# Create a new dataframe to hold the means and standard deviations of evenness estimates
+SampleID <- row.names(evenness)
+mean <- apply(evenness, 1, mean)
+sd <- apply(evenness, 1, sd)
+measure <- rep("Inverse Simpson", nsamp)
+even_stats <- data.frame(SampleID, mean, sd, measure)
+```
+
+**Now we will combine our estimates for richness and evenness into one dataframe**
+```
+alpha <- rbind(rich_stats, even_stats)
+```
+
+Let’s add the sample metadata into this dataframe using the `merge()` command
+```
+s <- data.frame(sample_data(mydata))
+alphadiv <- merge(alpha, s, by = "SampleID") 
+```
+
+**Finally, we will plot the two alpha diversity measures using a facet**
+
+```
+ggplot(alphadiv, aes(x = SampleID, y = mean)) +
+  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), colour="black", width=.1) +
+  geom_point(size = 2) +
+  facet_wrap(~measure, ncol = 1, scales = "free")
+```
+**Phyloseq also can do this for you**
+```
+plot_richness(mydata, measures="Chao1")
+```
