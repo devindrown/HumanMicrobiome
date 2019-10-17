@@ -16,45 +16,37 @@ library(reshape2)
 library(colorspace)
 library(phyloseq)
 ```
-
-Here is some code to create and change your working directory. Before you run, be sure to chang **MYNAME** to something specific.
-
+# Importing your data
+I've put three data files in a folder in your drive. These are two of the 'mothur' output files and the start of the class metadata file. Here is some code to set your working directory. 
 ```
 # Set working directory
-mainDir <- "C:/Users/microbiome/documents"
-subDir <- "MYNAME"
-
-ifelse(!dir.exists(file.path(mainDir, subDir)), dir.create(file.path(mainDir, subDir)), FALSE)
-setwd(file.path(mainDir, subDir))
+setwd("~/BIOL491.2019.microbe")
 
 # Set plotting theme
 theme_set(theme_bw())
 ```
 
-# Importing your data
 
-I've put four four data files on the Lab/Project Analysis section of Blackboard. You can download the mothur output of our class data there. You should end up with
+ You should see the three files as below in that directory
 
 ```
-microbiome2018.biom
-microbiome2018.metadata.csv
-microbiome2018.shared
-microbiome2018.taxonomy
+BIOL491.2019.metadata.csv
+BIOL491.2019.shared
+BIOL491.2019.taxonomy
 ```
-You want to make sure these end up in the directory you created in the previous steps.
 
 Next, as you learned before you want to import these for use for phyloseq
 
 ```
 # Assign variables for imported data
-sharedfile = "microbiome2018.shared"
-taxfile = "microbiome2018.taxonomy"
+sharedfile = "BIOL491.2019.shared"
+taxfile = "BIOL491.2019.taxonomy"
 
 # Import mothur data
 mothur_data <- import_mothur(mothur_shared_file = sharedfile,
                              mothur_constaxonomy_file = taxfile)
 ```
-
+<!-- COMMENT OUT THIS STEP
 ## Some simple QC
 
 We know that there are a couple of OTUs that are contaminating our samples, so let's remove those before we proceed any further
@@ -67,13 +59,15 @@ allTaxa <- allTaxa[!(allTaxa %in% badOTU)]
 mothur_data_clean = prune_taxa(allTaxa, mothur_data)
 
 ```
+END OF COMMENT
+-->
 ## Metadata
 
 We collected the sample metadata too, next we need to import this.
 
 ```
 # Import sample metadata
-mapfile = "microbiome2018.metadata.csv"
+mapfile = "BIOL491.2019.metadata.csv"
 map <- read.csv(mapfile)
 
 # Convert this dataframe into phyloseq forma
@@ -83,16 +77,16 @@ map <- sample_data(map)
 rownames(map) <- map$SampleID
 
 # Merge mothurdata object with sample metadata
-mb <- merge_phyloseq(mothur_data_clean, map)
+mb <- merge_phyloseq(mothur_data, map)
 ```
 
 If you type `mb` you should see the following output
 
 ```
 phyloseq-class experiment-level object
-otu_table()   OTU Table:         [ 14685 taxa and 192 samples ]
-sample_data() Sample Data:       [ 192 samples by 15 sample variables ]
-tax_table()   Taxonomy Table:    [ 14687 taxa by 6 taxonomic ranks ]
+otu_table()   OTU Table:         [ 8208 taxa and 192 samples ]
+sample_data() Sample Data:       [ 192 samples by 18 sample variables ]
+tax_table()   Taxonomy Table:    [ 8208 taxa by 6 taxonomic ranks ]
 ```
 
 Now we have a phyloseq object called mb. 
@@ -108,15 +102,15 @@ colnames(tax_table(mb)) <- c("Kingdom", "Phylum", "Class",
 
 The complete dataset is too big to really look at all at once.
 
-Pick a Site that you want to work with and create a smaller dataset. You can look in the metadata file to see how the labels are formatted (e.g. SiteA, SiteB)
+Let's start by looking at all the sites within a single home. Pick a house that you want to work with can create a smaller dataset. You houses are identified by the last 4 digits of the ID
+
+```
+myhouse <- subset_samples(mb, House=="ab8a")
+```
+
+While you're making datasets, pick a Site that you want to work with and create a smaller dataset. You can look in the metadata file to see how the labels are formatted (e.g. SiteA, SiteB)
 ```
 mysiteC <- subset_samples(mb, Site=="SiteC")
-```
-
-While you're making datasets, pick a house that you want to work with can create a smaller dataset. You houses are identified by the last 4 digits of the ID
-
-```
-myhouse <- subset_samples(mb, House=="145a")
 ```
 
 # Explore diversity
@@ -132,66 +126,19 @@ Now you have two new datasets, go back to the previous lab, [Phyloseq and R for 
 
 When looking at your site data, you might want to consider these options for plotting your diversity
 
-We can specify a sample variable on which to group/organize samples along the horizontal (x) axis. An experimentally meaningful categorical variable is usually a good choice (e.g. Plate, House)
+We can specify a sample variable on which to group/organize samples along the horizontal (x) axis. An experimentally meaningful categorical variable is usually a good choice (e.g. Plate, House, Source, Type)
 
+For a single house, think about groups of sites
+```
+plot_richness(myhouse, x = "Source", measures="Chao1")
+plot_richness(myhouse, x = "Type", measures="Chao1")
+```
+For a single Site, think about other ways of showing all of the data
 ```
 plot_richness(mysiteC, x = "Plate", measures="Chao1")
 plot_richness(mysiteC, x = "House", measures="Chao1")
 ```
 
-# Introductory stats
-
-## Permanova
-Here is an example of how to run a permanova test using the adonis function in vegan. In this example we are testing the hypothesis that samples from the two different plates have different centroids
-
-```
-# Calculate bray curtis distance matrix
-mysiteC_bray <- phyloseq::distance(mysiteC, method = "bray")
-
-# make a data frame from the sample_data
-sampledf <- data.frame(sample_data(mysiteC))
-
-# Adonis test
-adonis(mysiteC_bray ~ Plate, data = sampledf)
-```
-
-Example output
-```
-Call:
-adonis(formula = mysiteA_bray ~ Plate, data = sampledf) 
-Permutation: free
-Number of permutations: 999
-
-Terms added sequentially (first to last)
-          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)
-Plate      1    0.2244 0.22440 0.78306 0.04169  0.665
-Residuals 18    5.1583 0.28657         0.95831       
-Total     19    5.3827                 1.00000
-```
-This output tells us that our adonis test is not significant (p = 0.665) so we cannot reject the null hypothesis that our samples from different plates have same centroid.
-
-If we had a significant test, then it would be worth running a **Homogeneity of dispersion test**
-
-```
-beta <- betadisper(mysiteC_bray, sampledf$Plate)
-permutest(beta)
-```
-
-Example  output
-```
-Permutation test for homogeneity of multivariate dispersions
-Permutation: free
-Number of permutations: 999
-
-Response: Distances
-          Df  Sum Sq   Mean Sq      F N.Perm Pr(>F)
-Groups     1 0.00067 0.0006744 0.0257    999  0.866
-Residuals 18 0.47307 0.0262816  
-```
-
-Additionally, our betadisper results are not significant, meaning we cannot reject the null hypothesis that our groups have the same dispersions. This means we can be more confident that our adonis result is a real result, and not due to differences in group dispersions
-
-There is a lot more analysis that can be done here. We could test different grouping variables, or we could create a more complex permanova by testing a model that combines multiple variables. We'll get back to that later.
 
 # Sampling complex subsets
 
@@ -219,7 +166,6 @@ mysiteBCD_nmds <- ordinate(
   method = "NMDS", 
   distance = "bray"
 )
-
 ```
 
 Next, we want to plot our results, but we'll use symbols for the different sites and solors for the various houses
@@ -244,64 +190,6 @@ plot_ordination(
 
 ```
 
-## Testing signifcance with two variables
-
-Prepare data
-
-```
-mysiteBCD_bray <- phyloseq::distance(mysiteBCD, method = "bray")
-sampledf <- data.frame(sample_data(mysiteBCD))
-```
-
-We can write a more complex formula as below (typical model formula such as Y ~ A + B*C)
-
-```
-adonis(mysiteBCD_bray ~ House + Site, data = sampledf)
-```
-
-Example output
-
-```
-adonis(formula = mysiteBCD_bray ~ House + Site, data = sampledf) 
-          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
-House      3    1.4630 0.48765  2.4831 0.45750  0.001 ***
-Site       2    0.5564 0.27821  1.4166 0.17400  0.143    
-Residuals  6    1.1783 0.19639         0.36849           
-Total     11    3.1977                 1.00000 
-```
-
-It appears that we can reject the null hypothesis that samples from different house are from the same centroid.
-
-adonis adds the terms of formula sequentially, so it is worth comparing the two orders so that you can be more confident of your results.
-```
-adonis(mysiteBCD_bray ~ Site + House, data = sampledf)
-```
-
-Example output
-```
-adonis(formula = mysiteBCD_bray ~ Site + House, data = sampledf)
-          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)   
-House      3    1.4630 0.48765  2.4831 0.45750  0.002 **
-```
-
-Again, House is significant, so we should move on the final test of homogeneity of dispersions
-
-```
-beta <- betadisper(mysiteBCD_bray, sampledf$House)
-permutest(beta)
-```
-
-Example output
-
-```
-Permutation test for homogeneity of multivariate dispersions
-Response: Distances
-          Df  Sum Sq  Mean Sq      F N.Perm Pr(>F)
-Groups     3 0.04076 0.013586 0.3013    999  0.878
-Residuals  8 0.36068 0.045085
-```
-
-Not significant, so we can be more confident of our earlier results.
 
 ## Plot alpha diversity
 
@@ -413,4 +301,4 @@ gpsf = filter_taxa(gps, function(x) sd(x)/mean(x) > 3.0, TRUE)
 
 # What's next
 
-Now you have lots of code and your head should be full of lots of ideas. Go ahead and start testing.
+Now you have lots of code and your head should be full of lots of ideas. Next week, we'll move on to testing.
