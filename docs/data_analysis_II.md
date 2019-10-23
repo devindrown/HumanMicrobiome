@@ -38,7 +38,8 @@ colnames(tax_table(mb)) <- c("Kingdom", "Phylum", "Class", "Order", "Family", "G
 ```
 Now we have a phyloseq object called mb. 
 
-# To start today, focus on your Single Site Sample, below is an example for Site C
+# Single Site Sample
+To start today, subsample a single site like last week, below is an example for Site C
 
 ```
 mysiteC <- subset_samples(mb, Site=="SiteC")
@@ -349,7 +350,3 @@ Filter the taxa using a cutoff of 3.0 for the Coefficient of Variation
 ```
 gpsf = filter_taxa(gps, function(x) sd(x)/mean(x) > 3.0, TRUE)
 ```
-
-# What's next
-
-Now you have lots of code and your head should be full of lots of ideas. Go ahead and start testing.
