@@ -10,6 +10,8 @@ Labs
 
 * [Data analysis of Human Microbiome](data_analysis)
 
+* [Data analysis of Complex data sets](data_analysis_II)
+
 * [Running Phyloseq on your own computer](microbiome_R)
 
 * [Code snacks for Microbiome Project](project_code_snacks)
