@@ -44,10 +44,16 @@ Now we have a phyloseq object called mb.
 mysiteC <- subset_samples(mb, Site=="SiteC")
 ```
 
+As a shortcut, you can copy your new dataset into a generic container. This will allow you to reuse your visualization code for multiple datasets.
+```
+mydata <- mysiteC
+```
 
 
 # Introductory stats
 
+## Plot
+We'll look at all of our particular site, but color by Sequencing `Plate`
 ```
 # Calculate
 mydata_pcoa_bray <- ordinate(
@@ -63,41 +69,41 @@ plot_ordination(
   color = "Plate"
 ) + 
   geom_point(aes(color = Plate), alpha = 0.7, size = 4)
-
+```
 
 ## Permanova
 Here is an example of how to run a permanova test using the adonis function in vegan. In this example we are testing the hypothesis that samples from the two different plates have different centroids
 
 ```
 # Calculate bray curtis distance matrix
-mysiteC_bray <- phyloseq::distance(mysiteC, method = "bray")
+mydata_bray <- phyloseq::distance(mydata, method = "bray")
 
 # make a data frame from the sample_data
-sampledf <- data.frame(sample_data(mysiteC))
+sampledf <- data.frame(sample_data(mydata))
 
 # Adonis test
-adonis(mysiteC_bray ~ Plate, data = sampledf)
+adonis(mydata_bray ~ Plate, data = sampledf)
 ```
 
 Example output
 ```
 Call:
-adonis(formula = mysiteA_bray ~ Plate, data = sampledf) 
+adonis(formula = mydata_bray ~ Plate, data = sampledf) 
 Permutation: free
 Number of permutations: 999
 
 Terms added sequentially (first to last)
           Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)
-Plate      1    0.2244 0.22440 0.78306 0.04169  0.665
-Residuals 18    5.1583 0.28657         0.95831       
-Total     19    5.3827                 1.00000
+Plate      1    0.2964 0.29644 0.97378 0.05132   0.43
+Residuals 18    5.4795 0.30442         0.94868       
+Total     19    5.7760                 1.00000
 ```
-This output tells us that our adonis test is not significant (p = 0.665) so we cannot reject the null hypothesis that our samples from different plates have same centroid.
+This output tells us that our adonis test is not significant (p = 0.43) so we cannot reject the null hypothesis that our samples from different plates have same centroid.
 
-If we had a significant test, then it would be worth running a **Homogeneity of dispersion test**
+If we had a significant test, then it would be worth running a **Homogeneity of dispersion test** Go ahead and run it now
 
 ```
-beta <- betadisper(mysiteC_bray, sampledf$Plate)
+beta <- betadisper(mydata_bray, sampledf$Plate)
 permutest(beta)
 ```
 
@@ -109,8 +115,8 @@ Number of permutations: 999
 
 Response: Distances
           Df  Sum Sq   Mean Sq      F N.Perm Pr(>F)
-Groups     1 0.00067 0.0006744 0.0257    999  0.866
-Residuals 18 0.47307 0.0262816  
+Groups     1 0.00291 0.0029126 0.1134    999  0.711
+Residuals 18 0.46214 0.0256745  
 ```
 
 Additionally, our betadisper results are not significant, meaning we cannot reject the null hypothesis that our groups have the same dispersions. This means we can be more confident that our adonis result is a real result, and not due to differences in group dispersions
