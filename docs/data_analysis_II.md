@@ -133,9 +133,16 @@ mysitelist = c("SiteB","SiteC","SiteD")
 myhouselist = c("3a4c","4226","3f92","415e")
 ```
 
+If you need to find a list of house IDs, then you can use the following command
+```
+print(unique(map$House))
+```
+The same command works for $Site
+
+
 Next, create a subset as before, but with some masking
 ```
-mysiteBCD <- subset_samples(mb, ((Site %in% mysitelist) & (House %in% myhouselist)))
+mycomplexdata <- subset_samples(mb, ((Site %in% mysitelist) & (House %in% myhouselist)))
 ```
 
 ## Ordination with two variables
@@ -144,8 +151,8 @@ With this more complete dataset, you can create an ordination plot, here we'll u
 
 ```
 #Ordinate
-mysiteBCD_nmds <- ordinate(
-  physeq = mysiteBCD, 
+mycomplexdata_nmds <- ordinate(
+  physeq = mycomplexdata, 
   method = "NMDS", 
   distance = "bray"
 )
@@ -160,11 +167,11 @@ Next, we want to plot our results, but we'll use symbols for the different sites
 house_colors <- rainbow_hcl(length(unique(myhouselist)))
 
 plot_ordination(
-  physeq = mysiteBCD,
-  ordination = mysiteBCD_nmds,
+  physeq = mycomplexdata,
+  ordination = mycomplexdata_nmds,
   color = "House",
   shape = "Site",
-  title = "NMDS of mysiteBCD bacterial Communities"
+  title = "NMDS of mycomplexdata bacterial Communities"
 ) + 
   scale_color_manual(values = house_colors
   ) +
@@ -179,45 +186,45 @@ plot_ordination(
 Prepare data
 
 ```
-mysiteBCD_bray <- phyloseq::distance(mysiteBCD, method = "bray")
-sampledf <- data.frame(sample_data(mysiteBCD))
+mycomplexdata_bray <- phyloseq::distance(mycomplexdata, method = "bray")
+sampledf <- data.frame(sample_data(mycomplexdata))
 ```
 
 We can write a more complex formula as below (typical model formula such as Y ~ A + B*C)
 
 ```
-adonis(mysiteBCD_bray ~ House + Site, data = sampledf)
+adonis(mycomplexdata_bray ~ House + Site, data = sampledf)
 ```
 
 Example output
 
 ```
-adonis(formula = mysiteBCD_bray ~ House + Site, data = sampledf) 
-          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)    
-House      3    1.4630 0.48765  2.4831 0.45750  0.001 ***
-Site       2    0.5564 0.27821  1.4166 0.17400  0.143    
-Residuals  6    1.1783 0.19639         0.36849           
-Total     11    3.1977                 1.00000 
+adonis(formula = mycomplexdata_bray ~ House + Site, data = sampledf) 
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)  
+House      3    1.9064 0.63545  2.5398 0.47278  0.014 *
+Site       2    0.6247 0.31234  1.2484 0.15492  0.249  
+Residuals  6    1.5012 0.25019         0.37229         
+Total     11    4.0322                 1.00000
 ```
 
 It appears that we can reject the null hypothesis that samples from different house are from the same centroid.
 
 adonis adds the terms of formula sequentially, so it is worth comparing the two orders so that you can be more confident of your results.
 ```
-adonis(mysiteBCD_bray ~ Site + House, data = sampledf)
+adonis(mycomplexdata_bray ~ Site + House, data = sampledf)
 ```
 
 Example output
 ```
-adonis(formula = mysiteBCD_bray ~ Site + House, data = sampledf)
+adonis(formula = mycomplexdata_bray ~ Site + House, data = sampledf)
           Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)   
-House      3    1.4630 0.48765  2.4831 0.45750  0.002 **
+House      3    1.9064 0.63545  2.5398 0.47278  0.016 *
 ```
 
 Again, House is significant, so we should move on the final test of homogeneity of dispersions
 
 ```
-beta <- betadisper(mysiteBCD_bray, sampledf$House)
+beta <- betadisper(mycomplexdata_bray, sampledf$House)
 permutest(beta)
 ```
 
@@ -227,18 +234,18 @@ Example output
 Permutation test for homogeneity of multivariate dispersions
 Response: Distances
           Df  Sum Sq  Mean Sq      F N.Perm Pr(>F)
-Groups     3 0.04076 0.013586 0.3013    999  0.878
-Residuals  8 0.36068 0.045085
+Groups     3 0.01769 0.005896 0.0946    999  0.852
+Residuals  8 0.49889 0.062361
 ```
 
 Not significant, so we can be more confident of our earlier results.
 
 ## Plot alpha diversity
 
-Heere we'll divide up the X axis by Site and then color each house differently
+Here we'll divide up the X axis by Site and then color each house differently
 
 ```
-plot_richness(mysiteBCD, x = "Site", color = "House", measures="Chao1")
+plot_richness(mycomplexdata, x = "Site", color = "House", measures="Chao1")
 ```
 
 ## Complex bar plots with this kind of data
@@ -246,64 +253,66 @@ plot_richness(mysiteBCD, x = "Site", color = "House", measures="Chao1")
 Transform to relative abundances
 
 ```
-relmydata = transform_sample_counts(mysiteBCD,function(x) 100 * x / sum(x))
+relmydata = transform_sample_counts(mycomplexdata,function(x) 100 * x / sum(x))
 ```
 
-You probably don't want to look at all of your data at once. Here we are looking at the Phylum level and filtering out anything less than 1%. You might want to do something else for your own dataset.
+You probably don't want to look at all of your data at once. Here we are looking at the Order level and filtering out anything less than 5%. You might want to do something else for your own dataset.
 
 ```
-relmydata_phylum <- relmydata %>%
-  tax_glom(taxrank = "Phylum") %>%                     # group at Phylum level
-  psmelt() %>%                                         # Melt to long format
-  filter(Abundance > 1) %>%                         # Filter out low abundance taxa
-  arrange(Phylum)                                   # Sort data frame alphabetically by Phylum
+relmydata_order <- relmydata %>%
+  tax_glom(taxrank = "Order") %>%
+  psmelt() %>%
+  filter(Abundance > 5) %>%
+  arrange(Order)
 ```
 
-Pick some colors based on the phylum data (you can do deeper if you choose)
-
+Pick some colors based on the Order data (you can do deeper if you choose). You can use your old code or if you'd like to explore some other colors, try this code, and then look at the names.
 ```
-phylum_colors <- diverge_hcl(length(unique(relmydata_phylum$Phylum)))
+hcl_palettes(plot = TRUE)
 ```
-
+If you like a palette under `Qualitative`, then you can pick a new color palette and swap out `diverge_hcl` with the alternative name `qualitative_hcl` and specify the palette
+```
+order_colors <- qualitative_hcl(length(unique(relmydata_order$Order)), palette = "Dark 3")
+```
 Plot **Sites** across the **X axis** and make a separate **Row** for each **house**
 
 ```
-ggplot(relmydata_phylum, aes(x = Site, y = Abundance, fill = Phylum)) + 
+ggplot(relmydata_order, aes(x = Site, y = Abundance, fill = Order)) + 
   facet_grid(House~.) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = phylum_colors) +
+  scale_fill_manual(values = order_colors) +
   # Remove x axis title
   theme(axis.title.x = element_blank()) + 
-  ylab("Relative Abundance (Phylum > 1%) \n") +
+  ylab("Relative Abundance (Order > 5%) \n") +
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
-  ggtitle("Composition, Phylum")
+  ggtitle("Composition, Order")
 ```
 
 What if you want to compare in the other dimension? Try this:
 
 ```
-ggplot(relmydata_phylum, aes(x = House, y = Abundance, fill = Phylum)) + 
+ggplot(relmydata_order, aes(x = House, y = Abundance, fill = Order)) + 
   facet_grid(Site~.) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = phylum_colors) +
+  scale_fill_manual(values = order_colors) +
   # Remove x axis title
   theme(axis.title.x = element_blank()) + 
-  ylab("Relative Abundance (Phylum > 1%) \n") +
+  ylab("Relative Abundance (Order > 5%) \n") +
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
-  ggtitle("Composition, Phylum")
+  ggtitle("Composition, Order")
 ```
 
-Finally, explore differences at the Phylum level with this plot (note the `x = Phylum`)
+Finally, explore differences at the Order level with this plot (note the `x = Order`)
 ```
-ggplot(relmydata_phylum, aes(x = Phylum, y = Abundance, fill = Phylum)) + 
+ggplot(relmydata_order, aes(x = Order, y = Abundance, fill = Order)) + 
   facet_grid(House ~ Site) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = phylum_colors) +
+  scale_fill_manual(values = order_colors) +
   # Remove x axis title
   theme(axis.title.x = element_blank()) + 
-  ylab("Relative Abundance (Phylum > 1%) \n") +
+  ylab("Relative Abundance (Order > 5%) \n") +
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
-  ggtitle("Composition, Phylum")
+  ggtitle("Composition, Order")
 ```
 
 The **`facet_grid`** function controls the formatting as `facet_grid(ROW_variable ~ COLUMN_variable)`
