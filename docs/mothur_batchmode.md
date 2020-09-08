@@ -12,7 +12,7 @@ The beauty of the batch mode is that you can run mothur from your command line w
 
 **To run mothur in batch mode give it the name of the file containing the commands you wish to have executed**
 ```
-mothur.exe mothur_MiSeq_SOP.batch
+mothur mothur_MiSeq_SOP.batch
 ```
 Sit back and wait and let it rip. All of the output is going in a folder called `testrun_batch`
 
