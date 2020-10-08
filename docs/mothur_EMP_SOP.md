@@ -42,7 +42,7 @@ You should verify that you have the databases we used in the previous lab. If yo
 
 ## Starting the program
 
-Now you are ready to start the local version of mothur, you can double click on the `mothur` file
+Now you are ready to start the local version of mothur, you can type `mothur` in the Terminal
 
 **Setup a directory to put all of your output.**
 ```
@@ -90,7 +90,7 @@ make.file(inputdir=./rawdata_neg, type=fastq, prefix=neg.stability)
 
 **Check the stability file**
 
-You'll need to open the file in `notepad` and check the first column. Make sure each sample a short name without spaces or dashes. 
+You'll need to open the file by using the 'Files' window on the right and opening the 'negativeQC' folder, then clicking on the stability file. Check the first column. Make sure each sample a short name without spaces or dashes. 
 
 Remeber, the first column is the name othe sample. The second column is the name of the forward read for that sample and the third columns in the name of the reverse read for that sample.
 
