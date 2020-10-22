@@ -1,9 +1,10 @@
 # Overview
+Data Analysis Part II
+
 Exploring Metadata with your OTU data.
 
-You should have most of the basics firgured out, but to get you started, I've provided a script to load a larger dataset including 386 samples spanning two years of data collection
-
 # Loading dataset
+You should have most of the basics firgured out, but to get you started, I've provided a script to load a larger dataset including 383 samples spanning two years of data collection
 
 1. From the Files window in RStudio, open the 'BIOL491.combined.microbe' folder.
 2. Next open the 'BIOL491.combined.LoadData.R' R-script. This file contains all of the commands to import your data for use with Phyloseq.
@@ -13,38 +14,13 @@ You should have most of the basics firgured out, but to get you started, I've pr
 
 In the Console you can enter `source('~/BIOL491.combined.microbe/BIOL491.combined.LoadData.R')`
 
-```
-#Load libraries
-library(ggplot2)
-library(vegan)
-library(dplyr)
-library(scales)
-library(grid)
-library(reshape2)
-library(colorspace)
-library(phyloseq)
-```
-# Importing your data
-```
-setwd("~/BIOL491.2019.microbe")
-theme_set(theme_bw())
-```
-# Import data for use for phyloseq
-```
-sharedfile = "BIOL491.2019.shared"
-taxfile = "BIOL491.2019.taxonomy"
-mothur_data <- import_mothur(mothur_shared_file = sharedfile, mothur_constaxonomy_file = taxfile)
-```
-# Import sample metadata
-```
-mapfile = "BIOL491.2019.metadata.csv"
-map <- read.csv(mapfile)
-map <- sample_data(map)
-rownames(map) <- map$SampleID
-mb <- merge_phyloseq(mothur_data, map)
-colnames(tax_table(mb)) <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus")
-```
-Now we have a phyloseq object called mb. 
+## Output
+Now we have a number of phyloseq objects:
+
+* 'mb' contains the entire dataset with 383 samples including negative controls
+* 'mbQC' excludes the negative controls for a reduced 239 samples
+* 'mb_dirty' includes the entire dataset along with some contaminating OTUs
+
 
 # Single Site Sample
 To start today, subsample a single site like last week, below is an example for Site C
