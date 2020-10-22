@@ -16,9 +16,9 @@ In the Console you can enter `source('~/BIOL491.combined.microbe/BIOL491.combine
 ## Output
 Now we have a number of phyloseq objects:
 
-* 'mb' contains the entire dataset with 383 samples including negative controls
-* 'mbQC' excludes the negative controls for a reduced 239 samples
-* 'mb_dirty' includes the entire dataset along with some contaminating OTUs
+* `mb` contains the entire dataset with 383 samples including negative controls
+* `mbQC` excludes the negative controls for a reduced 239 samples
+* `mb_dirty` includes the entire dataset along with some contaminating OTUs
 
 
 # Single Site Sample
