@@ -4,7 +4,7 @@ Data Analysis Part II
 Exploring Metadata with your OTU data.
 
 # Loading dataset
-You should have most of the basics firgured out, but to get you started, I've provided a script to load a larger dataset including 383 samples spanning two years of data collection
+You should have most of the basics firgured out, but to get you started, I have provided a script to load a larger dataset including 383 samples spanning two years of data collection
 
 From the Files window in RStudio, open the 'BIOL491.combined.microbe' folder.
 
