@@ -10,16 +10,15 @@ You should have most of the basics firgured out, but to get you started, I have 
 2. Next open the `BIOL491.combined.LoadData.R` R-script. This file contains all of the commands to import your data for use with Phyloseq.
 3. Run the `BIOL491.combined.LoadData.R` script by selecting all of the content and hit `Ctrl+Enter`
 
-## shortcut
-
+**Want a shortcut?**
 In the Console you can enter `source('~/BIOL491.combined.microbe/BIOL491.combined.LoadData.R')`
 
 ## Output
 Now we have a number of phyloseq objects:
 
-'mb' contains the entire dataset with 383 samples including negative controls
-'mbQC' excludes the negative controls for a reduced 239 samples
-'mb_dirty' includes the entire dataset along with some contaminating OTUs
+* 'mb' contains the entire dataset with 383 samples including negative controls
+* 'mbQC' excludes the negative controls for a reduced 239 samples
+* 'mb_dirty' includes the entire dataset along with some contaminating OTUs
 
 
 # Single Site Sample
