@@ -41,7 +41,7 @@ trainset9_032012.pds.tax
 
 Now you are ready to start the local version of mothur, Go to the Terminal window and it should look like
 ```
-microbiome@hikita:~$
+mb2021@hikita:~$
 ```
 At the `$` prompt type `mothur`
 
@@ -61,7 +61,7 @@ set.dir(output=./testrun)
 
 # Prepare the custom database
 
-We'll be aligning our sequencings to a currated set of 16s sequences called the Silva database. We'll go more into this later, but for now we want to trim the database down to just the v4 region.
+We'll be aligning our sequencings to a currated set of 16S sequences called the Silva database. We'll go more into this later, but for now we want to trim the database down to just the v4 region.
 
 **Customize database to our region of interest**
 ```
@@ -69,8 +69,10 @@ pcr.seqs(fasta=./silva.bacteria/silva.bacteria.fasta, start=11894, end=25319, ke
 ```
 The output should look something like
 ```
+It took 2 secs to screen 14956 sequences.
+
 Output File Names:
-./testrun\silva.bacteria.pcr.fasta
+/home/mb2021/testrun/silva.bacteria.pcr.fasta
 ```
 
 **Rename the output**
@@ -86,7 +88,7 @@ rename.file(input=INPUT, new=silva.v4.fasta)
 make.contigs(inputdir=./MiSeq_SOP, file=./MiSeq_SOP/stability.files, processors=4)
 ```
 
-You’ll probably get a [WARNING] message, but don’t worry.
+You’ll might get a [WARNING] message, but don’t worry.
 
 **Compare your output with the expected below**
 Output
@@ -102,19 +104,20 @@ Mock    4779
 Total of all groups is 152360
 
 Output File Names:
-/home/microbiome/mothur/testrun/stability.trim.contigs.fasta
-/home/microbiome/mothur/testrun/stability.trim.contigs.qual
-/home/microbiome/mothur/testrun/stability.contigs.report
-/home/microbiome/mothur/testrun/stability.scrap.contigs.fasta
-/home/microbiome/mothur/testrun/stability.scrap.contigs.qual
-/home/microbiome/mothur/testrun/stability.contigs.groups
+/home/mb2021/testrun/stability.trim.contigs.fasta
+/home/mb2021/testrun/stability.trim.contigs.qual
+/home/mb2021/testrun/stability.scrap.contigs.fasta
+/home/mb2021/testrun/stability.scrap.contigs.qual
+/home/mb2021/testrun/stability.contigs.report
+/home/mb2021/testrun/stability.contigs.groups
+
 ```
 
 **Go back to the Files window, click on the `MiSeq_SOP` folder, and then open `stability.files`**
 
 What do you see?  The first column is the name of the sample. The second column is the name of the forward read for that sample and the third columns in the name of the reverse read for that sample.
 
-**Let's see what these sequences look like**
+**Let's see what these sequences look like**, try getting a summary by typing
 ```
 summary.seqs(fasta=current)
 ```
@@ -122,8 +125,8 @@ summary.seqs(fasta=current)
 **Compare your output with the expected below**
 
 ```
-Using /home/microbiome/mothur/testrun/stability.trim.contigs.fasta as input file for the fasta parameter.
-Using 8 processors.
+Using /home/mb2021/testrun/stability.trim.contigs.fasta as input file for the fasta parameter.
+Using 4 processors.
                 Start   End     NBases  Ambigs  Polymer NumSeqs
 Minimum:        1       248     248     0       3       1
 2.5%-tile:      1       252     252     0       3       3810
@@ -134,8 +137,10 @@ Median:         1       252     252     0       4       76181
 Maximum:        1       502     502     249     243     152360
 Mean:   1       252     252     0       4
 # of Seqs:      152360
+
+It took 0 secs to summarize 152360 sequences.
 Output File Names:
-/home/microbiome/mothur/testrun/stability.trim.contigs.summary
+/home/mb2021/testrun/stability.trim.contigs.summary
 ```
 
 **Verify that you have the same number of reads `# of Seqs:      152360`**
@@ -150,24 +155,26 @@ screen.seqs(fasta=current, group=current, maxambig=0, maxlength=275)
 ```
 get.current()
 ```
-mothur remembers your latest fasta file and group file as well as the number of processors you have, so you don’t have to type them in each time. You should see something like this list:
+`mothur` remembers your latest fasta file and group file as well as the number of processors you have, so you don’t have to type them in each time. You should see something like this list:
 
 ```
+Current RAM usage: 0.0926437 Gigabytes. Total Ram: 125.848 Gigabytes.
 Current files saved by mothur:
-fasta=/home/microbiome/mothur/testrun/stability.trim.contigs.good.fasta
-group=/home/microbiome/mothur/testrun/stability.contigs.good.groups
-qfile=/home/microbiome/mothur/testrun/stability.trim.contigs.qual
-contigsreport=/home/microbiome/mothur/testrun/stability.contigs.report
-processors=8
-summary=/home/microbiome/mothur/testrun/stability.trim.contigs.summary
+accnos=/home/mb2021/testrun/stability.trim.contigs.bad.accnos
+fasta=/home/mb2021/testrun/stability.trim.contigs.good.fasta
+group=/home/mb2021/testrun/stability.contigs.good.groups
+qfile=/home/mb2021/testrun/stability.trim.contigs.qual
+contigsreport=/home/mb2021/testrun/stability.contigs.report
+processors=4
+summary=/home/mb2021/testrun/stability.trim.contigs.summary
 
-Current input directory saved by mothur: /home/microbiome/mothur/MiSeq_SOP/
-Current output directory saved by mothur: /home/microbiome/mothur/testrun/
-Current default directory saved by mothur: /home/microbiome/mothur/mothur/
-Current working directory: /home/microbiome/mothur/
+Current input directory saved by mothur: /home/mb2021/MiSeq_SOP/
+Current output directory saved by mothur: /home/mb2021/testrun/
+Current default directory saved by mothur: /usr/local/bin/
+Current working directory: /home/mb2021/
 
 Output File Names:
-/home/microbiome/mothur/testrun/current_files.summary
+/home/mb2021/testrun/current_files.summary
 ```
 
 # Processing improved sequences
@@ -219,12 +226,12 @@ Mean:   1       252     252     0       4
 total # of seqs:        128872
 
 Output File Names:
-/home/microbiome/mothur/testrun/stability.trim.contigs.good.unique.summary
+/home/mb2021/testrun/stability.trim.contigs.good.unique.summary
 ```
 
 # Aligning to the database
 
-Now we need to align our sequences to the reference alignment. You’ve already trimmed the silva database to just the right region of 16s. If you were using a different section, you’d need to do this from scratch. See the MiSeq SOP online for details.
+Now we need to align our sequences to the reference alignment. You’ve already trimmed the silva database to just the right region of 16S. If you were using a different section, you’d need to do this from scratch. See the MiSeq SOP online for details.
 
 **Align your dataset to the database**
 ```
@@ -237,7 +244,7 @@ summary.seqs(count=current)
 ```
 So what does this mean? You'll see that the bulk of the sequences start at position 1968 and end at position 11550. Deviants from the mode positions are likely due to an insertion or deletion at the terminal ends of the alignments. 
 
-To make sure that everything overlaps the same region we'll re-run `screen.seqs` to get sequences that start at or before position 1 and end at or after position 11550. We'll also set the maximum homopolymer length to 8 since there's nothing in the database with a stretch of 9 or more of the same base in a row. 
+To make sure that everything overlaps the same region we'll re-run `screen.seqs` to get sequences that start at or before position 1968 and end at or after position 11550. We'll also set the maximum homopolymer length to 8 since there's nothing in the database with a stretch of 9 or more of the same base in a row. 
 ```
 screen.seqs(fasta=current, count=current, summary=current, start=1968, end=11550, maxhomop=8)
 ```
@@ -313,14 +320,14 @@ summary.seqs(fasta=current, count=current)
                 Start   End     NBases  Ambigs  Polymer NumSeqs
 Minimum:        1       376     249     0       3       1
 2.5%-tile:      1       376     252     0       3       2955
-25%-tile:       1       376     252     0       4       29543
-Median:         1       376     252     0       4       59086
-75%-tile:       1       376     253     0       5       88629
-97.5%-tile:     1       376     253     0       6       115217
-Maximum:        1       376     256     0       8       118171
+25%-tile:       1       376     252     0       4       29544
+Median:         1       376     252     0       4       59087
+75%-tile:       1       376     253     0       5       88630
+97.5%-tile:     1       376     253     0       6       115219
+Maximum:        1       376     256     0       8       118173
 Mean:   1       376     252     0       4
 # of unique seqs:       2489
-total # of seqs:        118171
+total # of seqs:        118173
 ```
 
 Sometimes when we pick a primer set they will amplify other stuff such as 16S rRNA from chloroplasts, and mitochondria.
@@ -335,7 +342,7 @@ Now that everything is classified we want to **remove our undesirables**
 remove.lineage(fasta=current, count=current, taxonomy=current, taxon=Chloroplast-Mitochondria-unknown-Archaea-Eukaryota)
 ```
 
-Also of note is that "unknown" only pops up as a classification if the classifier cannot classify your sequence to one of the domains. If you run summary.seqs you'll see that we now have 2281 unique sequences and a total of 118150 total sequences. This means about 350 of our sequences were in these various groups.
+Also of note is that "unknown" only pops up as a classification if the classifier cannot classify your sequence to one of the domains. If you run `summary.seqs(fasta=current, count=current)`, you'll see that we now have 2469 unique sequences and a total of 118011 total sequences. This means about 20 of our sequences were in these various groups.
 
 **Create an updated taxonomy summary file that reflects these removals**
 ```
