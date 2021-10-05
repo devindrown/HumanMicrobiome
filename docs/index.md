@@ -4,7 +4,7 @@ Labs
 
 * [mothur batchmode](mothur_batchmode)
 
-* [mothur analysis of Human Microbiome](mothur_EMP_SOP)
+* [mothur Class Data Quality Control](mothur_ClassDataQC)
 
 * [Phyloseq and R for analysis and visualization](phyloseq_analysis_visualization)
 
