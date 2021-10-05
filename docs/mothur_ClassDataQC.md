@@ -1,5 +1,5 @@
 # Overview
-Here we will analyze our own data. We'll start with a small set.
+Here we will analyze previous control samples. This includes samples from our DNA extraction and PCR negative template controls from two different years. This is a small set of data that can be run through the bioinformatic pipeline quickly. 
 
 # Getting started
 
