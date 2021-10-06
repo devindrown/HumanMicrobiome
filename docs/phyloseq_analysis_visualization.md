@@ -123,7 +123,9 @@ Output should look like (but contain more values):
 ```
 plot_bar(mydata)
 ```
-- [ ] **Before you move on**, show your plot to your neighbor or the instructor. What does each bar represent? How is each bar divided?
+**Before you move on**, show your plot to your neighbor or the instructor. What does each bar represent? How is each bar divided? 
+Does your plot look like this?
+![Raw Bar Plot](demodata.rawbarplot.png)
 
 
 # Bar plots
@@ -132,7 +134,7 @@ You of course know that your samples had different numbers of reads after the QC
 ```
 relmydata = transform_sample_counts(mydata,function(x) 100 * x / sum(x))
 ```
-Here you’ll divide all the OTU counts by the total sample counts and then multiple by 100. Now your bars will sum to 100% and represent the relative abundance within a sample. Does your plot look like this?
+Here you’ll divide all the OTU counts by the total sample counts and then multiple by 100. Now your bars will sum to 100% and represent the relative abundance within a sample. 
 
 **You can use Phylseq's built in function to make some bar plot**
 ```
