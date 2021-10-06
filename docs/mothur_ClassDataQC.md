@@ -11,7 +11,7 @@ You should verify that you have the databases we used in the previous lab. If yo
 
 **Check the raw data folder**
 
- `rawdata_neg` confirm that you have **12 original data files**
+ `rawdata_neg` confirm that you have **24 original sequence data files**
 
 ```
 2017a1PCRneg_S16_L001_R1_001.fastq
@@ -80,7 +80,7 @@ rename.file(input=./negativeQC/silva.seed_v132.pick.tax, new=silva.seed_v132.EMP
 -->
 # Make contigs
 
-First we need to take the paired-end read data from the MiSeq and join the read 1 and read 2 into a single sequences or contig. For example, you will see two files: ExtractionNEG-B-2017001057_S96_L001_R1_001.fastq and ExtractionNEG-B-2017001057_S96_L001_R2_001.fastq.. The first and all those with R1 correspond to read 1 while the second and all those with R2 correspond to the second or reverse read. These sequences are 250 bp and overlap in the V4 region of the 16S rRNA gene; this region is about 253 bp long.
+First, we need to take the paired-end read data from the MiSeq and join the read 1 and read 2 into a single sequences or contig. For example, you will see two files: `ExtractionNEG-B-2017001057_S96_L001_R1_001.fastq` and `ExtractionNEG-B-2017001057_S96_L001_R2_001.fastq`. The first and all those with R1 correspond to read 1 while the second and all those with R2 correspond to the second or reverse read. These sequences are 250 bp and overlap in the V4 region of the 16S rRNA gene; this region is about 253 bp long.
 
 Last time, you had a file preapred for you that contained all of the raw data files. This time around, you'll be making and editing that file from scratch. Mothur helps to get you started. You give the program a location (directory) and type of file (fastq).
 
@@ -90,17 +90,23 @@ make.file(inputdir=./rawdata_neg, type=fastq, prefix=neg.stability)
 
 **Check the stability file**
 
-You'll need to open the file by using the 'Files' window on the right and opening the 'negativeQC' folder, then clicking on the stability file. Check the first column. Make sure each sample a short name without spaces or dashes. 
+You'll need to open the file by using the 'Files' window on the right and opening the 'negativeQC' folder, then clicking on the stability file. Check the first column. Make sure each sample has a short name without spaces or dashes. 
 
-Remeber, the first column is the name othe sample. The second column is the name of the forward read for that sample and the third columns in the name of the reverse read for that sample.
+Remeber, the first column is the name of the sample. The second column is the name of the forward read for that sample and the third columns in the name of the reverse read for that sample.
 
 **Combine our two sets of reads for each sample and then to combine the data from all of the samples**
 
 ```
-make.contigs(inputdir=./rawdata_neg, file=./negativeQC/neg.stability.files, processors=8)
+make.contigs(inputdir=./rawdata_neg, file=./negativeQC/neg.stability.files, processors=4)
 ```
 
 **Q1: Report how many sequences are in each group**
+
+| 2017A1 PCRNEG  | 2017A2 PCRNEG | 2017A DNANEG   | 2017B1 PCRNEG      | 2017B2 PCRNEG      | 2017B DNANEG |
+|----------------|---------------|----------------|--------------------|--------------------|--------------|
+|                |               |                |                    |                    |              |
+| 2018A PCRNEG12 | 2018A PCRNEG  | 2018B PCRNEG12 | 2018B HOUSE DNANEG | 2018B HOUSE PCRNEG | 2018B PCRNEG |
+|                |               |                |                    |                    |              |
 
 **Determine the distributions of these sequences**
 ```
