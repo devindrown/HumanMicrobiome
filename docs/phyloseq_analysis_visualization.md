@@ -210,7 +210,7 @@ One of the best exploratory analyses for amplicon data is unconstrained ordinati
 
 ```
 # Calculate
-mydata_pcoa_bray <- ordinate(
+mydata_nmds_bray <- ordinate(
   physeq = mydata, 
   method = "NMDS",
   #  weight=TRUE,
@@ -219,8 +219,8 @@ mydata_pcoa_bray <- ordinate(
 # Plot
 plot_ordination(
   physeq = mydata,
-  ordination = mydata_pcoa_bray,
-  title = "PCoA of mydata (bray)",
+  ordination = mydata_nmds_bray,
+  title = "NMDS of mydata (bray)",
   color = "year",
   shape = "type"
 ) + 
