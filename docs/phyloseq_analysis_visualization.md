@@ -42,7 +42,7 @@ mothur_data <- import_mothur(mothur_shared_file = sharedfile,
                              mothur_constaxonomy_file = taxfile)
 ```
 
-The sample metadata is just a basic csv with columns for sample attributes. Here is a preview of what the sample metadata looks like.
+The sample metadata is just a basic `.csv` with columns for sample attributes. Here is a preview of what the sample metadata looks like.
 
 ```
 SampleID	House	Site	Type
@@ -61,7 +61,10 @@ mapfile = "demodataR.csv"
 # Import sample metadata
 map <- read.csv(mapfile)
 
-# Convert this dataframe into phyloseq forma
+# Convert year into categorical factor
+map$year <- as.factor(map$year)
+
+# Convert this dataframe into phyloseq format
 map <- sample_data(map)
 
 # Assign rownames to be Sample ID's
@@ -79,9 +82,9 @@ If you type `moth_merge` you should see the following output
 ```
 > moth_merge
 phyloseq-class experiment-level object
-otu_table()   OTU Table:         [ 213 taxa and 12 samples ]
+otu_table()   OTU Table:         [ 395 taxa and 12 samples ]
 sample_data() Sample Data:       [ 12 samples by 3 sample variables ]
-tax_table()   Taxonomy Table:    [ 213 taxa by 6 taxonomic ranks ]
+tax_table()   Taxonomy Table:    [ 395 taxa by 6 taxonomic ranks ]
 ```
 
 Now we have a phyloseq object called moth.merge. 
@@ -115,8 +118,8 @@ sample_sums(mydata)
 
 Output should look like (but contain more values):
 ```
-ExtractionNEGA ExtractionNEGB    PCRNEGSetA1    PCRNEGSetA2    PCRNEGSetB1    PCRNEGSetB2
-          5108          71128          13710           4192          53655          12605
+    2017a1PCRneg     2017a2PCRneg      2017aDNAneg     2017b1PCRneg 
+           13712             4205             5113            53672
 ```
 **Plot it**
 ```
@@ -230,7 +233,7 @@ Estimating alpha diversity of microbial communities is problematic no matter wha
 ```
 min_lib <- min(sample_sums(mydata))
 ```
-We will subsample to 4192, the minimum number of reads. We will repeat this 100 times and average the diversity estimates from each trial.
+We will subsample to 4205, the minimum number of reads. We will repeat this 100 times and average the diversity estimates from each trial.
 
 **Initialize matrices to store richness and evenness estimates**
 ```
