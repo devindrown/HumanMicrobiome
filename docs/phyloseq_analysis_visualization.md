@@ -1,5 +1,5 @@
 # Overview
-Here we will analyze out small dataset in R and produce some visualizations
+Here we will visualize our small dataset in R.
 
 
 Most of these instructions are modified from:
@@ -22,7 +22,7 @@ library(ape)
 
 ```
 # Set working directory
-setwd("~/demodataR2019")
+setwd("~/demodataR")
 
 # Set plotting theme
 theme_set(theme_bw())
