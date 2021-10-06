@@ -44,15 +44,11 @@ mothur_data <- import_mothur(mothur_shared_file = sharedfile,
 
 The sample metadata is just a basic `.csv` with columns for sample attributes. Here is a preview of what the sample metadata looks like.
 
-```
-SampleID	House	Site	Type
-ExtractionNEGA	NONE	NEG	QC
-ExtractionNEGB	NONE	NEG	QC
-PCRNEGSetA1	NONE	NEG	QC
-PCRNEGSetA2	NONE	NEG	QC
-PCRNEGSetB1	NONE	NEG	QC
-PCRNEGSetB2	NONE	NEG	QC
-```
+| SampleID     | year | type |
+|--------------|------|------|
+| 2017a1PCRneg | 2017 | PCR  |
+| 2017a2PCRneg | 2017 | PCR  |
+| 2017aDNAneg  | 2017 | DNA  |
 
 As you can see, there is one column called SampleID with the names of each of the samples. The remaining columns contain information on the sampling conditions related to each sample. The only formatting required to merge the sample data into a phyloseq object is that the rownames must match the sample names in your shared and taxonomy files.
 
@@ -108,6 +104,8 @@ colnames(tax_table(moth_merge)) <- c("Kingdom", "Phylum", "Class",
 mydata <- merge_phyloseq(moth_merge)
 ```
 
+At this point you should have a Data object called `mydata` in the **Environment** panel. This object should be a Formal *class phyloseq*.
+
 # Basic info and plots
 
 **Calculate the number of reads per sample**
@@ -125,6 +123,8 @@ Output should look like (but contain more values):
 ```
 plot_bar(mydata)
 ```
+- [ ] **Before you move on**, show your plot to your neighbor or the instructor. What does each bar represent? How is each bar divided?
+
 
 # Bar plots
 
@@ -132,7 +132,7 @@ You of course know that your samples had different numbers of reads after the QC
 ```
 relmydata = transform_sample_counts(mydata,function(x) 100 * x / sum(x))
 ```
-Here you’ll divide all the OTU counts by the total sample counts and then multiple by 100. Now your bars will sum to 100% and represent the relative abundance within a sample.
+Here you’ll divide all the OTU counts by the total sample counts and then multiple by 100. Now your bars will sum to 100% and represent the relative abundance within a sample. Does your plot look like this?
 
 **You can use Phylseq's built in function to make some bar plot**
 ```
