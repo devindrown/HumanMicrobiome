@@ -212,8 +212,8 @@ One of the best exploratory analyses for amplicon data is unconstrained ordinati
 # Calculate
 mydata_pcoa_bray <- ordinate(
   physeq = mydata, 
-  method = "PCoA",
-#  weight=TRUE,
+  method = "NMDS",
+  #  weight=TRUE,
   distance = "bray"
 )
 # Plot
@@ -221,9 +221,10 @@ plot_ordination(
   physeq = mydata,
   ordination = mydata_pcoa_bray,
   title = "PCoA of mydata (bray)",
-  color = "SampleID"
+  color = "year",
+  shape = "type"
 ) + 
-  geom_point(aes(color = SampleID), alpha = 0.7, size = 4)
+  geom_point(aes(color = year), alpha = 0.7, size = 4)
 ```
 
 # Alpha Diversity
