@@ -100,6 +100,8 @@ Remeber, the first column is the name of the sample. The second column is the na
 make.contigs(inputdir=./rawdata_neg, file=./negativeQC/neg.stability.files, processors=4)
 ```
 
+The output of the `make.contigs` command will provide a Group count. This is the the number of sequences associated with each sample.
+
 **Q1: Report how many sequences are in each group**
 
 | 2017A1 PCRNEG  | 2017A2 PCRNEG | 2017A DNANEG   | 2017B1 PCRNEG      | 2017B2 PCRNEG      | 2017B DNANEG |
