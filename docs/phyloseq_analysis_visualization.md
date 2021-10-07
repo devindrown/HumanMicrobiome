@@ -9,6 +9,7 @@ Most of these instructions are modified from:
 
 ```
 #Load libraries
+library(tidyverse)
 library(ggplot2)
 library(vegan)
 library(dplyr)
