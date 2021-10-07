@@ -130,17 +130,18 @@ Does your plot look like this?
 
 # Bar plots
 
-You of course know that your samples had different numbers of reads after the QC, so you should convert your dataset to relative abundances. Use this command and create a new dataset
+Of course, you know that your samples had different numbers of reads after the QC, so you should convert your dataset to relative abundances. Use this command and create a new dataset
 ```
 relmydata = transform_sample_counts(mydata,function(x) 100 * x / sum(x))
 ```
 Here you’ll divide all the OTU counts by the total sample counts and then multiple by 100. Now your bars will sum to 100% and represent the relative abundance within a sample. 
 
-**You can use Phylseq's built in function to make some bar plot**
+You can use Phylseq's built in function to color your bar plot
 ```
 plot_bar(relmydata,fill="Class")
 ```
-Here you're plotting all the OTUs colored by Class. This can get pretty confusing pretty quickly. So you can use the following code to pull together some of the OTUs by whatever level you're intereseted in
+The above command is plotting all the OTUs colored by Class. This can get pretty confusing pretty quickly. You can use the below code to pull together some of the OTUs by whatever taxonomic level you're intereseted in.
+
 ```
 relmydata_phylum <- relmydata %>%
   tax_glom(taxrank = "Phylum") %>%                     # group at Phylum level
@@ -148,7 +149,7 @@ relmydata_phylum <- relmydata %>%
   filter(Abundance > 1) %>%                         # Filter out low abundance taxa
   arrange(Phylum)                                   # Sort data frame alphabetically by Phylum
 ```
-Here we are looking at the Phylum level and filtering out anything less than 1%
+Here, we are combining at the **Phylum** level and filtering out any phylum that is represented less than 1%
 
 Next we plot the results
 ```
@@ -162,10 +163,12 @@ ggplot(relmydata_phylum, aes(x = SampleID, y = Abundance, fill = Phylum)) +
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
   ggtitle("Composition, Phylum")
 ```
+Does your plot look like this?
+![Phylum Bar Plot](demodata.phylumbarplot.png)
 
 **Keep digging deeper into the data**
 
-Let's look at class and family level
+Now, let's look at class and family level. Below is code to combine the OTUs at each of those levels.
 ```
 relmydata_class <- relmydata %>%
   tax_glom(taxrank = "Class") %>% 
@@ -179,13 +182,11 @@ relmydata_family <- relmydata %>%
   filter(Abundance > 1) %>% 
   arrange(Family)            
 ```
-Create some pretty colors for your categories
+Here is another exmaples to create some pretty color pallets for your categories.  There are lots more!
 ```
-class_colors <- diverge_hcl(length(unique(relmydata_class$Class)))
-family_colors <- rainbow_hcl(length(unique(relmydata_family$Family)))
+class_colors <- rainbow_hcl(length(unique(relmydata_class$Class)))
 ```
-
-Finally, you can print each separately
+Finally, you can plot each level separately. First **Class**
 ```
 ggplot(relmydata_class, aes(x = SampleID, y = Abundance, fill = Class)) + 
   geom_bar(stat = "identity") +
@@ -196,10 +197,12 @@ ggplot(relmydata_class, aes(x = SampleID, y = Abundance, fill = Class)) +
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
   ggtitle("Composition, Class") 
 ```
+and now by **Family**
+In this case, we've defined the color directly in the `ggplot` command (see the `scale_fill_discrete_qualitative`). This is another alternative method.
 ```
 ggplot(relmydata_family, aes(x = SampleID, y = Abundance, fill = Family)) + 
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = family_colors) +
+  scale_fill_discrete_qualitative(palette = "Dark 3") +
   # Remove x axis title
   theme(axis.title.x = element_blank()) + 
   ylab("Relative Abundance (Family > 1%) \n") +
@@ -207,17 +210,22 @@ ggplot(relmydata_family, aes(x = SampleID, y = Abundance, fill = Family)) +
   ggtitle("Composition, Family")
 ```
 
-# Ordinations
-One of the best exploratory analyses for amplicon data is unconstrained ordinations. Phyloseq can compute these in two simple steps
+**Before you move on**, show your plot to your neighbor or the instructor. What does each bar represent? How is each bar divided? 
 
+# Ordinations
+One of the best exploratory analyses for amplicon data is an ordinations to visualize the beta diversity. Phyloseq can compute these in two simple steps. You calculate the distances between all your points, then you plot that data.
+
+Caculation
 ```
 # Calculate
 mydata_nmds_bray <- ordinate(
   physeq = mydata, 
   method = "NMDS",
-  #  weight=TRUE,
   distance = "bray"
 )
+````
+Plotting
+````
 # Plot
 plot_ordination(
   physeq = mydata,
