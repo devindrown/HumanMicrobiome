@@ -315,7 +315,14 @@ ggplot(alphadiv, aes(x = SampleID, y = mean)) +
   geom_point(size = 2) +
   facet_wrap(~measure, ncol = 1, scales = "free")
 ```
-**Phyloseq also can do this for you**
+*Phyloseq can also do the hard work for you with a one line code*
 ```
+plot_richness(mydata, measures = "InvSimpson")
+```
+There are many metrics built into Phyloseq
+```
+# Shannon Diveristy
+plot_richness(mydata,measures = "Shannon")
+# Chao1 measure
 plot_richness(mydata, measures="Chao1")
 ```
