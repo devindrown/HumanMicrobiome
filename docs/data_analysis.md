@@ -66,11 +66,12 @@ plot_richness(mysiteC, x = "House", measures="Chao1")
 
 If you'd like to sample more than one site at a time or more than one house you can do that in the following way
 
-Create some lists, each time in enclosed in double quotes `"` and separated by a comma `,`
+Create some lists, each item is enclosed in double quotes `"` and separated by a comma `,`
 ```
 mysitelist = c("SiteB","SiteC","SiteD")
 myhouselist = c("3a4c","4226","3f92","415e")
 ```
+**Note, the above houses do not exist. You will have to pick some from the full data set**
 
 Next, create a subset as before, but with some masking
 ```
