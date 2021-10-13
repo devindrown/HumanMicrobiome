@@ -1,8 +1,8 @@
 # Data Analysis
 Here you will start to explore your own dataset. You have already aquired some basic skills. You'll apply that knowledge to this new dataset.
 
-# Loading dataset
-To get you started, I have provided a script to load a larger dataset including 383 samples spanning two years of data collection
+# Loading the complete data set
+To get you started, I have provided a script to load a larger data set including 383 samples spanning two years of data collection
 
 1. Create a new RStudio Project (File>New Project). If RStudio asks you to “Save Current Workspace”, you should select “Don’t Save”.  You then want to select Existing Directory. 
 On the next window, set the Project working directory to: `~/BIOL491.combined.microbe`
@@ -45,6 +45,7 @@ Now you have two new datasets, go back to the previous lab, [Phyloseq and R for 
 
 **Show your instructor the set of figures on your house data before you move on to the site data.**
 
+## Optional idea
 When looking at your site data, you might want to consider these options for plotting your diversity
 
 We can specify a sample variable on which to group/organize samples along the horizontal (x) axis. An experimentally meaningful categorical variable is usually a good choice (e.g. Plate, House, Source, Type)
