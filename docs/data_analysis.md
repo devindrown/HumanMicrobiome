@@ -1,7 +1,5 @@
 # Data Analysis
-Here you will start to explore your own dataset.
-
-You have already aquired some basic skills. You'll apply that knowledge to this new dataset.
+Here you will start to explore your own dataset. You have already aquired some basic skills. You'll apply that knowledge to this new dataset.
 
 # Loading dataset
 To get you started, I have provided a script to load a larger dataset including 383 samples spanning two years of data collection
@@ -30,7 +28,7 @@ myhouse <- subset_samples(mbQC, House=="ab8a")
 
 While you're making data sets, pick a Site that you want to work with and create a smaller dataset. You can look in the metadata file to see how the labels are formatted (e.g. SiteA, SiteB)
 ```
-mysiteC <- subset_samples(mb, Site=="SiteC")
+mysite <- subset_samples(mb, Site=="SiteC")
 ```
 
 **HINT** The code you used last week relied on your dataset being in a container called `mydata`. You can copy your own dataset into that temporary container with this short command `mydata <- myhouse` or `mydata <- mysiteC`.
