@@ -1,126 +1,49 @@
-# Overview
+# Data Analysis
 Here you will start to explore your own dataset.
 
-You should have most of the basics firgured out, but to get you started
+You have already aquired some basic skills. You'll apply that knowledge to this new dataset.
 
-# Getting your workspace ready
+# Loading dataset
+To get you started, I have provided a script to load a larger dataset including 383 samples spanning two years of data collection
 
-```
-#Load libraries
-library(ggplot2)
-library(vegan)
-library(dplyr)
-library(scales)
-library(grid)
-library(reshape2)
-library(colorspace)
-library(phyloseq)
-```
-# Importing your data
-I've put three data files in a folder in your drive. These are two of the 'mothur' output files and the start of the class metadata file. Here is some code to set your working directory. 
-```
-# Set working directory
-setwd("~/BIOL491.2019.microbe")
+1. Create a new RStudio Project (File>New Project). If RStudio asks you to “Save Current Workspace”, you should select “Don’t Save”.  You then want to select Existing Directory. 
+On the next window, set the Project working directory to: `~/BIOL491.combined.microbe`
+2. In the Console you can enter `source('~/BIOL491.combined.microbe/BIOL491.combined.LoadData.R')`. You can open this file in your explorer to see all of the data you've loaded.
+3. For today’s analysis, you want to create a new R Script (File>New File>R Script) to hold all of the code you’re writing. This will create an empty document in a new panel. You should go ahead and save this document (File>Save). You can name the file anything you want, but keep the title informative and without space (e.g. `house_analysis.R`). It’s important to end the file in `.R` so that Rstudio knows it’s an R script.
 
-# Set plotting theme
-theme_set(theme_bw())
-```
+## Output
+Now we have a number of phyloseq objects:
 
+* `mb` contains the entire dataset with 383 samples including negative controls
+* `mbQC` excludes the negative controls for a reduced 239 samples
+* `mb_dirty` includes the entire dataset along with some contaminating OTUs
 
- You should see the three files as below in that directory
+# Create your data sets
+
+The complete data set is too big to really look at all at once.
+
+Pick a house that you want to work with can create a smaller data set. You houses are identified by the last 4 digits of the ID. You can get a list of the included houses by typing `unique(map$House)`. Let's start by looking at all the sites within a single home. You can use the code below to put all of the samples from a single house (e.g. `ab8a`) into a container (`myhouse`)
 
 ```
-BIOL491.2019.metadata.csv
-BIOL491.2019.shared
-BIOL491.2019.taxonomy
+myhouse <- subset_samples(mbQC, House=="ab8a")
 ```
 
-Next, as you learned before you want to import these for use for phyloseq
-
-```
-# Assign variables for imported data
-sharedfile = "BIOL491.2019.shared"
-taxfile = "BIOL491.2019.taxonomy"
-
-# Import mothur data
-mothur_data <- import_mothur(mothur_shared_file = sharedfile,
-                             mothur_constaxonomy_file = taxfile)
-```
-<!-- COMMENT OUT THIS STEP
-## Some simple QC
-
-We know that there are a couple of OTUs that are contaminating our samples, so let's remove those before we proceed any further
-
-```
-# Remove bad OTUs
-badOTU = c("Otu00001","Otu00002")
-allTaxa = taxa_names(mothur_data)
-allTaxa <- allTaxa[!(allTaxa %in% badOTU)]
-mothur_data_clean = prune_taxa(allTaxa, mothur_data)
-
-```
-END OF COMMENT
--->
-## Metadata
-
-We collected the sample metadata too, next we need to import this.
-
-```
-# Import sample metadata
-mapfile = "BIOL491.2019.metadata.csv"
-map <- read.csv(mapfile)
-
-# Convert this dataframe into phyloseq forma
-map <- sample_data(map)
-
-# Assign rownames to be Sample ID's
-rownames(map) <- map$SampleID
-
-# Merge mothurdata object with sample metadata
-mb <- merge_phyloseq(mothur_data, map)
-```
-
-If you type `mb` you should see the following output
-
-```
-phyloseq-class experiment-level object
-otu_table()   OTU Table:         [ 8208 taxa and 192 samples ]
-sample_data() Sample Data:       [ 192 samples by 18 sample variables ]
-tax_table()   Taxonomy Table:    [ 8208 taxa by 6 taxonomic ranks ]
-```
-
-Now we have a phyloseq object called mb. 
-
-Next reset the column names of the taxonomy
-```
-colnames(tax_table(mb)) <- c("Kingdom", "Phylum", "Class", 
-  "Order", "Family", "Genus")
-```
-
-
-# Create your samples
-
-The complete dataset is too big to really look at all at once.
-
-Let's start by looking at all the sites within a single home. Pick a house that you want to work with can create a smaller dataset. You houses are identified by the last 4 digits of the ID
-
-```
-myhouse <- subset_samples(mb, House=="ab8a")
-```
-
-While you're making datasets, pick a Site that you want to work with and create a smaller dataset. You can look in the metadata file to see how the labels are formatted (e.g. SiteA, SiteB)
+While you're making data sets, pick a Site that you want to work with and create a smaller dataset. You can look in the metadata file to see how the labels are formatted (e.g. SiteA, SiteB)
 ```
 mysiteC <- subset_samples(mb, Site=="SiteC")
 ```
+
+**HINT** The code you used last week relied on your dataset being in a container called `mydata`. You can copy your own dataset into that temporary container with this short command `mydata <- myhouse` or `mydata <- mysiteC`.
 
 # Explore diversity
 
 Now you have two new datasets, go back to the previous lab, [Phyloseq and R for analysis and visualization](phyloseq_analysis_visualization), and run the following to explore you data.
 
+
 1. Calculate number of reads
 2. Alpha Diversity
 3. Bar Plots of diversity at different scales
-4. Ordination plot
+4. Ordination plot (only complete for the Site data set)
 
 **Show your instructor the set of figures on your house data before you move on to the site data.**
 
