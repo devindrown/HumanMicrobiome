@@ -58,3 +58,119 @@ ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill =
 ```
 ![Raw Bar Plot](mysite.demo.1.png)
 
+
+add classic theme
+```
+ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = mycolors) +
+  ylab(myYaxis) +
+  ggtitle("Community Composition") +
+  theme_classic()
+```
+![Raw Bar Plot](mysite.demo.2.png)
+
+
+Rotate x axis text
+```
+ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = mycolors) +
+  ylab(myYaxis) +
+  ggtitle("Community Composition") +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  )
+```
+![Raw Bar Plot](mysite.demo.3.png)
+
+
+change text size
+```
+ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = mycolors) +
+  ylab(myYaxis) +
+  ggtitle("Community Composition") +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    axis.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 14,face = "bold"),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 14),
+  )
+```
+![Raw Bar Plot](mysite.demo.4.png)
+
+
+add dashed grid lines
+```
+ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = mycolors) +
+  ylab(myYaxis) +
+  ggtitle("Community Composition") +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    axis.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 14,face = "bold"),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 14),
+    axis.ticks = element_blank(),
+    panel.grid = element_line(color = "#b4aea9"),
+    panel.grid.major.y = element_line(linetype = "dashed"),
+  )
+```
+![Raw Bar Plot](mysite.demo.5.png)
+
+Change color palette to using `ggsci` package. You'll need to install the `ggsci` package and load the library before this will work.
+```
+ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
+  geom_bar(stat = "identity") +
+  # scale_fill_manual(values = mycolors) +
+  scale_color_lancet() + scale_fill_lancet() +
+  ylab(myYaxis) +
+  ggtitle("Community Composition") +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    axis.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 14,face = "bold"),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 14),
+    axis.ticks = element_blank(),
+    panel.grid = element_line(color = "#b4aea9"),
+    panel.grid.major.y = element_line(linetype = "dashed"),
+  )
+```
+![Raw Bar Plot](mysite.demo.6.png)
+
+
+Change color palette to Simpsons theme.
+```
+ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
+  geom_bar(stat = "identity") +
+  # scale_fill_manual(values = mycolors) +
+  # scale_color_lancet() + scale_fill_lancet() +
+  scale_color_simpsons() + scale_fill_simpsons() +
+  ylab(myYaxis) +
+  ggtitle("Community Composition") +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    axis.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 14,face = "bold"),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 14),
+    axis.ticks = element_blank(),
+    panel.grid = element_line(color = "#b4aea9"),
+    panel.grid.major.y = element_line(linetype = "dashed"),
+  )
+```
+![Raw Bar Plot](mysite.demo.7.png)
+
+
+
