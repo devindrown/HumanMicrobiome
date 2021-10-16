@@ -59,7 +59,7 @@ ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill =
 ![Raw Bar Plot](mysite.demo.1.png)
 
 
-add classic theme
+You can improve this graph. By adding classic theme (`theme_classic()`), you can remove the gray background on the graph and add some lines for the axes.
 ```
 ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
   geom_bar(stat = "identity") +
@@ -71,7 +71,7 @@ ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill =
 ![Raw Bar Plot](mysite.demo.2.png)
 
 
-Rotate x axis text
+The labels on the horizontal axis are overlapping. You can rotate the text using the `axis.text.x` call in `theme()`.
 ```
 ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
   geom_bar(stat = "identity") +
@@ -86,7 +86,7 @@ ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill =
 ![Raw Bar Plot](mysite.demo.3.png)
 
 
-change text size
+The font size is still quite small. We can increase and standardize the size in the `theme`.
 ```
 ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
   geom_bar(stat = "identity") +
@@ -105,7 +105,7 @@ ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill =
 ![Raw Bar Plot](mysite.demo.4.png)
 
 
-add dashed grid lines
+If you want, you can add dashed grid lines to help see differences better with the `panel.grid` call in `theme()`.
 ```
 ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
   geom_bar(stat = "identity") +
@@ -126,7 +126,7 @@ ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill =
 ```
 ![Raw Bar Plot](mysite.demo.5.png)
 
-Change color palette to using `ggsci` package. You'll need to install the `ggsci` package and load the library before this will work.
+You change the color palette to using `ggsci` package. You'll need to install the `ggsci` package and load the library before this will work. Here we use the two functions `scale_color_lancet()` and `scale_fill_lancet()` to pick colors like the journal *Lancet*.
 ```
 ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
   geom_bar(stat = "identity") +
@@ -148,8 +148,7 @@ ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill =
 ```
 ![Raw Bar Plot](mysite.demo.6.png)
 
-
-Change color palette to Simpsons theme.
+If you'd like to be a little silly, you can change the color palette to Simpsons theme.
 ```
 ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
   geom_bar(stat = "identity") +
