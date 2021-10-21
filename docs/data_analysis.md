@@ -31,7 +31,7 @@ While you're making data sets, pick a Site that you want to work with and create
 mysite <- subset_samples(mb, Site=="SiteC")
 ```
 
-**HINT** The code you used last week relied on your dataset being in a container called `mydata`. You can copy your own dataset into that temporary container with this short command `mydata <- myhouse` or `mydata <- mysiteC`.
+**HINT** The code you used last week relied on your dataset being in a container called `mydata`. You can copy your own dataset into that temporary container with this short command `mydata <- myhouse` or `mydata <- mysite`.
 
 # Explore diversity
 
