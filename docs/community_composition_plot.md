@@ -18,7 +18,7 @@ myFilter <- 5
 
 Now you can create a string variable with all of the information. You'll use this to label, **`myYaxis`** , for your vertical axis.
 ```
-myYaxis <- paste("Relative Abundance (", myTaxLevel, " > ", myfilter, "%) \n")
+myYaxis <- paste("Relative Abundance (", myTaxLevel, " > ", myFilter, "%) \n")
 ```
 Now you are ready to start reorganizing your data. The code below should work for any taxonomic level and any degree of filtering. You should be able to change the values of `myTaxLevel` and `myFilter` and then run the commands below to generate any number of different plots.
 
