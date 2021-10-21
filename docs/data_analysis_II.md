@@ -3,15 +3,12 @@ Data Analysis Part II
 
 Exploring Metadata with your OTU data.
 
-# Loading dataset
-You should have most of the basics firgured out, but to get you started, I have provided a script to load a larger dataset including 383 samples spanning two years of data collection
+# Loading the complete data set
+To get you started, I have provided a script to load a larger data set including 383 samples spanning two years of data collection
 
-1. From the Files window in RStudio, open the `BIOL491.combined.microbe` folder.
-2. Next open the `BIOL491.combined.LoadData.R` R-script. This file contains all of the commands to import your data for use with Phyloseq.
-3. Run the `BIOL491.combined.LoadData.R` script by selecting all of the content and hit `Ctrl+Enter`
+In most cases, your data should still be available in RStudio. However, if you need to reload your project, you can navigate to the `BIOL491.combined.microbe` folder and then click on the *project file* `BIOL491.combined.microbe.Rproj`.
 
-**Want a shortcut?**
-In the Console you can enter `source('~/BIOL491.combined.microbe/BIOL491.combined.LoadData.R')`
+If you want to get a clean start, you can use the broom tool to clear objects from the workspace. After that you can enter `source('~/BIOL491.combined.microbe/BIOL491.combined.LoadData.R')`.
 
 ## Output
 Now we have a number of phyloseq objects:
@@ -20,19 +17,22 @@ Now we have a number of phyloseq objects:
 * `mbQC` excludes the negative controls for a reduced 239 samples
 * `mb_dirty` includes the entire dataset along with some contaminating OTUs
 
+# Create your data sets, a REVIEW from last week
 
-# Single Site Sample
-To start today, subsample a single site like last week, below is an example for Site C
+The complete data set is too big to really look at all at once.
+
+Pick a house that you want to work with can create a smaller data set. You houses are identified by the last 4 digits of the ID. You can get a list of the included houses by typing `unique(map$House)`. Let's start by looking at all the sites within a single home. You can use the code below to put all of the samples from a single house (e.g. `ab8a`) into a container (`myhouse`)
 
 ```
-mysiteC <- subset_samples(mb, Site=="SiteC")
+myhouse <- subset_samples(mbQC, House=="ab8a")
 ```
 
-As a shortcut, you can copy your new dataset into a generic container. This will allow you to reuse your visualization code for multiple datasets.
+While you're making data sets, pick a Site that you want to work with and create a smaller dataset. You can look in the metadata file to see how the labels are formatted (e.g. SiteA, SiteB)
 ```
-mydata <- mysiteC
+mysite <- subset_samples(mb, Site=="SiteC")
 ```
 
+**HINT** The code you used last week relied on your dataset being in a container called `mydata`. You can copy your own dataset into that temporary container with this short command `mydata <- myhouse` or `mydata <- mysite`.
 
 # Introductory stats
 
@@ -56,17 +56,18 @@ plot_ordination(
 ```
 
 ## Permanova
-Here is an example of how to run a permanova test using the adonis function in vegan. In this example we are testing the hypothesis that samples from the two different plates have different centroids
+Here is an example of how to run a permanova test using the `adonis` function in vegan. In this example we are testing the hypothesis that samples from the two different plates have different centroids
 
 ```
-# Calculate bray curtis distance matrix
-mydata_bray <- phyloseq::distance(mydata, method = "bray")
+# Calculate a distance matrix using Bray Curtis distances
+mydata_distance <- phyloseq::distance(mydata, method = "bray")
 
-# make a data frame from the sample_data
+# Create a data frame from the sample_data
 sampledf <- data.frame(sample_data(mydata))
 
-# Adonis test
-adonis(mydata_bray ~ Plate, data = sampledf)
+# Run the Adonis test
+adonis(mydata_distance ~ Plate, data = sampledf)
+
 ```
 
 Example output
@@ -87,11 +88,11 @@ This output tells us that our adonis test is not significant (p = 0.43) so we ca
 If we had a significant test, then it would be worth running a **Homogeneity of dispersion test** Go ahead and run it now
 
 ```
-beta <- betadisper(mydata_bray, sampledf$Plate)
+beta <- betadisper(mydata_distance, sampledf$Plate)
 permutest(beta)
 ```
 
-Example  output
+Example output
 ```
 Permutation test for homogeneity of multivariate dispersions
 Permutation: free
