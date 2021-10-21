@@ -227,30 +227,34 @@ Residuals  8 0.49889 0.062361
 
 Not significant, so we can be more confident of our earlier results.
 
-## Plot alpha diversity
+## Alpha diversity with two variables
 
-Here we'll divide up the X axis by Site and then color each house differently
+We can group the data along the X axis by Site and then use color to distinguish houses.
 
 ```
 plot_richness(mycomplexdata, x = "Site", color = "House", measures="Chao1")
 ```
+*If you wanted to look at differences among house, how might you plot the data?*
 
-## Complex bar plots with this kind of data
-
-Transform to relative abundances
-
-```
-relmydata = transform_sample_counts(mycomplexdata,function(x) 100 * x / sum(x))
-```
+## Community composition bar plots with two variables
 
 You probably don't want to look at all of your data at once. Here we are looking at the Order level and filtering out anything less than 5%. You might want to do something else for your own dataset.
 
 ```
-relmydata_order <- relmydata %>%
-  tax_glom(taxrank = "Order") %>%
-  psmelt() %>%
-  filter(Abundance > 5) %>%
-  arrange(Order)
+myTaxLevel <- "Order"
+myFilter <- 5
+myYaxis <- paste("Relative Abundance (", myTaxLevel, " > ", myFilter, "%) \n")
+```
+Transform to relative abundances
+```
+relmydata = transform_sample_counts(mydata,function(x) 100 * x / sum(x))
+
+relmydata_grouped <- relmydata %>%
+  tax_glom(taxrank = myTaxLevel) %>%        # group at your Taxonomic level
+  psmelt() %>%                              # Melt to long format
+  filter(Abundance > myFilter) %>%          # Filter out low abundance taxa
+  arrange(myTaxLevel)                       # Sort data frame alphabetically by your Taxonomic level
+relmydata_grouped_clean <- subset(relmydata_grouped, relmydata_grouped[[myTaxLevel]] != "Bacteria_unclassified")
 ```
 
 Pick some colors based on the Order data (you can do deeper if you choose). You can use your old code or if you'd like to explore some other colors, try this code, and then look at the names.
@@ -259,52 +263,54 @@ hcl_palettes(plot = TRUE)
 ```
 If you like a palette under `Qualitative`, then you can pick a new color palette and swap out `diverge_hcl` with the alternative name `qualitative_hcl` and specify the palette
 ```
-order_colors <- qualitative_hcl(length(unique(relmydata_order$Order)), palette = "Dark 3")
+my_colors <- qualitative_hcl(length(unique(relmydata_grouped_clean[[myTaxLevel]])), palette = "Dark 3")
 ```
 Plot **Sites** across the **X axis** and make a separate **Row** for each **house**
 
 ```
-ggplot(relmydata_order, aes(x = Site, y = Abundance, fill = Order)) + 
+ggplot(relmydata_grouped_clean, aes(x = Site, y = Abundance, fill = Order)) + 
   facet_grid(House~.) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = order_colors) +
-  # Remove x axis title
+  scale_fill_manual(values = my_colors) +
   theme(axis.title.x = element_blank()) + 
-  ylab("Relative Abundance (Order > 5%) \n") +
+  ylab(myYaxis) +
+  theme_bw()+
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
-  ggtitle("Composition, Order")
+  ggtitle("Community Composition")
 ```
 
 What if you want to compare in the other dimension? Try this:
 
 ```
-ggplot(relmydata_order, aes(x = House, y = Abundance, fill = Order)) + 
+ggplot(relmydata_grouped_clean, aes(x = House, y = Abundance, fill = Order)) + 
   facet_grid(Site~.) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = order_colors) +
-  # Remove x axis title
+  scale_fill_manual(values = my_colors) +
   theme(axis.title.x = element_blank()) + 
-  ylab("Relative Abundance (Order > 5%) \n") +
+  ylab(myYaxis) +
+  theme_bw()+
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
-  ggtitle("Composition, Order")
+  ggtitle("Community Composition")
 ```
 
 Finally, explore differences at the Order level with this plot (note the `x = Order`)
 ```
-ggplot(relmydata_order, aes(x = Order, y = Abundance, fill = Order)) + 
+ggplot(relmydata_grouped_clean, aes(x = Order, y = Abundance, fill = Order)) + 
   facet_grid(House ~ Site) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = order_colors) +
-  # Remove x axis title
+  scale_fill_manual(values = my_colors) +
   theme(axis.title.x = element_blank()) + 
-  ylab("Relative Abundance (Order > 5%) \n") +
+  ylab(myYaxis) +
+  theme_bw()+
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
-  ggtitle("Composition, Order")
+  ggtitle("Community Composition")
 ```
 
-The **`facet_grid`** function controls the formatting as `facet_grid(ROW_variable ~ COLUMN_variable)`
+The **`facet_grid`** function controls the formatting as `facet_grid(ROW_variable ~ COLUMN_variable)`. You can explore your data in many different way.
 
-# Advanced QC
+# Advanced QC, redux
+
+In case you did not comlete this in the previous lab. Here are the instructions again for advance quality control. 
 
 First we want to remove the negative controls from our dataset. You can subsample your data and select only those samples that are not of the QC type
 ```
@@ -336,3 +342,5 @@ Filter the taxa using a cutoff of 3.0 for the Coefficient of Variation
 ```
 gpsf = filter_taxa(gps, function(x) sd(x)/mean(x) > 3.0, TRUE)
 ```
+
+**Now what?** You could use this new data set and explore the impact of reducing some of the noise in your sequence data.
