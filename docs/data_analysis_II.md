@@ -268,7 +268,7 @@ my_colors <- qualitative_hcl(length(unique(relmydata_grouped_clean[[myTaxLevel]]
 Plot **Sites** across the **X axis** and make a separate **Row** for each **house**
 
 ```
-ggplot(relmydata_grouped_clean, aes(x = Site, y = Abundance, fill = Order)) + 
+ggplot(relmydata_grouped_clean, aes_string(x = "Site", y = "Abundance", fill = myTaxLevel)) + 
   facet_grid(House~.) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = my_colors) +
@@ -282,7 +282,7 @@ ggplot(relmydata_grouped_clean, aes(x = Site, y = Abundance, fill = Order)) +
 What if you want to compare in the other dimension? Try this:
 
 ```
-ggplot(relmydata_grouped_clean, aes(x = House, y = Abundance, fill = Order)) + 
+ggplot(relmydata_grouped_clean, aes_string(x = "House", y = "Abundance", fill = myTaxLevel)) + 
   facet_grid(Site~.) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = my_colors) +
@@ -295,7 +295,7 @@ ggplot(relmydata_grouped_clean, aes(x = House, y = Abundance, fill = Order)) +
 
 Finally, explore differences at the Order level with this plot (note the `x = Order`)
 ```
-ggplot(relmydata_grouped_clean, aes(x = Order, y = Abundance, fill = Order)) + 
+ggplot(relmydata_grouped_clean, aes_string(x = myTaxLevel, y = "Abundance", fill = myTaxLevel)) + 
   facet_grid(House ~ Site) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = my_colors) +
