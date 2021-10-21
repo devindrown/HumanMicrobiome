@@ -1,5 +1,4 @@
-# Overview
-Data Analysis Part II
+# Data Analysis Part II
 
 Exploring Metadata with your OTU data.
 
@@ -36,8 +35,8 @@ mysite <- subset_samples(mb, Site=="SiteC")
 
 # Introductory stats
 
-## Plot
-We'll look at all of our particular site, but color by Sequencing `Plate`
+## Plot the data
+We'll look at all of our particular site, but color by sequencing `Plate`. In this case, Plate was just an arbritrary assignment during the library preparation. We do not expect Plate to have a signficiant impact on our sequencing output.
 ```
 # Calculate
 mydata_pcoa_bray <- ordinate(
@@ -55,7 +54,7 @@ plot_ordination(
   geom_point(aes(color = Plate), alpha = 0.7, size = 4)
 ```
 
-## Permanova
+## Test for differences using Permanova
 Here is an example of how to run a permanova test using the `adonis` function in vegan. In this example we are testing the hypothesis that samples from the two different plates have different centroids
 
 ```
@@ -67,7 +66,6 @@ sampledf <- data.frame(sample_data(mydata))
 
 # Run the Adonis test
 adonis(mydata_distance ~ Plate, data = sampledf)
-
 ```
 
 Example output
@@ -83,9 +81,9 @@ Plate      1    0.2964 0.29644 0.97378 0.05132   0.43
 Residuals 18    5.4795 0.30442         0.94868       
 Total     19    5.7760                 1.00000
 ```
-This output tells us that our adonis test is not significant (p = 0.43) so we cannot reject the null hypothesis that our samples from different plates have same centroid.
+This output tells us that our adonis test is not significant (`p = 0.43`). We cannot reject the null hypothesis that our samples from different plates have same centroid.
 
-If we had a significant test, then it would be worth running a **Homogeneity of dispersion test** Go ahead and run it now
+If we had a significant test, then it would be worth running a **Homogeneity of dispersion** test. Go ahead and run it now
 
 ```
 beta <- betadisper(mydata_distance, sampledf$Plate)
@@ -104,7 +102,7 @@ Groups     1 0.00291 0.0029126 0.1134    999  0.711
 Residuals 18 0.46214 0.0256745  
 ```
 
-Additionally, our betadisper results are not significant, meaning we cannot reject the null hypothesis that our groups have the same dispersions. This means we can be more confident that our adonis result is a real result, and not due to differences in group dispersions
+Additionally, our betadispersion results are not significant, meaning we cannot reject the null hypothesis that our groups have the same dispersions. We can be more confident that our adonis result is a real result, and not due to differences in group dispersions.
 
 There is a lot more analysis that can be done here. We could test different grouping variables, or we could create a more complex permanova by testing a model that combines multiple variables. We'll get back to that later.
 
@@ -122,7 +120,7 @@ If you need to find a list of house IDs, then you can use the following command
 ```
 print(unique(map$House))
 ```
-The same command works for $Site
+The same command works for `$Site`
 
 
 Next, create a subset as before, but with some masking
@@ -130,55 +128,56 @@ Next, create a subset as before, but with some masking
 mycomplexdata <- subset_samples(mb, ((Site %in% mysitelist) & (House %in% myhouselist)))
 ```
 
+If you copy this container into `mydata`, then you can reuse some of your previous graphing code.
+```
+mydata <- mycomplexdata
+```
+
 ## Ordination with two variables
 
-With this more complete dataset, you can create an ordination plot, here we'll use an NMDS plot
+With this more complete dataset, you can create an ordination plot, here we'll use an PCoA plot
 
 ```
-#Ordinate
-mycomplexdata_nmds <- ordinate(
-  physeq = mycomplexdata, 
-  method = "NMDS", 
+# Calculate distances
+mydata_ord <- ordinate(
+  physeq = mydata, 
+  method = "PCoA",
   distance = "bray"
 )
-
 ```
 
-Next, we want to plot our results, but we'll use symbols for the different sites and solors for the various houses
+Next, we want to plot our results, but we'll use symbols for the different sites and colors for the various houses
 
 ```
-# Plot 
-
+# Get a list of colors
 house_colors <- rainbow_hcl(length(unique(myhouselist)))
 
+# Plot 
 plot_ordination(
-  physeq = mycomplexdata,
-  ordination = mycomplexdata_nmds,
+  physeq = mydata,
+  ordination = mydata_ord,
   color = "House",
   shape = "Site",
-  title = "NMDS of mycomplexdata bacterial Communities"
+  title = "PCoA of mycomplexdata bacterial Communities"
 ) + 
-  scale_color_manual(values = house_colors
-  ) +
-  #  geom_line() +
-  geom_point(aes(color = House), alpha = 0.7, size = 6) +
-  geom_point(colour = "grey90", size = 1.5) 
-
+  scale_color_manual(values = house_colors) +
+  geom_point(aes(color = House), alpha = 0.7, size = 6)
 ```
 
 ## Testing signifcance with two variables
 
-Prepare data
+Prepare data, this is the same as you did previously
+```
+# Calculate a distance matrix using Bray Curtis distances
+mydata_distance <- phyloseq::distance(mydata, method = "bray")
+# Create a data frame from the sample_data
+sampledf <- data.frame(sample_data(mydata))
+```
+
+We can write a more complex formula as below (typical model formula such as `Y ~ A + B`)
 
 ```
-mycomplexdata_bray <- phyloseq::distance(mycomplexdata, method = "bray")
-sampledf <- data.frame(sample_data(mycomplexdata))
-```
-
-We can write a more complex formula as below (typical model formula such as Y ~ A + B*C)
-
-```
-adonis(mycomplexdata_bray ~ House + Site, data = sampledf)
+adonis(mydata_distance ~ House + Site, data = sampledf)
 ```
 
 Example output
@@ -186,30 +185,33 @@ Example output
 ```
 adonis(formula = mycomplexdata_bray ~ House + Site, data = sampledf) 
           Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)  
-House      3    1.9064 0.63545  2.5398 0.47278  0.014 *
-Site       2    0.6247 0.31234  1.2484 0.15492  0.249  
-Residuals  6    1.5012 0.25019         0.37229         
+House      3    1.9108 0.63695  1.9422 0.40882  0.006 **
+Site       2    0.7955 0.39775  1.2128 0.17019  0.187   
+Residuals  6    1.9677 0.32796         0.42099         
 Total     11    4.0322                 1.00000
 ```
 
-It appears that we can reject the null hypothesis that samples from different house are from the same centroid.
+It appears that we can reject the null hypothesis that samples from different houses are from the same centroid (`p = 0.006`)
 
-adonis adds the terms of formula sequentially, so it is worth comparing the two orders so that you can be more confident of your results.
+**adonis** adds the terms of formula sequentially, so it is worth comparing the two orders so that you can be more confident of your results.
 ```
-adonis(mycomplexdata_bray ~ Site + House, data = sampledf)
+adonis(mydata_distance ~ Site + House, data = sampledf)
 ```
 
 Example output
 ```
-adonis(formula = mycomplexdata_bray ~ Site + House, data = sampledf)
+adonis(formula = mydata_distance ~ Site + House, data = sampledf)
           Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)   
-House      3    1.9064 0.63545  2.5398 0.47278  0.016 *
+Site       2    0.7955 0.39775  1.2128 0.17019  0.198   
+House      3    1.9108 0.63695  1.9422 0.40882  0.004 **
+Residuals  6    1.9677 0.32796         0.42099          
+Total     11    4.6741                 1.00000       
 ```
 
-Again, House is significant, so we should move on the final test of homogeneity of dispersions
+Again, House is significant (`p = 0.004`), so we should move on the final test of homogeneity of dispersions and specify `House` in the dataframe.
 
 ```
-beta <- betadisper(mycomplexdata_bray, sampledf$House)
+beta <- betadisper(mydata_distance, sampledf$House)
 permutest(beta)
 ```
 
