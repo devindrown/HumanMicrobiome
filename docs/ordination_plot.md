@@ -16,7 +16,7 @@ mydata_ord <- ordinate(
   distance = "bray"
 )
 ```
-### Plost distances
+### Plot distances
 Next, we using the `plot_ordination` function to visualizae those distances.
 ```
 plot_ordination(
@@ -26,6 +26,91 @@ plot_ordination(
 ```
 In this example, my plot looks like the one below. All of the samples are colored the same.
 ![Raw Ord Plot](myord.demo.1.png)
+
+In most cases, we are using this kind of plot to visualize the differences among at least two different groups. We can color each of our points by membership in that group using the `color = ` parameter. In this examples, we'll color by sequencing plate (a grouping with a null expectation of differences).
+```
+plot_ordination(
+  physeq = mydata,
+  ordination = mydata_ord,
+  color = "Plate"
+) 
+```
+![Raw Ord Plot](myord.demo.2.png)
+
+Everything is still quite small. If we had a lot of points, it would be quite hard to see overlapping samples. We can fix both of these by increaseing the size (`size = `) and making the points transparent (`alpha = `) within the `geom_point` function of `ggplot`. We will modify the `phyloseq` object with the additional code.
+```
+plot_ordination(
+  physeq = mydata,
+  ordination = mydata_ord,
+  color = "Plate"
+) +
+  geom_point(aes(color = Plate),size=5, alpha = 0.7) +
+  labs(color='Plate') 
+```
+![Raw Ord Plot](myord.demo.3.png)
+
+There may be times when you want to label individual points. This can be done with the `geom_text` function of `ggplot`. In the below example, we'll label each point with the `House` and move the labels horizontally (`hjust`) and vertically (`vjust`) so they don't overlap with the point.
+```
+plot_ordination(
+  physeq = mydata,
+  ordination = mydata_ord,
+  color = "Plate"
+) +
+  geom_point(aes(color = Plate),size=5, alpha = 0.7) +
+  labs(color='Plate')  +
+  geom_text(aes(label = House), size=3, hjust=1.2, vjust=1.2)
+```
+![Raw Ord Plot](myord.demo.4.png)
+
+### Adding an elipse
+To help visualize the clustering of the different groups in our plot, we might want to provide an elipse around each group. We can do this pretty simply withte `stat_ellipse` function. We will assume a multivariate distribution with the parameter `type = norm`. In the below example, we will add the elipse first, and then plot the point on top. 
+```
+plot_ordination(
+  physeq = mydata,
+  ordination = mydata_ord,
+  color = "Plate"
+) +
+  stat_ellipse(geom="polygon",type="norm", alpha=0.1, show.legend=F, aes(fill = Plate)) +
+  geom_point(aes(color = Plate),size=5, alpha = 0.7) +
+  labs(color='Plate')
+```
+![Raw Ord Plot](myord.demo.5.png)
+
+The elipse is pretty wide. Since this is just a visualize aid and we'll do some stats in a moment, let's use the `level =` parameter to shrink that elipse down.
+```
+plot_ordination(
+  physeq = mydata,
+  ordination = mydata_ord,
+  color = "Plate"
+) +
+  stat_ellipse(geom="polygon",type="norm", level=0.75, alpha=0.1, show.legend=F, aes(fill = Plate)) +
+  geom_point(aes(color = Plate),size=5, alpha = 0.7) +
+  labs(color='Plate')
+```
+![Raw Ord Plot](myord.demo.6.png)
+
+### Final clean up
+We can modify this plot with a few more tweaks. If we fix the coordinate system, then the x and y axes will be on the same scale. You can change the color palette to using `ggsci` package. You’ll need to install the ggsci package and load the library before this will work. Here we use the two functions scale_color_lancet() and scale_fill_lancet() to pick colors like the journal Lancet. We're going to get rid of the gray background with `theme_minimal`. Finally, let's standardize the text size with some additional `theme` adjustments.
+```
+plot_ordination(
+  physeq = mydata,
+  ordination = mydata_ord,
+  color = "Plate"
+) +
+  coord_fixed() +
+  stat_ellipse(geom="polygon",type="norm", level=0.75, alpha=0.1, show.legend=F, aes(fill = Plate)) +
+  geom_point(aes(color = Plate),size=5, alpha = 0.7) +
+  labs(color='Plate') +
+  scale_color_lancet() + scale_fill_lancet() +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 14,face = "bold"),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 14),
+  )
+```
+![Raw Ord Plot](myord.demo.7.png)
 
 
 
