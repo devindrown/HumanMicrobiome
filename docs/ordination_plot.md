@@ -112,174 +112,90 @@ plot_ordination(
 ```
 ![Raw Ord Plot](myord.demo.7.png)
 
-
-
-
-
-We will use a series of commands to combine OTU/ASVs by the taxonomic rank. 
-First let's create a variable with the taxonomic rank at which you want to combine OTU/ASVs. We'll call this variable **`myTaxLevel`**. In this example, we'll be combining at the Phylum level.
+### Stats
+As a reminder, all of the above provides a visualization of our data, but does not compare differences between our groups in a statistical framework. Remember you can use the `adonis` test in the `vegan` package to complete this test.
 ```
-myTaxLevel <- "Phylum"
-```
+# Calculate bray curtis distance matrix
+mydata_distance <- phyloseq::distance(mydata, method = "bray")
 
-You should also consider filtering out low abudance groups. We'll call this variable **`myfilter`**. In this example, we'll filter out any group that is present at less than 5% (`< 5%`).
-```
-myFilter <- 5
+# make a data frame from the sample_data
+sampledf <- data.frame(sample_data(mydata))
+
+# Adonis test
+adonis(mydata_distance ~ Plate, data = sampledf)
 ```
 
-Now you can create a string variable with all of the information. You'll use this to label, **`myYaxis`** , for your vertical axis.
+The adonis output makes it clear that there is no reason to reject the null hypothesis, `p > 0.05`.
 ```
-myYaxis <- paste("Relative Abundance (", myTaxLevel, " > ", myFilter, "%) \n")
+Call:
+adonis(formula = mydata_distance ~ Plate, data = sampledf) 
+
+Permutation: free
+Number of permutations: 999
+
+Terms added sequentially (first to last)
+
+          Df SumsOfSqs MeanSqs F.Model      R2 Pr(>F)
+Plate      1    0.5585 0.55846  1.3569 0.11948  0.127
+Residuals 10    4.1156 0.41156         0.88052       
+Total     11    4.6741                 1.00000 
 ```
-Now you are ready to start reorganizing your data. The code below should work for any taxonomic level and any degree of filtering. You should be able to change the values of `myTaxLevel` and `myFilter` and then run the commands below to generate any number of different plots.
 
 
-## Covert to relative abundance and combine
-
-Start by converting the raw count data into relative abundance data as a percent (0 - 100 range). This creates a new data set called **`relmydata`**.
+While this particular test isn't signficant, in general, we would also run the homogeneity of dispersion test
 ```
-relmydata = transform_sample_counts(mydata,function(x) 100 * x / sum(x))
-```
-You've already set up your variables and filters so you can combine your OTU/ASVs. Your combined data will now be in the container called **`relmydata_grouped`**.
-```
-relmydata_grouped <- relmydata %>%
-  tax_glom(taxrank = myTaxLevel) %>%        # group at your Taxonomic level
-  psmelt() %>%                              # Melt to long format
-  filter(Abundance > myFilter) %>%          # Filter out low abundance taxa
-  arrange(myTaxLevel)                       # Sort data frame alphabetically by your Taxonomic level
+beta <- betadisper(mydata_distance, sampledf$Plate)
+permutest(beta)
 ```
 
-We can clean up this data and remove unclassified OTU/ASVs labeled as `Bacteria_unclassified`. Your cleaned data will now be called **`relmydata_grouped_clean`**.
+In this case our output is:
 ```
-relmydata_grouped_clean <- subset(relmydata_grouped, relmydata_grouped[[myTaxLevel]] != "Bacteria_unclassified")
+Permutation test for homogeneity of multivariate dispersions
+Permutation: free
+Number of permutations: 999
+
+Response: Distances
+          Df   Sum Sq   Mean Sq      F N.Perm Pr(>F)
+Groups     1 0.000002 0.0000022 0.0002    999  0.983
+Residuals 10 0.142956 0.0142956
 ```
 
-Next, create a color palette based on the number of groups within your taxonomic level. In this example, we'll use the Viridis palette to pull colors. The colors will be stored in a variable called **`mycolors`**.
+
+### Convex hulls
+If you'd like to draw lines around all the points within a group, you can use `convext hulls` to accomplish this.
+
+We have to do a little extra to get this to work. First you need to install the `ggordiplots` package from Github
 ```
-mycolors <- sequential_hcl(length(unique(relmydata_grouped_clean[[myTaxLevel]])), palette = "viridis")
+# Only have to install packages once
+install.packages("remotes")
+remotes::install_github("jfq3/ggordiplots" )
+# Load library
+library(ggordiplots)
 ```
 
-Finally, we can put this all together and use `ggplot` to graph the data.
+Next, you can use your existing distances stored in `mydata_ord` to run the `gg_ordiplot` function. You have to also specify the variable you'd like using the `groups = ` parameter. We'll take this new `ggplot` object alled `myord` and  
 ```
-ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
-  geom_bar(stat = "identity") +
-  scale_fill_manual(values = mycolors) +
-  ylab(myYaxis) +
-  ggtitle("Community Composition")
+myord <- gg_ordiplot(mydata_ord$vectors, groups = mydata@sam_data$Plate,
+                     # kind = c("ehull"),
+                     ellipse  = FALSE,
+                     label = FALSE,
+                     hull = TRUE,
+                     plot = FALSE,
+) 
 ```
-![Raw Bar Plot](mysite.demo.1.png)
-
-
-You can improve this graph. By adding classic theme (`theme_classic()`), you can remove the gray background on the graph and add some lines for the axes.
+Next we plot this object with a few additional tweaks to color and text size
 ```
-ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
-  geom_bar(stat = "identity") +
-  scale_fill_manual(values = mycolors) +
-  ylab(myYaxis) +
-  ggtitle("Community Composition") +
-  theme_classic()
-```
-![Raw Bar Plot](mysite.demo.2.png)
-
-
-The labels on the horizontal axis are overlapping. You can rotate the text using the `axis.text.x` call in `theme()`.
-```
-ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
-  geom_bar(stat = "identity") +
-  scale_fill_manual(values = mycolors) +
-  ylab(myYaxis) +
-  ggtitle("Community Composition") +
-  theme_classic() +
+myord$plot + 
+  geom_point(size=6) +
+  scale_color_npg() + scale_fill_npg() +
+  labs(color='Plate') +
+  theme(legend.position = "bottom") + 
+  theme_minimal() +
   theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-  )
-```
-![Raw Bar Plot](mysite.demo.3.png)
-
-
-The font size is still quite small. We can increase and standardize the size in the `theme`.
-```
-ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
-  geom_bar(stat = "identity") +
-  scale_fill_manual(values = mycolors) +
-  ylab(myYaxis) +
-  ggtitle("Community Composition") +
-  theme_classic() +
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
     axis.text = element_text(size = 12, face = "bold"),
     axis.title = element_text(size = 14,face = "bold"),
     legend.text = element_text(size = 12),
     legend.title = element_text(size = 14),
   )
 ```
-![Raw Bar Plot](mysite.demo.4.png)
-
-
-If you want, you can add dashed grid lines to help see differences better with the `panel.grid` call in `theme()`.
-```
-ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
-  geom_bar(stat = "identity") +
-  scale_fill_manual(values = mycolors) +
-  ylab(myYaxis) +
-  ggtitle("Community Composition") +
-  theme_classic() +
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-    axis.text = element_text(size = 12, face = "bold"),
-    axis.title = element_text(size = 14,face = "bold"),
-    legend.text = element_text(size = 12),
-    legend.title = element_text(size = 14),
-    axis.ticks = element_blank(),
-    panel.grid = element_line(color = "#b4aea9"),
-    panel.grid.major.y = element_line(linetype = "dashed"),
-  )
-```
-![Raw Bar Plot](mysite.demo.5.png)
-
-You change the color palette to using `ggsci` package. You'll need to install the `ggsci` package and load the library before this will work. Here we use the two functions `scale_color_lancet()` and `scale_fill_lancet()` to pick colors like the journal *Lancet*.
-```
-ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
-  geom_bar(stat = "identity") +
-  # scale_fill_manual(values = mycolors) +
-  scale_color_lancet() + scale_fill_lancet() +
-  ylab(myYaxis) +
-  ggtitle("Community Composition") +
-  theme_classic() +
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-    axis.text = element_text(size = 12, face = "bold"),
-    axis.title = element_text(size = 14,face = "bold"),
-    legend.text = element_text(size = 12),
-    legend.title = element_text(size = 14),
-    axis.ticks = element_blank(),
-    panel.grid = element_line(color = "#b4aea9"),
-    panel.grid.major.y = element_line(linetype = "dashed"),
-  )
-```
-![Raw Bar Plot](mysite.demo.6.png)
-
-If you'd like to be a little silly, you can change the color palette to Simpsons theme.
-```
-ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
-  geom_bar(stat = "identity") +
-  # scale_fill_manual(values = mycolors) +
-  # scale_color_lancet() + scale_fill_lancet() +
-  scale_color_simpsons() + scale_fill_simpsons() +
-  ylab(myYaxis) +
-  ggtitle("Community Composition") +
-  theme_classic() +
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-    axis.text = element_text(size = 12, face = "bold"),
-    axis.title = element_text(size = 14,face = "bold"),
-    legend.text = element_text(size = 12),
-    legend.title = element_text(size = 14),
-    axis.ticks = element_blank(),
-    panel.grid = element_line(color = "#b4aea9"),
-    panel.grid.major.y = element_line(linetype = "dashed"),
-  )
-```
-![Raw Bar Plot](mysite.demo.7.png)
-
-
+![Raw Ord Plot](myord.demo.8.png)
