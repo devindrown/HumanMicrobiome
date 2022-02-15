@@ -1,4 +1,6 @@
-# Install Software
+# Jetson Hackathon 2022 Analysis
+
+## Software list
 * Filtlong (https://github.com/rrwick/Filtlong)
 * Seqtk (https://github.com/lh3/seqtk)
 * Samtools (http://www.htslib.org/download/)
@@ -63,7 +65,7 @@ Pick run1 and enter that below for example, if you color is `RAINBOW`
 SAMPLEID=jetsonhack_RAINBOW_run1_20220207
 ````
 
-##Filter out length, and separate
+## Filter out length, and separate
 
 ### Setup paramters
 ````
@@ -145,8 +147,24 @@ for TRMT in control enrich; do
   samtools index "$MAPPED_OUT"
   samtools view -F 0x04 "$MAPPED_OUT" | cut -f1 | sort | uniq > "$LIST_OUT"
   seqtk subseq "$SAMPLEID"/fasta/"$SAMPLEID".reads.pass.fastq "$LIST_OUT" > "$FASTQ_OUT"
-  head -n1 "$SAMPLEID"/basecalled/sequencing_summary.txt > "$SUM_OUT"
+  head -n1 "$SAMPLEID"/basecalling/sequencing_summary.txt > "$SUM_OUT"
   grep -f "$LIST_OUT" "$SAMPLEID"/basecalling/sequencing_summary.txt >> "$SUM_OUT"
 done
 ````
+
+## Grab the results
+````
+assembly-stats  "$SAMPLEID"/fasta/*.fastq | grep -B 1 sum
+````
+
+For the 4 files that end in
+* `mapped.enrich.fastq`
+* `mapped.control.fastq`
+* `reads.enrich.fastq`
+* `reads.control.fastq`
+
+Copy the values from `sum = ` and `n =` into the shared spreadsheet for further analysis.
+
+## Explore sequencing summary
+You can use NanoPlot Online (http://nanoplot.bioinf.be/) to explore any of the files that end in `seqsum.txt`
 
