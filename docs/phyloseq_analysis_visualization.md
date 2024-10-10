@@ -107,10 +107,6 @@ Output should look like (but contain more values):
 |--------------|--------------|-------------|--------------|
 |11119          |3525         |4170         |44132         |
 
-```
-    2017a1PCRneg     2017a2PCRneg      2017aDNAneg     2017b1PCRneg 
-           11119             3525             4170            44132
-```
 **Plot it**
 ```
 plot_bar(mydata)
@@ -223,10 +219,10 @@ plot_ordination(
   physeq = mydata,
   ordination = mydata_nmds_bray,
   title = "NMDS of mydata (bray)",
-  color = "year",
-  shape = "type"
+  color = "Year",
+  shape = "Type"
 ) + 
-  geom_point(aes(color = year), alpha = 0.7, size = 4)
+  geom_point(aes(color = Year), alpha = 0.7, size = 4)
 ```
 
 # Alpha Diversity
@@ -236,7 +232,7 @@ Estimating alpha diversity of microbial communities is problematic no matter wha
 ```
 min_lib <- min(sample_sums(mydata))
 ```
-We will subsample to 4205, the minimum number of reads. We will repeat this 100 times and average the diversity estimates from each trial.
+We will subsample to 3525, the minimum number of reads. We will repeat this 100 times and average the diversity estimates from each trial.
 
 **Initialize matrices to store richness and evenness estimates**
 ```
@@ -248,7 +244,6 @@ row.names(richness) <- sample_names(mydata)
 
 evenness <- matrix(nrow = nsamp, ncol = trials)
 row.names(evenness) <- sample_names(mydata)
-
 ```
 
 **It is always important to set a seed when you subsample so your result is replicable**
@@ -315,6 +310,4 @@ There are many metrics built into Phyloseq
 ```
 # Shannon Diveristy
 plot_richness(mydata,measures = "Shannon")
-# Chao1 measure
-plot_richness(mydata, measures="Chao1")
 ```
