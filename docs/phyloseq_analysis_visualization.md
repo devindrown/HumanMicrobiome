@@ -6,11 +6,20 @@ Most of these instructions are modified from:
 [Denef lab howto](http://deneflab.github.io/MicrobeMiseq/demos/mothur_2_phyloseq.html)
 
 # Getting your workspace ready
+Before you can start analyzing your data, you have to load a number of R packages
 
 ```
-#Load libraries
+# Load packages -----------------------------------------------------------
+
+library(readr)
+library(ampvis2)
+library(phyloseq)
+library(qiime2R)
 library(tidyverse)
 library(ggplot2)
+library(janitor)
+library(forcats)
+library(colorspace)
 library(vegan)
 library(dplyr)
 library(scales)
@@ -21,29 +30,25 @@ library(colorspace)
 library(ape)
 ```
 
+Later on, we'll be plotting our data. Here is a simple setting to give them a clean look
 ```
-# Set working directory
-setwd("~/demodataR")
-
 # Set plotting theme
 theme_set(theme_bw())
 ```
 
 # Importing your data
-
-First, we will import the mothur shared file, consensus taxonomy file, and our sample metadata and store them in one phyloseq object. By storing all of our data structures together in one object we can easily interface between each of the structures. For example, as we will see later, we can use criteria in the sample metadata to select certain samples from the OTU table
+You've learned how to use QIIME2 to process your 16S rRNA sequencing data. We'll use the following code to import the output artifacts from QIIME. These include the feature table, a tree, the taxnomomy, and out sample metadata. By storing all of our data structures together in one object we can easily interface between each of the structures. For example, as we will see later, we can use criteria in the sample metadata to select certain samples from the ASV table
 
 ```
-# Assign variables for imported data
-sharedfile = "demodataR.shared"
-taxfile = "demodataR.taxonomy"
-
-# Import mothur data
-mothur_data <- import_mothur(mothur_shared_file = sharedfile,
-                             mothur_constaxonomy_file = taxfile)
+# Import Data from QIIME2 -------------------------------------------------
+data_raw<-qza_to_phyloseq(features = "qiime/table-filtered.qza",
+                                tree = "qiime/rooted_tree.qza",
+                                taxonomy="qiime/taxonomy.qza",
+                                metadata="metadata/demodataR.metadata.tsv"
+                                )
 ```
 
-The sample metadata is just a basic `.csv` with columns for sample attributes. Here is a preview of what the sample metadata looks like.
+The sample metadata is just a basic `.tsv` with columns for sample attributes. Here is a preview of what the sample metadata looks like.
 
 | SampleID     | year | type |
 |--------------|------|------|
@@ -54,55 +59,35 @@ The sample metadata is just a basic `.csv` with columns for sample attributes. H
 As you can see, there is one column called SampleID with the names of each of the samples. The remaining columns contain information on the sampling conditions related to each sample. The only formatting required to merge the sample data into a phyloseq object is that the rownames must match the sample names in your shared and taxonomy files.
 
 ```
-mapfile = "demodataR.csv"
-# Import sample metadata
-map <- read.csv(mapfile)
-
-# Convert year into categorical factor
-map$year <- as.factor(map$year)
-
-# Convert this dataframe into phyloseq format
-map <- sample_data(map)
-
-# Assign rownames to be Sample ID's
-rownames(map) <- map$SampleID
+# Convert Year and Type into categorical factors
+data_raw@sam_data$Year <- as.factor(data_raw@sam_data$Year)
+data_raw@sam_data$Type <- as.factor(data_raw@sam_data$Type)
+# Create a new column with the SampleIDs
+data_raw@sam_data$SampleID <- row.names(data_raw@sam_data)
 ```
-
-We need to merge our metadata into our phyloseq object.
-```
-# Merge mothurdata object with sample metadata
-moth_merge <- merge_phyloseq(mothur_data, map)
-```
-
-If you type `moth_merge` you should see the following output
+If you type `data_raw` you should see the following output
 
 ```
-> moth_merge
+> data_raw
 phyloseq-class experiment-level object
-otu_table()   OTU Table:         [ 395 taxa and 12 samples ]
+otu_table()   OTU Table:         [ 165 taxa and 12 samples ]
 sample_data() Sample Data:       [ 12 samples by 3 sample variables ]
-tax_table()   Taxonomy Table:    [ 395 taxa by 6 taxonomic ranks ]
+tax_table()   Taxonomy Table:    [ 165 taxa by 7 taxonomic ranks ]
+phy_tree()    Phylogenetic Tree: [ 165 tips and 164 internal nodes ]
 ```
 
-Now we have a phyloseq object called moth.merge. 
-
-Before we move on with analysis, we need to do some basic reformatting and filtering.
+Now we have a phyloseq object called data_raw. 
 
 What are the column names of our taxonomy file?
 
 ```
-colnames(tax_table(moth_merge))
-## [1] "Rank1" "Rank2" "Rank3" "Rank4" "Rank5" "Rank6"
-```
-These taxonomy names are not helpful, so let’s rename them
-```
-colnames(tax_table(moth_merge)) <- c("Kingdom", "Phylum", "Class", 
-  "Order", "Family", "Genus")
+colnames(tax_table(data_raw))
+[1] "Kingdom" "Phylum"  "Class"   "Order"   "Family"  "Genus"   "Species"
 ```
 
 **Finally put your data in a new container**
 ```
-mydata <- merge_phyloseq(moth_merge)
+mydata <- data_raw
 ```
 
 At this point you should have a Data object called `mydata` in the **Environment** panel. This object should be a Formal *class phyloseq*.
@@ -118,7 +103,7 @@ sample_sums(mydata)
 Output should look like (but contain more values):
 ```
     2017a1PCRneg     2017a2PCRneg      2017aDNAneg     2017b1PCRneg 
-           13712             4205             5113            53672
+           11119             3525             4170            44132
 ```
 **Plot it**
 ```
@@ -135,13 +120,13 @@ Of course, you know that your samples had different numbers of reads after the Q
 ```
 relmydata = transform_sample_counts(mydata,function(x) 100 * x / sum(x))
 ```
-Here you’ll divide all the OTU counts by the total sample counts and then multiple by 100. Now your bars will sum to 100% and represent the relative abundance within a sample. 
+Here you’ll divide all the ASV counts by the total sample counts and then multiple by 100. Now your bars will sum to 100% and represent the relative abundance within a sample. 
 
 You can use Phylseq's built in function to color your bar plot
 ```
 plot_bar(relmydata,fill="Class")
 ```
-The above command is plotting all the OTUs colored by Class. This can get pretty confusing pretty quickly. You can use the below code to pull together some of the OTUs by whatever taxonomic level you're intereseted in.
+The above command is plotting all the ASVs colored by Class. This can get pretty confusing pretty quickly. You can use the below code to pull together some of the ASVs by whatever taxonomic level you're intereseted in.
 
 ```
 relmydata_phylum <- relmydata %>%
@@ -169,7 +154,7 @@ Does your plot look like this?
 
 **Keep digging deeper into the data**
 
-Now, let's look at class and family level. Below is code to combine the OTUs at each of those levels.
+Now, let's look at class and family level. Below is code to combine the ASVs at each of those levels.
 ```
 relmydata_class <- relmydata %>%
   tax_glom(taxrank = "Class") %>% 
