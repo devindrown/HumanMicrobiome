@@ -62,10 +62,11 @@ As you can see, there is one column called SampleID with the names of each of th
 # Convert Year and Type into categorical factors
 data_raw@sam_data$Year <- as.factor(data_raw@sam_data$Year)
 data_raw@sam_data$Type <- as.factor(data_raw@sam_data$Type)
+
 # Create a new column with the SampleIDs
 data_raw@sam_data$SampleID <- row.names(data_raw@sam_data)
 ```
-If you type `data_raw` you should see the following output
+If you type `data_raw` into the Console, you should see the following output
 
 ```
 > data_raw
@@ -101,6 +102,11 @@ sample_sums(mydata)
 ```
 
 Output should look like (but contain more values):
+
+| 2017a1PCRneg | 2017a2PCRneg | 2017aDNAneg | 2017b1PCRneg |
+|--------------|--------------|-------------|--------------|
+|11119          |3525         |4170         |44132         |
+
 ```
     2017a1PCRneg     2017a2PCRneg      2017aDNAneg     2017b1PCRneg 
            11119             3525             4170            44132
