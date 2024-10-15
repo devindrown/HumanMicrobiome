@@ -50,7 +50,7 @@ mycolors <- sequential_hcl(length(unique(relmydata_grouped_clean[[myTaxLevel]]))
 
 Finally, we can put this all together and use `ggplot` to graph the data.
 ```
-ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
+ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myTaxLevel]])) + 
   geom_bar(stat = "identity") +
   scale_fill_manual(values = mycolors) +
   ylab(myYaxis) +
@@ -61,7 +61,7 @@ ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill =
 
 You can improve this graph. By adding classic theme (`theme_classic()`), you can remove the gray background on the graph and add some lines for the axes.
 ```
-ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
+ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myTaxLevel]])) + 
   geom_bar(stat = "identity") +
   scale_fill_manual(values = mycolors) +
   ylab(myYaxis) +
@@ -73,7 +73,7 @@ ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill =
 
 The labels on the horizontal axis are overlapping. You can rotate the text using the `axis.text.x` call in `theme()`.
 ```
-ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
+ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myTaxLevel]])) + 
   geom_bar(stat = "identity") +
   scale_fill_manual(values = mycolors) +
   ylab(myYaxis) +
@@ -88,7 +88,7 @@ ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill =
 
 The font size is still quite small. We can increase and standardize the size in the `theme`.
 ```
-ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
+ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myTaxLevel]])) + 
   geom_bar(stat = "identity") +
   scale_fill_manual(values = mycolors) +
   ylab(myYaxis) +
@@ -107,7 +107,7 @@ ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill =
 
 If you want, you can add dashed grid lines to help see differences better with the `panel.grid` call in `theme()`.
 ```
-ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
+ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myTaxLevel]])) + 
   geom_bar(stat = "identity") +
   scale_fill_manual(values = mycolors) +
   ylab(myYaxis) +
