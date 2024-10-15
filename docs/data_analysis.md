@@ -25,21 +25,20 @@ Pick a house that you want to work with can create a smaller data set. You house
 myhouse <- subset_samples(mbQC, House=="ab8a")
 ```
 
-While you're making data sets, pick a Site that you want to work with and create a smaller dataset. You can look in the metadata file to see how the labels are formatted (e.g. SiteA, SiteB)
+While you're making data sets, pick a Site that you want to work with and create a smaller dataset. You can look in the metadata file `view(mb@sam_data)` to see how the labels are formatted (e.g. SiteA, SiteB)
 ```
-mysite <- subset_samples(mb, Site=="SiteC")
+mysite <- subset_samples(mb, Site=="SiteZ")
 ```
 
 **HINT** The code you used last week relied on your dataset being in a container called `mydata`. You can copy your own dataset into that temporary container with this short command `mydata <- myhouse` or `mydata <- mysite`.
 
 # Explore diversity
 
-Now you have two new datasets, go back to the previous lab, [Phyloseq and R for analysis and visualization](phyloseq_analysis_visualization), and run the following to explore you data.
+Now you have two new datasets Run the following to explore you data.
 
-
-1. Calculate number of reads
-2. Alpha Diversity
-3. Bar Plots of diversity at different scales
+1. Calculate number of reads You may back to the previous lab, [Phyloseq and R for analysis and visualization](phyloseq_analysis_visualization)
+2. [Alpha Diversity](alpha_diversity_plot)
+3. [Bar Plots of diversity at different scales](community_composition_plot)
 4. Ordination plot (only complete for the Site data set)
 
 **Show your instructor the set of figures on your house data before you move on to the site data.**
@@ -51,13 +50,11 @@ We can specify a sample variable on which to group/organize samples along the ho
 
 For a single house, think about groups of sites
 ```
-plot_richness(myhouse, x = "Source", measures="Chao1")
-plot_richness(myhouse, x = "Type", measures="Chao1")
+plot_richness(myhouse, x = "Source", measures="InvSimpson")
 ```
 For a single Site, think about other ways of showing all of the data
 ```
-plot_richness(mysiteC, x = "Plate", measures="Chao1")
-plot_richness(mysiteC, x = "House", measures="Chao1")
+plot_richness(mysite, x = "Plate", measures="InvSimpson")
 ```
 
 
@@ -67,14 +64,14 @@ If you'd like to sample more than one site at a time or more than one house you 
 
 Create some lists, each item is enclosed in double quotes `"` and separated by a comma `,`
 ```
-mysitelist = c("SiteB","SiteC","SiteD")
+mysitelist = c("SiteX","SiteY","SiteZ")
 myhouselist = c("3a4c","4226","3f92","415e")
 ```
 **Note, the above houses do not exist. You will have to pick some from the full data set**
 
 Next, create a subset as before, but with some masking
 ```
-mysiteBCD <- subset_samples(mb, ((Site %in% mysitelist) & (House %in% myhouselist)))
+mysiteL <- subset_samples(mb, ((Site %in% mysitelist) & (House %in% myhouselist)))
 ```
 
 ## Ordination with two variables
