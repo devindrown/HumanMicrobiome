@@ -2,25 +2,24 @@
 Here you will start to explore your own dataset. You have already aquired some basic skills. You'll apply that knowledge to this new dataset.
 
 # Loading the complete data set
-To get you started, I have provided a script to load a larger data set including 383 samples spanning two years of data collection
+To get you started, I have provided a script to load our class data set.
 
-1. Create a new RStudio Project (File>New Project). If RStudio asks you to “Save Current Workspace”, you should select “Don’t Save”.  You then want to select Existing Directory. 
-On the next window, set the Project working directory to: `~/BIOL491.combined.microbe`
-2. In the Console you can enter `source('~/BIOL491.combined.microbe/BIOL491.combined.LoadData.R')`. You can open this file in your explorer to see all of the data you've loaded.
+1. If you haven't already, create a new RStudio Project (File>New Project). If RStudio asks you to “Save Current Workspace”, you should select “Don’t Save”.  You then want to select Existing Directory. On the next window, set the Project working directory to: `~/BIOL491_2024`
+2. In the Console you can enter `source('treasurechest/LoadData.R')`. You can open this file in your explorer to see all of the data you've loaded.
 3. For today’s analysis, you want to create a new R Script (File>New File>R Script) to hold all of the code you’re writing. This will create an empty document in a new panel. You should go ahead and save this document (File>Save). You can name the file anything you want, but keep the title informative and without space (e.g. `house_analysis.R`). It’s important to end the file in `.R` so that Rstudio knows it’s an R script.
 
 ## Output
 Now we have a number of phyloseq objects:
 
-* `mb` contains the entire dataset with 383 samples including negative controls
-* `mbQC` excludes the negative controls for a reduced 239 samples
-* `mb_dirty` includes the entire dataset along with some contaminating OTUs
+* `mb` contains the entire dataset with 187 samples including negative controls
+* `mbQC` excludes the negative controls for a reduced 120 samples, also removes some low abundance ASVs
+* `mb_dirty` excludes the negative controls, but includes some contaminating ASVs
 
 # Create your data sets
 
 The complete data set is too big to really look at all at once.
 
-Pick a house that you want to work with can create a smaller data set. You houses are identified by the last 4 digits of the ID. You can get a list of the included houses by typing `unique(map$House)`. Let's start by looking at all the sites within a single home. You can use the code below to put all of the samples from a single house (e.g. `ab8a`) into a container (`myhouse`)
+Pick a house that you want to work with can create a smaller data set. You houses are identified by the last 4 digits of the ID. You can get a list of the included houses by typing `levels(mb@sam_data$House)`. Let's start by looking at all the sites within a single home. You can use the code below to put all of the samples from a single house (e.g. `ab8a`) into a container (`myhouse`)
 
 ```
 myhouse <- subset_samples(mbQC, House=="ab8a")
