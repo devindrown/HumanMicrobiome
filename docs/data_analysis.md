@@ -39,7 +39,7 @@ Now you have two new datasets Run the following to explore you data.
 1. Calculate number of reads You may back to the previous lab, [Phyloseq and R for analysis and visualization](phyloseq_analysis_visualization)
 2. [Alpha Diversity](alpha_diversity_plot)
 3. [Bar Plots of diversity at different scales](community_composition_plot)
-4. Ordination plot (only complete for the Site data set)
+4. Ordination plot (only complete for the Site data set). Hint: Check out the treasurechest.
 
 **Show your instructor the set of figures on your house data before you move on to the site data.**
 
@@ -73,6 +73,10 @@ Next, create a subset as before, but with some masking
 ```
 mysiteL <- subset_samples(mb, ((Site %in% mysitelist) & (House %in% myhouselist)))
 ```
+Copy this into a new container so that you code doesn't rely on this specific name
+```
+mydata <- mysiteL
+```
 
 ## Ordination with two variables
 
@@ -80,8 +84,8 @@ With this more complete dataset, you can create an ordination plot, here we'll u
 
 ```
 #Ordinate
-mysiteBCD_nmds <- ordinate(
-  physeq = mysiteBCD, 
+mydata_nmds_bray <- ordinate(
+  physeq = mydata, 
   method = "NMDS", 
   distance = "bray"
 )
@@ -95,15 +99,14 @@ Next, we want to plot our results, but we'll use symbols for the different sites
 house_colors <- rainbow_hcl(length(unique(myhouselist)))
 
 plot_ordination(
-  physeq = mysiteBCD,
-  ordination = mysiteBCD_nmds,
+  physeq = mydata,
+  ordination = mydata_nmds_bray,
   color = "House",
   shape = "Site",
-  title = "NMDS of mysiteBCD bacterial Communities"
+  title = "NMDS of mydata bacterial Communities"
 ) + 
   scale_color_manual(values = house_colors
   ) +
-  #  geom_line() +
   geom_point(aes(color = House), alpha = 0.7, size = 6) +
   geom_point(colour = "grey90", size = 1.5) 
 
@@ -115,7 +118,7 @@ plot_ordination(
 Heere we'll divide up the X axis by Site and then color each house differently
 
 ```
-plot_richness(mysiteBCD, x = "Site", color = "House", measures="Chao1")
+plot_richness(mydata, x = "Site", color = "House", measures="InvSimpson")
 ```
 
 ## Complex bar plots with this kind of data
@@ -123,7 +126,7 @@ plot_richness(mysiteBCD, x = "Site", color = "House", measures="Chao1")
 Transform to relative abundances
 
 ```
-relmydata = transform_sample_counts(mysiteBCD,function(x) 100 * x / sum(x))
+relmydata = transform_sample_counts(mydata,function(x) 100 * x / sum(x))
 ```
 
 You probably don't want to look at all of your data at once. Here we are looking at the Phylum level and filtering out anything less than 1%. You might want to do something else for your own dataset.
@@ -184,39 +187,6 @@ ggplot(relmydata_phylum, aes(x = Phylum, y = Abundance, fill = Phylum)) +
 ```
 
 The **`facet_grid`** function controls the formatting as `facet_grid(ROW_variable ~ COLUMN_variable)`
-
-# Advanced QC
-
-First we want to remove the negative controls from our dataset. You can subsample your data and select only those samples that are not of the QC type
-```
-mydata <- subset_samples(mb, Type!="QC")
-```
-
-The phyloseq package includes functions for filtering, subsetting, and merging abundance data. In the following example, the data is first transformed to relative abundance, creating the new GPr object, which is then filtered such that only OTUs with a mean greater than 10^-5 are kept.
-```
-mbr  = transform_sample_counts(mydata, function(x) x / sum(x) )
-mbfr = filter_taxa(mbr, function(x) mean(x) > 1e-5, TRUE)
-```
-
-This results in a highly-subsetted object, mbfr, removing the really rare OTUs.
-
-Another method: Remove taxa not seen more than 3 times in at least 20% of the samples. This protects against an OTU with small mean & trivially large C.V.
-
-```
-GP = filter_taxa(mb, function(x) sum(x > 3) > (0.2*length(x)), TRUE)
-```
-
-Standardize abundances to the median sequencing depth
-```
-total = median(sample_sums(GP))
-standf = function(x, t=total) round(t * (x / sum(x)))
-gps = transform_sample_counts(GP, standf)
-```
-
-Filter the taxa using a cutoff of 3.0 for the Coefficient of Variation
-```
-gpsf = filter_taxa(gps, function(x) sd(x)/mean(x) > 3.0, TRUE)
-```
 
 # What's next
 
