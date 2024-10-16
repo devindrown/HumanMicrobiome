@@ -128,7 +128,7 @@ ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myT
 
 You change the color palette to using `ggsci` package. You'll need to install the `ggsci` package and load the library before this will work. Here we use the two functions `scale_color_lancet()` and `scale_fill_lancet()` to pick colors like the journal *Lancet*.
 ```
-ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
+ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myTaxLevel]])) + 
   geom_bar(stat = "identity") +
   # scale_fill_manual(values = mycolors) +
   scale_color_lancet() + scale_fill_lancet() +
@@ -150,7 +150,7 @@ ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill =
 
 If you'd like to be a little silly, you can change the color palette to Simpsons theme.
 ```
-ggplot(relmydata_grouped_clean, aes_string( x = "House", y = "Abundance", fill = myTaxLevel)) + 
+ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myTaxLevel]])) + 
   geom_bar(stat = "identity") +
   # scale_fill_manual(values = mycolors) +
   # scale_color_lancet() + scale_fill_lancet() +
