@@ -41,7 +41,7 @@ For this example, we'll look at our site data set, but color by sequencing `Plat
 
 Start by copying the your site data set into a generic container `mydata`.
 ```
-mydata <- mysite`
+mydata <- mysite
 ```
 Now let's make an ordination to visualize the information
 ```
