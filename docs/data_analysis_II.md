@@ -5,9 +5,10 @@ Exploring Statistics and Complex Datasets
 # Loading the current year data set, a review from last week
 
 1. You should still be in the `/BIOL491_2024` RStuido Project.
-2. Get a clean start, Use the broom tool to clear objects from the workspace. After that, i the Console, you can enter
+2. Get a clean start, Use the broom tool to clear objects from the workspace.
+3. After that, in the Console, you can enter
 ```source('treasurechest/LoadData.R')```
-3. For today’s analysis, you want to create a new R Script (File>New File>R Script) to hold all of the code you’re writing. This will create an empty document in a new panel. You should go ahead and save this document (File>Save). You can name the file anything you want, but keep the title informative and without space (e.g. `house_stats.R`). It’s important to end the file in `.R` so that Rstudio knows it’s an R script.
+4. For today’s analysis, you want to create a new R Script (File>New File>R Script) to hold all of the code you’re writing. This will create an empty document in a new panel. You should go ahead and save this document (File>Save). You can name the file anything you want, but keep the title informative and without space (e.g. `house_stats.R`). It’s important to end the file in `.R` so that Rstudio knows it’s an R script.
 
 ## Output
 Now we have a number of phyloseq objects:
