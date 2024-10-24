@@ -331,37 +331,9 @@ The **`facet_grid`** function controls the formatting as `facet_grid(ROW_variabl
 
 # Advanced QC, redux
 
-In case you did not comlete this in the previous lab. Here are the instructions again for advance quality control. 
+What is the impact of the quality control? Can you measure it? Remember you have been working with the quality controlled data. However, you have multiple completed data sets
 
-First we want to remove the negative controls from our dataset. You can subsample your data and select only those samples that are not of the QC type
-```
-mydata <- subset_samples(mb, Type!="QC")
-```
+* `mbQC` excludes the negative controls for a reduced 120 samples, also removes some low abundance ASVs
+* `mb_dirty` excludes the negative controls, but includes some contaminating ASVs
 
-The phyloseq package includes functions for filtering, subsetting, and merging abundance data. In the following example, the data is first transformed to relative abundance, creating the new GPr object, which is then filtered such that only OTUs with a mean greater than 10^-5 are kept.
-```
-mbr  = transform_sample_counts(mydata, function(x) x / sum(x) )
-mbfr = filter_taxa(mbr, function(x) mean(x) > 1e-5, TRUE)
-```
-
-This results in a highly-subsetted object, mbfr, removing the really rare OTUs.
-
-Another method: Remove taxa not seen more than 3 times in at least 20% of the samples. This protects against an OTU with small mean & trivially large C.V.
-
-```
-GP = filter_taxa(mb, function(x) sum(x > 3) > (0.2*length(x)), TRUE)
-```
-
-Standardize abundances to the median sequencing depth
-```
-total = median(sample_sums(GP))
-standf = function(x, t=total) round(t * (x / sum(x)))
-gps = transform_sample_counts(GP, standf)
-```
-
-Filter the taxa using a cutoff of 3.0 for the Coefficient of Variation
-```
-gpsf = filter_taxa(gps, function(x) sd(x)/mean(x) > 3.0, TRUE)
-```
-
-**Now what?** You could use this new data set and explore the impact of reducing some of the noise in your sequence data.
+**Now what?** You could compare the `mbQC` and `mb_dirty` versions of your house or site data set to impact of reducing some of the noise in your sequence data.
