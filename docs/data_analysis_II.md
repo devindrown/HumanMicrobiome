@@ -259,7 +259,7 @@ Not significant, so we can be more confident of our earlier results.
 We can group the data along the X axis by Site and then use color to distinguish houses.
 
 ```
-plot_richness(mycomplexdata, x = "Site", color = "House", measures="Chao1")
+plot_richness(mycomplexdata, x = "Site", color = "House", measures="InvSimpson")
 ```
 *If you wanted to look at differences among house, how might you plot the data?*
 
