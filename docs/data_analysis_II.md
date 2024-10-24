@@ -68,7 +68,8 @@ Here is an example of how to run a permanova test using the `adonis2` function i
 # Formula: Bray-Curtis distance ~ Plate
 # Data: Sample data from the phyloseq object
 adonis2(
-  phyloseq::distance(mydata, method = "bray") ~ Plate,  
+  phyloseq::distance(mydata, method = "bray") ~ Plate,
+  by = "terms",  
   data = data.frame(mydata@sam_data)                  
 )
 ```
@@ -193,7 +194,8 @@ We can write a more complex formula as below (typical model formula such as `Y ~
 # Formula: Bray-Curtis distance ~ House + Site
 # Data: Sample data from the phyloseq object
   adonis2(
-    formula  phyloseq::distance(mydata, method = "bray") ~ House + Site,  
+    phyloseq::distance(mydata, method = "bray") ~ House + Site,
+    by = "terms",  
     data = data.frame(mydata@sam_data)                  
   )
 ```
@@ -213,7 +215,11 @@ It appears that we can reject the null hypothesis that samples from different ho
 
 **adonis** adds the terms of formula sequentially, so it is worth comparing the two orders so that you can be more confident of your results.
 ```
-adonis(mydata_distance ~ Site + House, data = sampledf)
+  adonis2(
+    phyloseq::distance(mydata, method = "bray") ~ Site + House,
+    by = "terms",  
+    data = data.frame(mydata@sam_data)                  
+  )
 ```
 
 Example output
@@ -229,8 +235,11 @@ Total     11    4.6741                 1.00000
 Again, House is significant (`p = 0.004`), so we should move on the final test of homogeneity of dispersions and specify `House` in the dataframe.
 
 ```
-beta <- betadisper(mydata_distance, sampledf$House)
-permutest(beta)
+permutest(
+  betadisper(phyloseq::distance(mydata, method = "bray"),
+             mydata@sam_data$House
+             )
+  )
 ```
 
 Example output
