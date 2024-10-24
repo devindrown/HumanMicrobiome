@@ -255,6 +255,9 @@ Residuals  8 0.49889 0.062361
 
 Not significant, so we can be more confident of our earlier results.
 
+** Want a deep dive into making visually appealing ordination plots? ** Check out [ordination_plot](ordination_plot)
+
+
 ## Alpha diversity with two variables
 
 We can group the data along the X axis by Site and then use color to distinguish houses.
