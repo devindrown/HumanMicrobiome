@@ -92,6 +92,8 @@ Total    19   6.6757 1.00000
 ```
 This output tells us that our adonis test is not significant (`p > 0.05`). We cannot reject the null hypothesis that our samples from different plates have same centroid.
 
+## Test for differences in dispersion
+
 If we had a significant test, then it would be worth running a **Homogeneity of dispersion** test. Go ahead and run it now.
 
 This code performs a permutation test to assess the homogeneity of multivariate dispersions between groups defined by a variable. This is important to check before conducting a PERMANOVA analysis, as significant differences in dispersion can influence the results of PERMANOVA.
@@ -131,25 +133,23 @@ There is a lot more analysis that can be done here. We could test different grou
 
 If you'd like to sample more than one site at a time or more than one house you can do that in the following way
 
-Create some lists, each time in enclosed in double quotes `"` and separated by a comma `,`
+Create some lists, each item is enclosed in double quotes `"` and separated by a comma `,`
 ```
-mysitelist = c("SiteB","SiteC","SiteD")
+mysitelist = c("SiteX","SiteY","SiteZ")
 myhouselist = c("3a4c","4226","3f92","415e")
 ```
-
+**Note, the above houses do not exist. You will have to pick some from the full data set**
 If you need to find a list of house IDs, then you can use the following command
 ```
-print(unique(map$House))
+print(levels(mb@sam_data$House))
 ```
 The same command works for `$Site`
-
 
 Next, create a subset as before, but with some masking
 ```
 mycomplexdata <- subset_samples(mb, ((Site %in% mysitelist) & (House %in% myhouselist)))
 ```
-
-If you copy this container into `mydata`, then you can reuse some of your previous graphing code.
+Copy this into a new container so that you code doesn't rely on this specific name
 ```
 mydata <- mycomplexdata
 ```
@@ -160,45 +160,42 @@ With this more complete dataset, you can create an ordination plot, here we'll u
 
 ```
 # Calculate distances
-mydata_ord <- ordinate(
+mydata_pcoa_bray <- ordinate(
   physeq = mydata, 
   method = "PCoA",
   distance = "bray"
 )
 ```
 
-Next, we want to plot our results, but we'll use symbols for the different sites and colors for the various houses
+Next, we want to plot our results, but we'll use symbols for the different houses and colors for the various sites
 
 ```
 # Get a list of colors
-house_colors <- rainbow_hcl(length(unique(myhouselist)))
+site_colors <- rainbow_hcl(length(unique(mysitelist)))
 
 # Plot 
 plot_ordination(
   physeq = mydata,
-  ordination = mydata_ord,
-  color = "House",
-  shape = "Site",
+  ordination = mydata_pcoa_bray,
+  color = "Site",
+  shape = "House",
   title = "PCoA of mycomplexdata bacterial Communities"
 ) + 
-  scale_color_manual(values = house_colors) +
-  geom_point(aes(color = House), alpha = 0.7, size = 6)
+  scale_color_manual(values = site_colors) +
+  geom_point(aes(color = Site), alpha = 0.7, size = 6)
 ```
 
 ## Testing signifcance with two variables
 
-Prepare data, this is the same as you did previously
-```
-# Calculate a distance matrix using Bray Curtis distances
-mydata_distance <- phyloseq::distance(mydata, method = "bray")
-# Create a data frame from the sample_data
-sampledf <- data.frame(sample_data(mydata))
-```
-
 We can write a more complex formula as below (typical model formula such as `Y ~ A + B`)
-
 ```
-adonis(mydata_distance ~ House + Site, data = sampledf)
+# Perform PERMANOVA analysis using the adonis2 function
+# Formula: Bray-Curtis distance ~ House + Site
+# Data: Sample data from the phyloseq object
+  adonis2(
+    formula  phyloseq::distance(mydata, method = "bray") ~ House + Site,  
+    data = data.frame(mydata@sam_data)                  
+  )
 ```
 
 Example output
