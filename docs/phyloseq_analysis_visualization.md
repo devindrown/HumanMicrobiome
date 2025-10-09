@@ -65,7 +65,7 @@ The sample metadata is just a basic `.tsv` with columns for sample attributes. H
 
 **It's good practice to ensure metadata columns are in the correct format.** As you can see, there is one column with the names of each of the samples. The remaining columns contain information on the sampling conditions related to each sample. The only formatting required to merge the sample data into a phyloseq object is that the rownames must match the sample names in your shared and taxonomy files.
 
-We convert 'Year' and 'Type' into factors, which are R's way of representing categorical data. We also create a new column 'SampleID' in the metadata from the row names for easier plotting later.
+We convert `Year` and `Type` into factors, which are R's way of representing categorical data. We also create a new column `SampleID` in the metadata from the row names for easier plotting later.
 
 ```
 # Convert Year and Type into categorical factors
@@ -224,7 +224,6 @@ mydata_nmds_bray <- ordinate(
   method = "NMDS",
   distance = "bray"
 )
-
 ````
 **Plot the ordination**. Each point represents the entire microbial community of a single sample. Points that are closer together have more similar communities. Here we are coloring the points by the `Year` column in our metadata. We use shape to represent the `Type` column
 
@@ -242,7 +241,7 @@ plot_ordination(
 
 # Section 5: Alpha Diversity
 
-Estimating alpha diversity of microbial communities is problematic no matter what you do. To account for uneven sequencing depth, we first need to 'rarefy' our data, which means subsampling all samples to the same number of reads. My best stab at it is to subsample the libraries with replacement to estimate the species abundance of the real population while standardizing sampling effort.
+Estimating alpha diversity of microbial communities is problematic no matter what you do. To account for uneven sequencing depth, we first need to **rarefy** our data, which means subsampling all samples to the same number of reads. My best stab at it is to subsample the libraries with replacement to estimate the species abundance of the real population while standardizing sampling effort.
 
 Find the lowest sequencing depth in our dataset. This will be our rarefaction depth.
 ```
