@@ -1,12 +1,18 @@
 # Overview
-Here we will visualize our small dataset in R.
-
+These instructions guide you through the analysis and visualization of microbiome data
+using the phyloseq package in R. We will import data from QIIME2,
+create plots for taxonomic composition, and calculate alpha and beta diversity.
 
 Most of these instructions are modified from:
 [Denef lab howto](http://deneflab.github.io/MicrobeMiseq/demos/mothur_2_phyloseq.html)
 
-# Getting your workspace ready
-Before you can start analyzing your data, you have to load a number of R packages
+# Section 1: Getting your workspace ready
+We begin by loading all the necessary R packages. Each package has a specific role:
+* `phyloseq`: The core package for importing, storing, and analyzing microbiome data.
+* `qiime2R`: Helps import data from QIIME2 formats (.qza files).
+* `tidyverse` & `ggplot2`: Powerful tools for data manipulation and creating beautiful plots.
+* `vegan`: A popular package for ecological analyses, including diversity calculations.
+* Other packages provide additional functions for plotting and data handling.
 
 ```
 # Load packages -----------------------------------------------------------
@@ -30,13 +36,14 @@ library(colorspace)
 library(ape)
 ```
 
-Later on, we'll be plotting our data. Here is a simple setting to give them a clean look
+Later on, we'll be plotting our data. Set a consistent plotting theme for all our graphs.
+`theme_bw()` gives a clean black-and-white background.
 ```
 # Set plotting theme
 theme_set(theme_bw())
 ```
 
-# Importing your data
+# Section 2: Importing your data
 You've learned how to use QIIME2 to process your 16S rRNA sequencing data. We'll use the following code to import the output artifacts from QIIME. These include the feature table, a tree, the taxnomomy, and out sample metadata. By storing all of our data structures together in one object we can easily interface between each of the structures. For example, as we will see later, we can use criteria in the sample metadata to select certain samples from the ASV table
 
 ```
@@ -50,13 +57,15 @@ data_raw<-qza_to_phyloseq(features = "qiime/table-filtered.qza",
 
 The sample metadata is just a basic `.tsv` with columns for sample attributes. Here is a preview of what the sample metadata looks like.
 
-| SampleID     | year | type |
+| Sample Data  | Year | Type |
 |--------------|------|------|
 | 2017a1PCRneg | 2017 | PCR  |
 | 2017a2PCRneg | 2017 | PCR  |
 | 2017aDNAneg  | 2017 | DNA  |
 
-As you can see, there is one column called SampleID with the names of each of the samples. The remaining columns contain information on the sampling conditions related to each sample. The only formatting required to merge the sample data into a phyloseq object is that the rownames must match the sample names in your shared and taxonomy files.
+**It's good practice to ensure metadata columns are in the correct format.** As you can see, there is one column with the names of each of the samples. The remaining columns contain information on the sampling conditions related to each sample. The only formatting required to merge the sample data into a phyloseq object is that the rownames must match the sample names in your shared and taxonomy files.
+
+We convert 'Year' and 'Type' into factors, which are R's way of representing categorical data. We also create a new column 'SampleID' in the metadata from the row names for easier plotting later.
 
 ```
 # Convert Year and Type into categorical factors
@@ -79,7 +88,7 @@ phy_tree()    Phylogenetic Tree: [ 165 tips and 164 internal nodes ]
 
 Now we have a phyloseq object called data_raw. 
 
-What are the column names of our taxonomy file?
+What are the column names of our taxonomy file? This will be helpful later.
 
 ```
 colnames(tax_table(data_raw))
@@ -93,7 +102,7 @@ mydata <- data_raw
 
 At this point you should have a Data object called `mydata` in the **Environment** panel. This object should be a Formal *class phyloseq*.
 
-# Basic info and plots
+# Section 3: Taxonomic Composition Plots
 
 **Calculate the number of reads per sample**
 
@@ -107,7 +116,7 @@ Output should look like (but contain more values):
 |--------------|--------------|-------------|--------------|
 |11119          |3525         |4170         |44132         |
 
-**Plot it**
+Now, try to **Plot it**
 ```
 plot_bar(mydata)
 ```
@@ -124,7 +133,7 @@ relmydata = transform_sample_counts(mydata,function(x) 100 * x / sum(x))
 ```
 Here you’ll divide all the ASV counts by the total sample counts and then multiple by 100. Now your bars will sum to 100% and represent the relative abundance within a sample. 
 
-You can use Phylseq's built in function to color your bar plot
+You can use Phylseq's built in function, `plot_bar()`, to color your bar plot
 ```
 plot_bar(relmydata,fill="Class")
 ```
@@ -132,50 +141,54 @@ The above command is plotting all the ASVs colored by Class. This can get pretty
 
 ```
 relmydata_phylum <- relmydata %>%
-  tax_glom(taxrank = "Phylum") %>%                     # group at Phylum level
-  psmelt() %>%                                         # Melt to long format
-  filter(Abundance > 1) %>%                         # Filter out low abundance taxa
-  arrange(Phylum)                                   # Sort data frame alphabetically by Phylum
+  tax_glom(taxrank = "Phylum") %>%  # 1. Group taxa by their Phylum.
+  psmelt() %>%                      # 2. Convert the into a 'long' data frame suitable for ggplot.
+  filter(Abundance > 1) %>%         # 3. Keep phyla that make up >1% of the abundance.
+  arrange(Phylum)                   # 4. Sort the data frame by Phylum name.
 ```
 Here, we are combining at the **Phylum** level and filtering out any phylum that is represented less than 1%
 
 Next we plot the results
 ```
+# Create a color palette for the phyla.
 phylum_colors <- diverge_hcl(length(unique(relmydata_phylum$Phylum)))
+# Create the ggplot bar chart.
 ggplot(relmydata_phylum, aes(x = SampleID, y = Abundance, fill = Phylum)) + 
-  geom_bar(stat = "identity") +
-  scale_fill_manual(values = phylum_colors) +
-  # Remove x axis title
-  theme(axis.title.x = element_blank()) + 
-  ylab("Relative Abundance (Phylum > 1%) \n") +
-  theme(axis.text.x=element_text(angle=90,hjust=1)) +
-  ggtitle("Composition, Phylum")
+  geom_bar(stat = "identity") + # Creates the stacked bars
+  scale_fill_manual(values = phylum_colors) + # Applies our custom colors
+  theme(axis.title.x = element_blank()) + # Removes the x-axis title
+  ylab("Relative Abundance (Phylum > 1%) \n") + # Sets the y-axis label
+  theme(axis.text.x=element_text(angle=90,hjust=1)) + # Rotates sample names for readability
+  ggtitle("Composition, Phylum") # Adds a title
 ```
 Does your plot look like this?
 ![Phylum Bar Plot](demodata.phylumbarplot.png)
 
 **Keep digging deeper into the data**
 
-Now, let's look at class and family level. Below is code to combine the ASVs at each of those levels.
+Now, let's look at **Class** and **Family** levels. Below is code to combine the ASVs at each of those levels.
 ```
+# -- Class Level Merge --
 relmydata_class <- relmydata %>%
   tax_glom(taxrank = "Class") %>% 
   psmelt() %>% 
   filter(Abundance > 1) %>% 
   arrange(Class)
 
+# -- Family Level Merge --
 relmydata_family <- relmydata %>%
   tax_glom(taxrank = "Family") %>% 
   psmelt() %>% 
   filter(Abundance > 1) %>% 
   arrange(Family)            
 ```
-Here is another exmaples to create some pretty color pallets for your categories.  There are lots more!
+
+Finally, you can plot each level separately. 
+
+**Class**: For this example, we'll modify the code to use a different color pallet for your categories.  There are lots more!
 ```
+# Create the Class-level ggplot.
 class_colors <- rainbow_hcl(length(unique(relmydata_class$Class)))
-```
-Finally, you can plot each level separately. First **Class**
-```
 ggplot(relmydata_class, aes(x = SampleID, y = Abundance, fill = Class)) + 
   geom_bar(stat = "identity") +
   scale_fill_manual(values = class_colors) +
@@ -185,9 +198,9 @@ ggplot(relmydata_class, aes(x = SampleID, y = Abundance, fill = Class)) +
   theme(axis.text.x=element_text(angle=90,hjust=1)) +
   ggtitle("Composition, Class") 
 ```
-and now by **Family**
-In this case, we've defined the color directly in the `ggplot` command (see the `scale_fill_discrete_qualitative`). This is another alternative method.
+**Family**: In this case, we've defined the color directly in the `ggplot` command (see the `scale_fill_discrete_qualitative`). This is another alternative method.
 ```
+# Create the Family-level ggplot.
 ggplot(relmydata_family, aes(x = SampleID, y = Abundance, fill = Family)) + 
   geom_bar(stat = "identity") +
   scale_fill_discrete_qualitative(palette = "Dark 3") +
@@ -200,21 +213,23 @@ ggplot(relmydata_family, aes(x = SampleID, y = Abundance, fill = Family)) +
 
 **Before you move on**, show your plot to your neighbor or the instructor. What does each bar represent? How is each bar divided? 
 
-# Ordinations
-One of the best exploratory analyses for amplicon data is an ordinations to visualize the beta diversity. Phyloseq can compute these in two simple steps. You calculate the distances between all your points, then you plot that data.
+# Section 4: Beta Diversity
+One of the best exploratory analyses for amplicon data is an ordinations to visualize the beta diversity. Beta diversity measures how different the microbial communities are between samples. We'll use Non-Metric Multidimensional Scaling (NMDS) with Bray-Curtis dissimilarity. Phyloseq can compute these in two simple steps. You calculate the distances between all your points, then you plot that data.
 
-Caculation
+**Calculate the ordination**. `ordinate()` is a phyloseq function that performs the complex calculations. Bray-Curtis is a common distance metric based on abundance.
 ```
-# Calculate
+# Calculate the ordination.
 mydata_nmds_bray <- ordinate(
   physeq = mydata, 
   method = "NMDS",
   distance = "bray"
 )
+
 ````
-Plotting
-````
-# Plot
+**Plot the ordination**. Each point represents the entire microbial community of a single sample. Points that are closer together have more similar communities. Here we are coloring the points by the `Year` column in our metadata. We use shape to represent the `Type` column
+
+```
+# Plot the ordination.
 plot_ordination(
   physeq = mydata,
   ordination = mydata_nmds_bray,
@@ -225,20 +240,22 @@ plot_ordination(
   geom_point(aes(color = Year), alpha = 0.7, size = 4)
 ```
 
-# Alpha Diversity
+# Section 5: Alpha Diversity
 
-Estimating alpha diversity of microbial communities is problematic no matter what you do. My best stab at it is to subsample the libraries with replacement to estimate the species abundance of the real population while standardizing sampling effort.
+Estimating alpha diversity of microbial communities is problematic no matter what you do. To account for uneven sequencing depth, we first need to 'rarefy' our data, which means subsampling all samples to the same number of reads. My best stab at it is to subsample the libraries with replacement to estimate the species abundance of the real population while standardizing sampling effort.
 
+Find the lowest sequencing depth in our dataset. This will be our rarefaction depth.
 ```
 min_lib <- min(sample_sums(mydata))
 ```
-We will subsample to 3525, the minimum number of reads. We will repeat this 100 times and average the diversity estimates from each trial.
+We will subsample to 3525, the minimum number of reads. Since rarefaction involves random subsampling, we will repeat it 100 times and calculate the average diversity to get a more stable estimate.
 
 **Initialize matrices to store richness and evenness estimates**
 ```
 nsamp = nsamples(mydata)
 trials = 100
 
+# Create empty matrices to store the results of each trial.
 richness <- matrix(nrow = nsamp, ncol = trials)
 row.names(richness) <- sample_names(mydata)
 
@@ -246,36 +263,36 @@ evenness <- matrix(nrow = nsamp, ncol = trials)
 row.names(evenness) <- sample_names(mydata)
 ```
 
-**It is always important to set a seed when you subsample so your result is replicable**
+**Setting a seed ensures that the random subsampling is reproducible.**
 ```
 set.seed(3)
 ```
-The create a loop to do all the subsampling
+Start the loop to perform rarefaction 100 times.
 ```
 for (i in 1:100) {
-  # Subsample
+  # 1. Subsample the data to the minimum library size.
   r <- rarefy_even_depth(mydata, sample.size = min_lib, verbose = FALSE, replace = TRUE)
   
-  # Calculate richness
+  # 2. Calculate richness (number of observed species/ASVs).
   rich <- as.numeric(as.matrix(estimate_richness(r, measures = "Observed")))
   richness[ ,i] <- rich
   
-  # Calculate evenness
+  # 3. Calculate evenness (here using the Inverse Simpson index).
   even <- as.numeric(as.matrix(estimate_richness(r, measures = "InvSimpson")))
   evenness[ ,i] <- even
 }
 ```
 
-Let’s calculate the mean and standard deviation per sample for observed richness and inverse simpson’s index and store those values in a dataframe.
+Now, summarize the results from the 100 trials. Let’s calculate the mean and standard deviation per sample for observed richness and inverse simpson’s index and store those values in a dataframe.
 ```
-# Create a new dataframe to hold the means and standard deviations of richness estimates
+# Create a new dataframe for the richness results (mean and standard deviation).
 SampleID <- row.names(richness)
 mean <- apply(richness, 1, mean)
 sd <- apply(richness, 1, sd)
 measure <- rep("Richness", nsamp)
 rich_stats <- data.frame(SampleID, mean, sd, measure)
 
-# Create a new dataframe to hold the means and standard deviations of evenness estimates
+# Create a new dataframe for the evenness results.
 SampleID <- row.names(evenness)
 mean <- apply(evenness, 1, mean)
 sd <- apply(evenness, 1, sd)
@@ -294,19 +311,20 @@ s <- data.frame(sample_data(mydata))
 alphadiv <- merge(alpha, s, by = "SampleID") 
 ```
 
-**Finally, we will plot the two alpha diversity measures using a facet**
+**Plot the alpha diversity results with error bars representing the standard deviation.**
 
 ```
 ggplot(alphadiv, aes(x = SampleID, y = mean)) +
   geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), colour="black", width=.1) +
   geom_point(size = 2) +
-  facet_wrap(~measure, ncol = 1, scales = "free")
+  facet_wrap(~measure, ncol = 1, scales = "free") + # Create separate panels for each metric
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) # Rotate sample labels
 ```
-*Phyloseq can also do the hard work for you with a one line code*
+*Phyloseq also has a built-in function for a quick alpha diversity plot.* This is useful for a quick look but offers less customization.
 ```
 plot_richness(mydata, measures = "InvSimpson")
 ```
-There are many metrics built into Phyloseq
+There are many metrics built into Phyloseq. You can find more with the command `help("plot_richness")` and then looking at `measures`. For instance, below you can plot the Shannon Diversity.
 ```
 # Shannon Diveristy
 plot_richness(mydata,measures = "Shannon")
