@@ -49,8 +49,8 @@ mysite <- subset_samples(mbQC, Site == "SiteZ")
 Now you are ready to analyze the diversity of your `myhouse` and `mysite` datasets. Refer back to the script and instructions from the previous lab for detailed guidance on how to perform the following analyses.
 
 1. **Calculate Read Counts**: Determine the sequencing depth for each sample in your new subset. You may refer back to the previous lab, [Phyloseq and R for analysis and visualization](phyloseq_analysis_visualization)
-2. **Alpha Diversity**: Calculate and plot alpha diversity metrics (e.g., Richness, Inverse Simpson).[Alpha Diversity](alpha_diversity_plot)
-3. **Community Composition**: Create bar plots showing the taxonomic composition at the Phylum, Class, and Family levels.[Bar Plots of diversity at different scales](community_composition_plot)
+2. **Alpha Diversity**: Calculate and plot alpha diversity metrics (e.g., Richness, Inverse Simpson). Instructions here: [Alpha Diversity](alpha_diversity_plot)
+3. **Community Composition**: Create bar plots showing the taxonomic composition at the Phylum, Class, and Family levels. Instructions here: [Bar Plots of diversity at different scales](community_composition_plot)
 4. Beta Diversity (Ordination): Create an NMDS ordination plot to visualize how sample communities relate to each other. Note: This will be most informative for your `mysite` dataset, which compares multiple houses at the same site. Hint: Check out the `treasurechest` for code.
 
 **Checkpoint: Please show your instructor the set of figures you've generated for your house dataset before you proceed with analyzing the site data.**
