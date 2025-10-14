@@ -1,49 +1,61 @@
-# Data Analysis
-Here you will start to explore your own dataset. You have already aquired some basic skills. You'll apply that knowledge to this new dataset.
+# Data Analysis Exploring the Class Microbiome Dataset
+In this part of the lab, you will apply the analysis skills you learned last week to a new, larger dataset. The goal is to explore the microbial diversity within different houses and sites from our class project.
 
-# Loading the complete data set
-To get you started, I have provided a script to load our class data set.
+# Step 1: Setting Up Your RStudio Environment
+First, let's get your R session ready to work with the class data.
 
-1. If you haven't already, create a new RStudio Project (File>New Project). If RStudio asks you to “Save Current Workspace”, you should select “Don’t Save”.  You then want to select Existing Directory. On the next window, set the Project working directory to: `~/BIOL491_2024`
-2. In the Console you can enter `source('treasurechest/LoadData.R')`. You can open this file in your explorer to see all of the data you've loaded.
-3. For today’s analysis, you want to create a new R Script (File>New File>R Script) to hold all of the code you’re writing. This will create an empty document in a new panel. You should go ahead and save this document (File>Save). You can name the file anything you want, but keep the title informative and without space (e.g. `house_analysis.R`). It’s important to end the file in `.R` so that Rstudio knows it’s an R script.
-
-## Output
-Now we have a number of phyloseq objects:
-
-* `mb` contains the entire dataset with 187 samples including negative controls
-* `mbQC` excludes the negative controls for a reduced 120 samples, also removes some low abundance ASVs
-* `mb_dirty` excludes the negative controls, but includes some contaminating ASVs
-
-# Create your data sets
-
-The complete data set is too big to really look at all at once.
-
-Pick a house that you want to work with can create a smaller data set. You houses are identified by the last 4 digits of the ID. You can get a list of the included houses by typing `levels(mb@sam_data$House)`. Let's start by looking at all the sites within a single home. You can use the code below to put all of the samples from a single house (e.g. `ab8a`) into a container (`myhouse`)
-
+1. Create a New RStudio Project: `File>New Project`. If RStudio asks you to “Save Current Workspace”, you should select “Don’t Save”. Select Existing Directory. On the next window, set the Project working directory to: `~/BIOL491_2024`
+2. Load the Class Data: In the RStudio Console (the bottom-left panel), type the following command and press Enter. This script will load several pre-processed datasets into your environment.
 ```
-myhouse <- subset_samples(mbQC, House=="ab8a")
+source('treasurechest/LoadData.R')
+```
+3. Create a New R Script: Go to `File > New File > R Script`. This will open a blank script in the editor panel. Immediately save this file (`File > Save`). Name it something informative, like `house_analysis.R`. Remember to include the .R extension! All the code you write for today's lab should go into this script.
+
+## Step 2: Understanding the Loaded Datasets
+The `LoadData.R` script provided you with three phyloseq objects. Each is a slightly different version of the class dataset:
+
+* `mb`: The complete, raw dataset containing all 187 samples, including negative controls.
+* `mbQC`: A quality-controlled version. Negative controls have been removed, and low-abundance ASVs (Amplicon Sequence Variants) have been filtered out, leaving 120 samples. You will use this for most of your analysis.
+* `mb_dirty`: This version has negative controls removed but still includes some known contaminating ASVs.
+
+# Step 3: Create Your Personal Datasets
+
+The full dataset is too large to analyze all at once. Your first task is to create smaller, manageable subsets to work with
+
+1. Subset by House:
+* First, see which houses are available by running this command in your console: 
+```levels(mb@sam_data$House)```
+* Choose one house ID (e.g., ab8a) and use the subset_samples() function to create a new phyloseq object containing only the samples from that house.
+```
+# This creates a new object 'myhouse' containing only samples where the 'House' column is "ab8a".
+# Replace "ab8a" with the house ID you chose.
+myhouse <- subset_samples(mbQC, House == "ab8a")
 ```
 
-While you're making data sets, pick a Site that you want to work with and create a smaller dataset. You can look in the metadata file `view(mb@sam_data)` to see how the labels are formatted (e.g. SiteA, SiteB)
+2. Subset by Site:
+* Next, choose a specific sample site to investigate (e.g., `SiteA`, `SiteB`). You can see all available site labels by inspecting the metadata: ```view(mbQC@sam_data)```.
+* Use the same subsetting technique to create a dataset for your chosen site.
 ```
-mysite <- subset_samples(mb, Site=="SiteZ")
+# This creates 'mysite' containing only samples where 'Site' is "SiteZ".
+# Replace "SiteZ" with the site you chose.
+mysite <- subset_samples(mbQC, Site == "SiteZ")
 ```
 
-**HINT** The code you used last week relied on your dataset being in a container called `mydata`. You can copy your own dataset into that temporary container with this short command `mydata <- myhouse` or `mydata <- mysite`.
+**Pro Tip**: The analysis script from last week expects your data to be in an object named `mydata`. To easily reuse that code, you can copy your new subset into mydata like this:
+```mydata <- myhouse``` or ```mydata <- mysite```.
 
-# Explore diversity
+# Step 4: Analyze Your Subsets
 
-Now you have two new datasets Run the following to explore you data.
+Now you are ready to analyze the diversity of your `myhouse` and `mysite` datasets. Refer back to the script and instructions from the previous lab for detailed guidance on how to perform the following analyses.
 
-1. Calculate number of reads You may back to the previous lab, [Phyloseq and R for analysis and visualization](phyloseq_analysis_visualization)
-2. [Alpha Diversity](alpha_diversity_plot)
-3. [Bar Plots of diversity at different scales](community_composition_plot)
-4. Ordination plot (only complete for the Site data set). Hint: Check out the treasurechest.
+1. **Calculate Read Counts**: Determine the sequencing depth for each sample in your new subset. You may refer back to the previous lab, [Phyloseq and R for analysis and visualization](phyloseq_analysis_visualization)
+2. **Alpha Diversity**: Calculate and plot alpha diversity metrics (e.g., Richness, Inverse Simpson).[Alpha Diversity](alpha_diversity_plot)
+3. **Community Composition**: Create bar plots showing the taxonomic composition at the Phylum, Class, and Family levels.[Bar Plots of diversity at different scales](community_composition_plot)
+4. Beta Diversity (Ordination): Create an NMDS ordination plot to visualize how sample communities relate to each other. Note: This will be most informative for your `mysite` dataset, which compares multiple houses at the same site. Hint: Check out the `treasurechest` for code.
 
-**Show your instructor the set of figures on your house data before you move on to the site data.**
+**Checkpoint: Please show your instructor the set of figures you've generated for your house dataset before you proceed with analyzing the site data.**
 
 
 # What's next
 
-Now you have lots of code and your head should be full of lots of ideas. Next week, we'll move on to testing.
+You now have a complete workflow for exploring microbiome data and a script full of your own analysis code. Next week, we will build on this foundation to perform statistical testing and formally test hypotheses.
