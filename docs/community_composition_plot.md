@@ -1,134 +1,139 @@
-# Stacked Bar Chart, visualize community composition differences
+# Stacked Bar Chart: visualize community composition differences
 
-In this example, we'll start with a single site data set. We can copy the site into a generic container, **`mydata`**.
+Stacked bar plots show which taxa make up each sample. We will build one in small steps. These are the same steps as in your `data_analysis_I.qmd` notebook. (In the notebook you build it first for your house, with sites on the x-axis. This page uses a site dataset, with houses on the x-axis. The code is the same except for the `x =` setting.)
+
+In this example, we'll start with a single site data set. We copy the site into a generic container, **`mydata`**.
 ```
 mydata <- mysite
 ```
 
-We will use a series of commands to combine OTU/ASVs by the taxonomic rank. 
-First let's create a variable with the taxonomic rank at which you want to combine OTU/ASVs. We'll call this variable **`myTaxLevel`**. In this example, we'll be combining at the Phylum level.
+## Choose your settings
+
+We will combine ASVs at one taxonomic rank. First, create a variable with the rank you want. We'll call this variable **`myTaxLevel`**. In this example, we'll combine at the Phylum level.
 ```
 myTaxLevel <- "Phylum"
 ```
 
-You should also consider filtering out low abudance groups. We'll call this variable **`myfilter`**. In this example, we'll filter out any group that is present at less than 5% (`< 5%`).
+You should also consider filtering out low-abundance groups. We'll call this variable **`myFilter`**. In this example, we'll hide any group that makes up less than 5% of a sample.
 ```
 myFilter <- 5
 ```
 
-Now you can create a string variable with all of the information. You'll use this to label, **`myYaxis`** , for your vertical axis.
+Now create a text label from these settings, **`myYaxis`**, for the vertical axis. It updates itself whenever you change the settings.
 ```
-myYaxis <- paste("Relative Abundance (", myTaxLevel, " > ", myFilter, "%) \n")
+myYaxis <- paste0("Relative abundance (", myTaxLevel, " > ", myFilter, "%)")
 ```
-Now you are ready to start reorganizing your data. The code below should work for any taxonomic level and any degree of filtering. You should be able to change the values of `myTaxLevel` and `myFilter` and then run the commands below to generate any number of different plots.
 
+The code below should work for any taxonomic level and any degree of filtering. Change the values of `myTaxLevel` and `myFilter`, then rerun the commands below to make different plots.
 
-## Covert to relative abundance and combine
+## Convert to relative abundance and combine
 
-Start by converting the raw count data into relative abundance data as a percent (0 - 100 range). This creates a new data set called **`relmydata`**.
+Samples have different numbers of reads, so start by converting the raw counts into relative abundance, as a percent (0 to 100). This creates a new data set called **`relmydata`**.
 ```
-relmydata = transform_sample_counts(mydata,function(x) 100 * x / sum(x))
+relmydata <- transform_sample_counts(mydata, function(x) 100 * x / sum(x))
 ```
-You've already set up your variables and filters so you can combine your OTU/ASVs. Your combined data will now be in the container called **`relmydata_grouped`**.
+
+Now combine your ASVs. Each line does one step, connected by the pipe `%>%` ("and then"). Your combined data will be in the container called **`relmydata_grouped`**.
 ```
 relmydata_grouped <- relmydata %>%
-  tax_glom(taxrank = myTaxLevel) %>%        # group at your Taxonomic level
-  psmelt() %>%                              # Melt to long format
-  filter(Abundance > myFilter) %>%          # Filter out low abundance taxa
-  arrange(myTaxLevel)                       # Sort data frame alphabetically by your Taxonomic level
+  tax_glom(taxrank = myTaxLevel) %>%         # combine ASVs at your taxonomic level
+  psmelt() %>%                               # turn into one long table for ggplot
+  filter(Abundance > myFilter) %>%           # drop taxa below myFilter %
+  arrange(.data[[myTaxLevel]])               # sort alphabetically
 ```
 
-We can clean up this data and remove unclassified OTU/ASVs labeled as `Bacteria_unclassified`. Your cleaned data will now be called **`relmydata_grouped_clean`**.
+Next, remove ASVs that could not be identified at this level. They are labeled "Unclassified ..." (for example, "Unclassified Bacteroidota"). Your cleaned data will be called **`relmydata_grouped_clean`**.
 ```
-relmydata_grouped_clean <- subset(relmydata_grouped, relmydata_grouped[[myTaxLevel]] != "Bacteria_unclassified")
+relmydata_grouped_clean <- relmydata_grouped %>%
+  filter(!grepl("^Unclassified", .data[[myTaxLevel]]))
 ```
 
-Next, create a color palette based on the number of groups within your taxonomic level. In this example, we'll use the Viridis palette to pull colors. The colors will be stored in a variable called **`mycolors`**.
+Next, create a color palette with one color for each group at your taxonomic level. In this example, we use the viridis palette. The colors are stored in a variable called **`mycolors`**.
 ```
 mycolors <- sequential_hcl(length(unique(relmydata_grouped_clean[[myTaxLevel]])), palette = "viridis")
 ```
 
-Finally, we can put this all together and use `ggplot` to graph the data.
+## Build the plot
+
+**1. The basic plot.** Put it all together with `ggplot`. Each bar is a sample, split into colored pieces by taxon.
 ```
-ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myTaxLevel]])) + 
+ggplot(relmydata_grouped_clean, aes(x = House, y = Abundance, fill = .data[[myTaxLevel]])) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = mycolors) +
   ylab(myYaxis) +
   ggtitle("Community Composition")
 ```
-![Raw Bar Plot](mysite.demo.1.png)
+![Community composition, step 1](mysite.demo.1.png)
 
-
-You can improve this graph. By adding classic theme (`theme_classic()`), you can remove the gray background on the graph and add some lines for the axes.
+**2. A cleaner background.** Adding the classic theme (`theme_classic()`) removes the gray background and adds lines for the axes.
 ```
-ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myTaxLevel]])) + 
+ggplot(relmydata_grouped_clean, aes(x = House, y = Abundance, fill = .data[[myTaxLevel]])) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = mycolors) +
   ylab(myYaxis) +
   ggtitle("Community Composition") +
   theme_classic()
 ```
-![Raw Bar Plot](mysite.demo.2.png)
+![Community composition, step 2](mysite.demo.2.png)
 
-
-The labels on the horizontal axis are overlapping. You can rotate the text using the `axis.text.x` call in `theme()`.
+**3. Rotate the x-axis labels.** The labels on the horizontal axis overlap. Rotate them with `axis.text.x` in `theme()`.
 ```
-ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myTaxLevel]])) + 
+ggplot(relmydata_grouped_clean, aes(x = House, y = Abundance, fill = .data[[myTaxLevel]])) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = mycolors) +
   ylab(myYaxis) +
   ggtitle("Community Composition") +
   theme_classic() +
   theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)
   )
 ```
-![Raw Bar Plot](mysite.demo.3.png)
+![Community composition, step 3](mysite.demo.3.png)
 
-
-The font size is still quite small. We can increase and standardize the size in the `theme`.
+**4. Increase the font size.** The text is still quite small. We can increase and standardize the size in `theme()`.
 ```
-ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myTaxLevel]])) + 
+ggplot(relmydata_grouped_clean, aes(x = House, y = Abundance, fill = .data[[myTaxLevel]])) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = mycolors) +
   ylab(myYaxis) +
   ggtitle("Community Composition") +
   theme_classic() +
   theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
     axis.text = element_text(size = 12, face = "bold"),
-    axis.title = element_text(size = 14,face = "bold"),
+    axis.title = element_text(size = 14, face = "bold"),
     legend.text = element_text(size = 12),
-    legend.title = element_text(size = 14),
+    legend.title = element_text(size = 14)
   )
 ```
-![Raw Bar Plot](mysite.demo.4.png)
+![Community composition, step 4](mysite.demo.4.png)
 
-
-If you want, you can add dashed grid lines to help see differences better with the `panel.grid` call in `theme()`.
+**5. Add gridlines.** Dashed grid lines make the percentages easier to read. Add them with `panel.grid` in `theme()`.
 ```
-ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myTaxLevel]])) + 
+ggplot(relmydata_grouped_clean, aes(x = House, y = Abundance, fill = .data[[myTaxLevel]])) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = mycolors) +
   ylab(myYaxis) +
   ggtitle("Community Composition") +
   theme_classic() +
   theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
     axis.text = element_text(size = 12, face = "bold"),
-    axis.title = element_text(size = 14,face = "bold"),
+    axis.title = element_text(size = 14, face = "bold"),
     legend.text = element_text(size = 12),
     legend.title = element_text(size = 14),
     axis.ticks = element_blank(),
     panel.grid = element_line(color = "#b4aea9"),
-    panel.grid.major.y = element_line(linetype = "dashed"),
+    panel.grid.major.y = element_line(linetype = "dashed")
   )
 ```
-![Raw Bar Plot](mysite.demo.5.png)
+![Community composition, step 5](mysite.demo.5.png)
 
-You change the color palette to using `ggsci` package. You'll need to install the `ggsci` package and load the library before this will work. Here we use the two functions `scale_color_lancet()` and `scale_fill_lancet()` to pick colors like the journal *Lancet*.
+**6. Journal color palettes with ggsci.** The [ggsci](https://nanx.me/ggsci/) package has color palettes inspired by scientific journals. Load it with `library(ggsci)`, then replace the `scale_fill_manual()` line with the two functions `scale_color_lancet()` and `scale_fill_lancet()` to use colors like the journal *Lancet*.
 ```
-ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myTaxLevel]])) + 
+library(ggsci)
+
+ggplot(relmydata_grouped_clean, aes(x = House, y = Abundance, fill = .data[[myTaxLevel]])) +
   geom_bar(stat = "identity") +
   # scale_fill_manual(values = mycolors) +
   scale_color_lancet() + scale_fill_lancet() +
@@ -136,21 +141,21 @@ ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myT
   ggtitle("Community Composition") +
   theme_classic() +
   theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
     axis.text = element_text(size = 12, face = "bold"),
-    axis.title = element_text(size = 14,face = "bold"),
+    axis.title = element_text(size = 14, face = "bold"),
     legend.text = element_text(size = 12),
     legend.title = element_text(size = 14),
     axis.ticks = element_blank(),
     panel.grid = element_line(color = "#b4aea9"),
-    panel.grid.major.y = element_line(linetype = "dashed"),
+    panel.grid.major.y = element_line(linetype = "dashed")
   )
 ```
-![Raw Bar Plot](mysite.demo.6.png)
+![Community composition, step 6](mysite.demo.6.png)
 
-If you'd like to be a little silly, you can change the color palette to Simpsons theme.
+**7. Or be a little silly** and use *The Simpsons* palette.
 ```
-ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myTaxLevel]])) + 
+ggplot(relmydata_grouped_clean, aes(x = House, y = Abundance, fill = .data[[myTaxLevel]])) +
   geom_bar(stat = "identity") +
   # scale_fill_manual(values = mycolors) +
   # scale_color_lancet() + scale_fill_lancet() +
@@ -159,17 +164,18 @@ ggplot(relmydata_grouped_clean, aes( x = House, y = Abundance, fill = .data[[myT
   ggtitle("Community Composition") +
   theme_classic() +
   theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
     axis.text = element_text(size = 12, face = "bold"),
-    axis.title = element_text(size = 14,face = "bold"),
+    axis.title = element_text(size = 14, face = "bold"),
     legend.text = element_text(size = 12),
     legend.title = element_text(size = 14),
     axis.ticks = element_blank(),
     panel.grid = element_line(color = "#b4aea9"),
-    panel.grid.major.y = element_line(linetype = "dashed"),
+    panel.grid.major.y = element_line(linetype = "dashed")
   )
 ```
-![Raw Bar Plot](mysite.demo.7.png)
+![Community composition, step 7](mysite.demo.7.png)
 
+**Running out of colors?** Each ggsci palette has a fixed number of colors: Lancet has 9 and Simpsons has 16. If your plot has more taxa than that, the extra taxa show up as gray bars. Raise `myFilter` or choose a palette with more colors. More palettes are listed at <https://nanx.me/ggsci/>.
 
-
+**Try it:** change `myTaxLevel` to `"Class"` and then `"Family"`, and rerun the steps from "Convert to relative abundance and combine" onward.
