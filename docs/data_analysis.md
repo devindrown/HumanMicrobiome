@@ -32,18 +32,20 @@ The walkthrough also shows a histogram of sequencing depth (reads per sample) fo
 Open `data_analysis_I.qmd`. The full dataset is too large to analyze all at once, so your first task is to create two smaller subsets.
 
 1. **Subset by house.** The notebook lists the house IDs. Choose your house and type its ID into this cell, in upper case exactly as listed (if the ID is not in the list, the cell stops and tells you so):
-```
-my_house <- "AB8A"   # <-- change to your house ID
 
-myhouse <- subset_samples(mbQC, House == my_house)
-```
+   ```
+   my_house <- "AB8A"   # <-- change to your house ID
+
+   myhouse <- subset_samples(mbQC, House == my_house)
+   ```
 
 2. **Subset by site.** The notebook also lists the sites. Choose one site to compare across all houses:
-```
-my_site <- "SiteZ"   # <-- change to the site you chose
 
-mysite <- subset_samples(mbQC, Site == my_site)
-```
+   ```
+   my_site <- "SiteZ"   # <-- change to the site you chose
+
+   mysite <- subset_samples(mbQC, Site == my_site)
+   ```
 
 The analysis code works on an object named `mydata`. To point it at one of your subsets, the notebook copies the subset into `mydata`: `mydata <- myhouse` or `mydata <- mysite`.
 

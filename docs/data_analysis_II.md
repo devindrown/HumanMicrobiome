@@ -7,9 +7,10 @@ As before, you work in a **Quarto notebook**, `data_analysis_II.qmd`. This page 
 1. Open the class project (`2026.only.Rproj`) in RStudio, as in [Data Analysis I](data_analysis).
 2. Open `data_analysis_II.qmd` from the **Files** pane.
 3. Run the first cell. It loads the class data, exactly as last week:
-```
-source("treasurechest/LoadData.R")
-```
+
+   ```
+   source("treasurechest/LoadData.R")
+   ```
 
 This gives you the same three phyloseq objects as last week: `mb` (everything, including negative controls), `mb_dirty` (controls and flagged samples removed) and `mbQC` (rare ASVs also removed). **Use `mbQC` for your analyses.**
 
