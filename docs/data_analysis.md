@@ -17,11 +17,9 @@ This year you will work in **Quarto notebooks** inside RStudio. A notebook mixes
 
 # Step 2: Understand the class data
 Open `LoadData_walkthrough.qmd` and work through it first. Every analysis starts with this line, which runs the script `treasurechest/LoadData.R`:
-
 ```
 source("treasurechest/LoadData.R")
 ```
-
 The walkthrough contains the same code as that script, one step at a time, with an explanation of each step. It creates three phyloseq objects, each a slightly different version of the class dataset:
 
 * `mb`: the complete dataset, including the negative controls.
@@ -33,16 +31,14 @@ The walkthrough also shows a histogram of sequencing depth (reads per sample) fo
 # Step 3: Create your personal datasets
 Open `data_analysis_I.qmd`. The full dataset is too large to analyze all at once, so your first task is to create two smaller subsets.
 
-**1. Subset by house.** The notebook lists the house IDs. Choose your house and type its ID into this cell:
-
+1. **Subset by house.** The notebook lists the house IDs. Choose your house and type its ID into this cell, in upper case exactly as listed (if the ID is not in the list, the cell stops and tells you so):
 ```
-my_house <- "ab8a"   # <-- change to your house ID
+my_house <- "AB8A"   # <-- change to your house ID
 
 myhouse <- subset_samples(mbQC, House == my_house)
 ```
 
-**2. Subset by site.** The notebook also lists the sites. Choose one site to compare across all houses:
-
+2. **Subset by site.** The notebook also lists the sites. Choose one site to compare across all houses:
 ```
 my_site <- "SiteZ"   # <-- change to the site you chose
 
